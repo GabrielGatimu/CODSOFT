@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        inter: ['inter', 'serif']
-      }
+        'poppins': ['Poppins', 'sans-serif']
+      },
     },
   },
   plugins: [],
