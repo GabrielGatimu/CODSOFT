@@ -3,7 +3,6 @@ import Nav from "./navbar/Nav.jsx";
 function NotFound() {
     return (
         <div>
-            <Nav />
             <h1 className="text-4xl text-red-600 font-medium">Not Found</h1>
             <p className="text-xl font-medium m-6">
                 Sorry, the page you&apos;re looking for cannot be found!

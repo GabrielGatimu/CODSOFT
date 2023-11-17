@@ -1,13 +1,14 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 // import './styles/App.css'
 
-// import Nav from "./components/navbar/Nav.jsx";
+import Nav from "./components/navbar/Nav.jsx";
 import HomePage from "./screens/HomePage.jsx";
 import NotFound from "./components/NotFound.jsx";
 
 function App() {
     return (
         <main className="overflow-x-hidden font-poppins">
+            <Nav />
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>

@@ -4,10 +4,12 @@ import MenuItem from "./MenuItem.jsx";
 export default function Nav() {
     return (
         <>
-            <nav className="bg-blue-500 flex items-center justify-evenly py-2 mb-2 border-b-2 border-b-slate-400">
-                {/* search button */}
+            {/*<nav className="bg-blue-200 hidden items-center md:block lg:flex lg:justify-evenly py-2 border-b-2 border-b-slate-400">*/}
+            <nav className="bg-red-500 shadow p-5 md:flex md:items-center md:justify-between">
+
+            {/* search button */}
                 <div>
-                    <form className="relative w-max mx-auto ">
+                    <form className="relative w-max mx-auto">
                         <input type="search" id="search"
                                className="relative peer z-10 bg-transparent w-12 h-12 rounded-full border cursor-pointer pl-12 pr-4 focus:w-full focus:border-lime-300 focus:cursor-text focus:pl-20 focus:pr-4"></input>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -19,7 +21,7 @@ export default function Nav() {
                     </form>
                 </div>
 
-                {/* site links */}
+                {/* page links */}
                 <Menu>
                     <MenuItem href="/" isActive>Home</MenuItem>
                     <MenuItem href="/jobs">Browse Jobs</MenuItem>
@@ -27,7 +29,7 @@ export default function Nav() {
                     <MenuItem href="/contact">Contact</MenuItem>
                 </Menu>
 
-                {/* action links (login) & (add button) */}
+                {/* action links (login & post buttons) */}
                 <div className="flex text-white items-center">
                     <a href="/login">Login</a>
                     <a href="/jobs/post" className="flex px-3 py-2 m-4 rounded-md bg-slate-100 text-black">Post A
