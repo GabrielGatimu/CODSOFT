@@ -7,7 +7,7 @@ import NotFound from "./components/NotFound.jsx";
 
 function App() {
     return (
-        <main className="font-poppins">
+        <main className="overflow-x-hidden font-poppins">
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>
