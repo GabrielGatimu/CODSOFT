@@ -7,7 +7,7 @@ import useActiveLink from "../../hooks/useActiveLink.js";
 
 export default function Nav() {
     const {userInfo} = useAuth()
-    const parentLink  = useActiveLink() // this is the current page
+    const parentLink  = useActiveLink() // gets the current page
     const [activeLink, setActiveLink] = useState(parentLink)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
