@@ -4,12 +4,12 @@ import MenuItem from "./MenuItem.jsx";
 export default function Nav() {
     return (
         <>
-            {/*<nav className="bg-blue-200 hidden items-center md:block lg:flex lg:justify-evenly py-2 border-b-2 border-b-slate-400">*/}
-            <nav className="bg-red-500 shadow p-5 md:flex md:items-center md:justify-between">
+            <nav
+                className="bg-blue-500 shadow p-5 pl-8 md:px-16 md:flex md:items-center md:justify-between  z-[-1] md:z-auto">
 
-            {/* search button */}
-                <div>
-                    <form className="relative w-max mx-auto">
+                {/* search button */}
+                <div className="flex items-center text-white space-x-1 md:space-x-3">
+                    <form className="relative w-auto md:w-max mx-auto">
                         <input type="search" id="search"
                                className="relative peer z-10 bg-transparent w-12 h-12 rounded-full border cursor-pointer pl-12 pr-4 focus:w-full focus:border-lime-300 focus:cursor-text focus:pl-20 focus:pr-4"></input>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -19,6 +19,10 @@ export default function Nav() {
                                   d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                         </svg>
                     </form>
+                    <div>
+                        <h1 className="text-xl md:text-2xl md:font-extrabold ">Job Board</h1>
+                        <h6 className="text-slate-200 text-sm">find your dream job</h6>
+                    </div>
                 </div>
 
                 {/* page links */}
@@ -30,11 +34,12 @@ export default function Nav() {
                 </Menu>
 
                 {/* action links (login & post buttons) */}
-                <div className="flex text-white items-center">
+                <div className="hidden md:flex text-white items-center">
                     <a href="/login">Login</a>
                     <a href="/jobs/post" className="flex px-3 py-2 m-4 rounded-md bg-slate-100 text-black">Post A
                         Job</a>
                 </div>
+
             </nav>
         </>
     );
