@@ -2,14 +2,22 @@ import {useState} from "react";
 
 import Menu from "./Menu.jsx";
 import MenuItem from "./MenuItem.jsx";
+import useAuth from "../../hooks/useAuth.js";
+import useActiveLink from "../../hooks/useActiveLink.js";
 
 export default function Nav() {
+    const {userInfo} = useAuth()
+    const parentLink  = useActiveLink() // this is the current page
+    const [activeLink, setActiveLink] = useState(parentLink)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen)
-        console.log(isMenuOpen)
-        // now toggle the Menu item to display block or hidden depending on the state of isMenuOpen
+    }
+
+    const handleMenuItemClick = (href) => {
+        setActiveLink(href)
+        toggleMenu()
     }
 
     return (
@@ -66,10 +74,11 @@ export default function Nav() {
 
                 {/* page links */}
                 <Menu isMenuOpen={isMenuOpen}>
-                    <MenuItem href="/" isActive>Home</MenuItem>
-                    <MenuItem href="/jobs">Browse Jobs</MenuItem>
-                    <MenuItem href="/blog">Blog</MenuItem>
-                    <MenuItem href="/contact">Contact</MenuItem>
+                    <MenuItem href="/" onClick={() => handleMenuItemClick('/')}>Home</MenuItem>
+                    <MenuItem href="/jobs" onClick={() => handleMenuItemClick('/jobs')}>Browse
+                        Jobs</MenuItem>
+                    <MenuItem href="/blog" onClick={() => handleMenuItemClick('/blog')}>Blog</MenuItem>
+                    <MenuItem href="/contact" onClick={() => handleMenuItemClick('/contact')}>Contact</MenuItem>
                 </Menu>
 
                 {/* action links (login & post buttons) */}
