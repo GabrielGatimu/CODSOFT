@@ -4,10 +4,11 @@ import Menu from "./Menu.jsx";
 import MenuItem from "./MenuItem.jsx";
 import useAuth from "../../hooks/useAuth.js";
 import useActiveLink from "../../hooks/useActiveLink.js";
+import {Link} from "react-router-dom";
 
 export default function Nav() {
     const {userInfo} = useAuth()
-    const parentLink  = useActiveLink() // gets the current page
+    const parentLink = useActiveLink() // gets the current page
     const [activeLink, setActiveLink] = useState(parentLink)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -17,16 +18,18 @@ export default function Nav() {
 
     const handleMenuItemClick = (href) => {
         setActiveLink(href)
-        toggleMenu()
+        if (isMenuOpen) {
+            toggleMenu()
+        }
     }
 
     return (
         <>
             <nav
-                className={`${isMenuOpen ? 'divide-y divide-slate-500 border-b-4 border-slate-500' : ''} bg-blue-500 shadow p-5 pl-8 md:px-16 md:flex md:items-center md:justify-between  z-[-1] md:z-auto`}>
+                className={`${isMenuOpen ? 'divide-y divide-stone-900 border-b-2 border-slate900' : ''}h-auto md:h-28 bg-blue-500 shadow p-5 pl-8 md:px-16 md:flex md:items-center md:justify-between  z-[-1] md:z-auto`}>
 
                 {/* search button */}
-                <div className="flex items-center justify-between text-white space-x-3 my-2">
+                <div className="flex items-center justify-evenly text-white space-x-1 md:space-x-3 mb-2">
                     <form className="relative w-auto md:w-max ">
                         <input type="search" id="search"
                                className="relative peer z-10 bg-transparent w-12 h-12 rounded-full border cursor-pointer pl-12 pr-4 focus:w-full focus:border-lime-300 focus:cursor-text focus:pl-20 focus:pr-4"></input>
@@ -39,7 +42,7 @@ export default function Nav() {
                     </form>
 
                     <div className="flex">
-                        <div className="mr-20">
+                        <div className="mr-4 md:mr-20">
                             <h1 className="text-xl md:text-2xl md:font-extrabold ">Job Board</h1>
                             <h6 className="text-slate-200 text-sm">find your dream job</h6>
                         </div>
@@ -82,11 +85,19 @@ export default function Nav() {
                 </Menu>
 
                 {/* action links (login & post buttons) */}
-                <div className={`${isMenuOpen ? 'block my-2' : 'hidden'}  md:flex text-white items-center`}>
-                    <a href="/login" className="ml-1 mr-4">Login</a>
-                    <a href="/jobs/post" className="flex w-fit px-3 py-2 m-4 ml-1 rounded-md bg-slate-100 text-black">Post
-                        A
-                        Job</a>
+                <div className={`${isMenuOpen ? 'block my-2' : 'hidden'} md:flex text-white items-center`}>
+                    <Link
+                        to={"/login"}
+                        onClick={toggleMenu}
+                        className="ml-1 mr-4"
+                    >Login
+                    </Link>
+                    <Link
+                        to={"/jobs/post"}
+                        onClick={() => handleMenuItemClick('/jobs')}
+                        className="flex w-fit px-3 py-2 m-4 ml-1 rounded-md bg-slate-100 text-black"
+                    >Post A Job
+                    </Link>
                 </div>
             </nav>
         </>

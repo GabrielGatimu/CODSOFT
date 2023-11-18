@@ -8,8 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon job-board-api/app.js",
     "client": "npm run dev --prefix job-board",
+    "client-expose": "npm run host --prefix job-board",
     "start": "node job-board-api/app.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\" "
+    "dev": "concurrently \"npm run server\" \"npm run client-expose\" "
   },
   "author": "Gabriel Gatimu",
   "license": "ISC",
