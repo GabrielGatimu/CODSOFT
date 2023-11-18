@@ -6,11 +6,11 @@ import Nav from "./components/navbar/Nav.jsx";
 
 function App() {
     return (
-        <>
+        <main className="font-poppins">
             <Nav/>
             <ToastContainer/>
             <Outlet/>
-        </>
+        </main>
 
     )
 }
