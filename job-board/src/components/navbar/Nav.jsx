@@ -1,10 +1,11 @@
 import {useState} from "react";
+import {Link} from "react-router-dom";
 
+import '../../styles/custom.css'
 import Menu from "./Menu.jsx";
 import MenuItem from "./MenuItem.jsx";
 import useAuth from "../../hooks/useAuth.js";
 import useActiveLink from "../../hooks/useActiveLink.js";
-import {Link} from "react-router-dom";
 
 export default function Nav() {
     const {userInfo} = useAuth()
@@ -88,14 +89,14 @@ export default function Nav() {
                 <div className={`${isMenuOpen ? 'block my-2' : 'hidden'} md:flex text-white items-center`}>
                     <Link
                         to={"/login"}
-                        onClick={toggleMenu}
+                        onClick={handleMenuItemClick}
                         className="ml-1 mr-4"
                     >Login
                     </Link>
                     <Link
                         to={"/jobs/post"}
-                        onClick={() => handleMenuItemClick('/jobs')}
-                        className="flex w-fit px-3 py-2 m-4 ml-1 rounded-md bg-slate-100 text-black"
+                        onClick={handleMenuItemClick}
+                        className="flex items-center h-12 w-fit px-4 m-4 ml-1 rounded-md bg-green-600 text-white hover:text-white hover:bg-transparent border border-green-600 hover:border hover:border-stone-800 duration-500"
                     >Post A Job
                     </Link>
                 </div>

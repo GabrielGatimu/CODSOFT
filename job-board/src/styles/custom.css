@@ -1,0 +1,3 @@
+.btn{
+    @apply text-white rounded-md px-2 py-1  m-2 w-20 hover:bg-transparent hover:text-black hover:border hover:border-stone-800 duration-500
+}
