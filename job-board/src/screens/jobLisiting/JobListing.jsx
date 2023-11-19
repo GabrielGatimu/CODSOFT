@@ -1,6 +1,8 @@
 import {useState} from "react";
-import JobCard from "../components/JobCard.jsx";
 import {useSelector} from "react-redux";
+
+import './jobListing.css'
+import JobCard from "../../components/JobCard.jsx";
 
 export default function JobListing() {
     const jobs = useSelector((state) => state.jobs)
@@ -41,9 +43,13 @@ export default function JobListing() {
             location: '',
             salary: ''
         })
+        setSearchItem('')
+        setFilteredJobs(jobs)
     }
 
     const handleSearch = () => {
+        setSearchItem('') // clear search input first
+
         const advancedFilter = jobs.filter(job => {
             return (
                 job.title.toLowerCase().includes(filters.title.toLowerCase()) &&
@@ -67,20 +73,21 @@ export default function JobListing() {
             <h1>Available Jobs</h1>
 
             {/* Search & Filter Section */}
-            <section className="bg-stone-200 my-4 p-4">
-                {/* Search Input */}
+            <section className="my-4 p-4 text-center">
+                {/*Search Input*/}
                 <div>
                     <input
                         type="text"
                         value={searchItem}
                         onChange={handleInputChange}
                         placeholder="search a job..."
-                        className="p-2 rounded-md mb-2 w-full md:w-64"
+                        className="border border-stone-800 p-2 rounded-md mb-2 w-full md:w-72"
                     />
                 </div>
 
                 {/* Filters Container */}
-                <div>
+                <h4> Advanced filter</h4>
+                <div className="filter-container bg-blue-100 px-2 rounded block md:flex space-x-3 items-center">
                     <div>
                         <label>Title: </label>
                         <select name="title" value={filters.title} onChange={handleFilterChange}>
@@ -115,14 +122,14 @@ export default function JobListing() {
                         </select>
                     </div>
 
-                    <div>
-                        {/*<button*/}
-                        {/*    className="bg-blue-500 text-white rounded-md p-2 m-4"*/}
-                        {/*    onClick={handleSearch}>Search*/}
-                        {/*</button>*/}
+                    <div className="flex items-center">
                         <button
-                            className="bg-stone-900 text-white rounded-md p-2 m-4"
-                            onClick={handleResetFilters}>Reset Filters
+                            className="btn bg-green-500"
+                            onClick={handleSearch}>Search
+                        </button>
+                        <button
+                            className="btn bg-stone-900"
+                            onClick={handleResetFilters}>Reset
                         </button>
                     </div>
                 </div>
@@ -134,15 +141,18 @@ export default function JobListing() {
                     ?
                     <h2 className="flex items-center justify-center">No Jobs Found</h2>
                     :
+
+                    <div>
+                    <h2 className="px-20 mb-8 w-fit bg-green-500">{searchItem ? `${searchItem} jobs` : ''}</h2>
                     <section
                         className={`flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center justify-center gap-10 mb-10 md:px-24`}>
-
                         {
                             filteredJobs.map((job) => (
                                 <JobCard key={job.id} job={job}/>
                             ))
                         }
                     </section>
+                    </div>
             }
         </div>
     )
