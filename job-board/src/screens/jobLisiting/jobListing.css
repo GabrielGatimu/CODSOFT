@@ -1,0 +1,11 @@
+.btn{
+    @apply text-white rounded-md px-2 py-1  m-2 w-20 hover:bg-transparent hover:text-black
+}
+
+.filter-container > div{
+    @apply my-2 py-2
+}
+
+.filter-container > div > label{
+    @apply font-bold
+}
