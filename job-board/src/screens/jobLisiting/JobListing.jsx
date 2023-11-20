@@ -36,6 +36,7 @@ export default function JobListing() {
 
     const handleResetFilters = () => {
         clearAllSearchInputs()
+        setSearchButtonClicked(false)
         setFilters({
             category_filter: '',
             company_filter: '',
@@ -70,7 +71,9 @@ export default function JobListing() {
         setFilters({...filters, [name]: value})
     }
 
+    const [searchButtonClicked, setSearchButtonClicked] = useState(false)
     const handleSearch = () => {
+        setSearchButtonClicked(true)
         clearAllSearchInputs('')
 
         // filter jobs
@@ -184,10 +187,10 @@ export default function JobListing() {
                             <select name="experience_filter" value={filters.experience_filter}
                                     onChange={handleFilterChange}>
                                 <option value="">exp</option>
-                                <option value="0-2">0-2 yrs</option>
-                                <option value="2-5">2-5 yrs</option>
-                                <option value="5-10"> 5-10 yrs</option>
-                                <option value="10-50">10+ yrs</option>
+                                <option value="0-2 years">0-2 yrs</option>
+                                <option value="2-5 years">2-5 yrs</option>
+                                <option value="5-10 years"> 5-10 yrs</option>
+                                <option value="10+ years">10+ yrs</option>
                             </select>
                         </div>
 
@@ -211,11 +214,36 @@ export default function JobListing() {
             {
                 filteredJobs.length === 0
                     ?
-                    <h2 className="flex items-center justify-center w-full">No Jobs Found</h2>
+                    (<h2 className="flex items-center justify-center w-full">No
+
+                        <span className="mx-2 text-red-500 text-xl">
+                            {(searchItem.title_input || searchItem.location_input || searchItem.skill_input) ?
+                                `${(searchItem.title_input || searchItem.location_input || searchItem.skill_input)} `
+                                : ''}
+
+                            {(filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter) ?
+                                `${(filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter)} jobs`
+                                : ''}
+                        </span>
+                        Jobs Found
+                    </h2>)
                     :
-                    <div>
+                    (<div>
                         {/* text to display the searched jobs */}
-                        {/*<h2 className="mx-20 px-2 text-slate-50 mb-8 w-fit bg-green-500">{searchItem ? `${searchItem} jobs` : ''}</h2>*/}
+                        {/*(filters ? `${{...filters}} jobs` : '')*/}
+                        <h2 className="mx-20 px-2 text-slate-50 mb-8 w-fit bg-green-500">
+                            {(searchItem.title_input || searchItem.location_input || searchItem.skill_input) ?
+                                `${(searchItem.title_input || searchItem.location_input || searchItem.skill_input)} jobs`
+                                : ''}
+
+                            {searchButtonClicked ?
+                                (filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter) ?
+                                    `${(filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter)} jobs`
+                                    : ''
+
+                                : ''
+                            }
+                        </h2>
                         <section
                             className={`flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center justify-center gap-10 mb-10 md:px-24`}>
                             {
@@ -224,7 +252,7 @@ export default function JobListing() {
                                 ))
                             }
                         </section>
-                    </div>
+                    </div>)
             }
         </div>
     )
