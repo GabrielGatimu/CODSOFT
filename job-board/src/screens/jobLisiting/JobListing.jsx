@@ -94,8 +94,8 @@ export default function JobListing() {
     return (
         <div className="px-3.5">
             {/* Search & Filter Section */}
-            <section className="my-4 md:px-20">
-                <div className="bg-white shadow-md md:py-1 rounded">
+            <section className="my-2 md:px-20">
+                <div className="bg-white shadow-md md:py-0 rounded">
                     {/*Search Inputs*/}
                     <div className="custom_flex-container">
                         <div className="search-container bg-white ml-3">
