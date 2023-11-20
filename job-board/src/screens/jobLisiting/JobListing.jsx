@@ -222,7 +222,7 @@ export default function JobListing() {
                                 : ''}
 
                             {(filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter) ?
-                                `${(filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter)} jobs`
+                                `${(filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter)}`
                                 : ''}
                         </span>
                         Jobs Found
