@@ -16,6 +16,7 @@ import './styles/tailwind.css'
 
 import HomePage from "./screens/HomePage.jsx";
 import JobListing from "./screens/jobLisiting/JobListing.jsx";
+import JobDetail from "./screens/jobLisiting/JobDetail.jsx";
 import Blog from "./screens/Blog.jsx";
 import Contact from "./screens/Contact.jsx";
 import Dashboard from "./screens/dashboards/Dashboard.jsx";
@@ -28,6 +29,7 @@ const router = createBrowserRouter(
             {/* public pages */}
             <Route index={true} path="/" element={<HomePage/>}/>
             <Route path="/jobs" element={<JobListing/>}/>
+            <Route path="/jobs/view/:jobId" element={<JobDetail/>}/>
             <Route path="/blog" element={<Blog/>}/>
             <Route path="/contact" element={<Contact/>}/>
 

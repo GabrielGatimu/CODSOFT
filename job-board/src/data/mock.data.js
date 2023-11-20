@@ -54,7 +54,7 @@ const mockJobs = [
     {
         id: 5,
         category: 'Machine Learning',
-        title: 'Machine Learning Engineer',
+        title: 'Machine Learning Eng',
         company: 'ML Innovations',
         companyLogo: '/public/vite.svg',
         location: 'Remote',
@@ -119,7 +119,7 @@ const mockJobs = [
     {
         id: 10,
         category: 'Machine Learning',
-        title: 'Machine Learning Engineer',
+        title: 'Machine Learning Eng',
         company: 'ML Innovations',
         companyLogo: '/images/company/logo.svg',
         location: 'Remote',
