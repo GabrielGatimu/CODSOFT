@@ -1,0 +1,10 @@
+.filter-container > div > select{
+    @apply font-bold py-1 px-3 bg-blue-100 rounded
+}
+
+.search-container{
+    @apply flex space-x-1 items-center p-2 rounded
+}
+.search-input{
+    @apply p-2 rounded-md mb-2 md:mb-0 w-full md:w-72
+}

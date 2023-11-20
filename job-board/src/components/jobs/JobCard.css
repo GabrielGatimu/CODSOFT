@@ -1,0 +1,3 @@
+.job-card > img{
+    @apply h-20 md:h-24 rounded object-cover
+}

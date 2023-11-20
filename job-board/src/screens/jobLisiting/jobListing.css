@@ -1,7 +1,0 @@
-.filter-container > div{
-    @apply my-2 py-2
-}
-
-.filter-container > div > label{
-    @apply font-bold
-}

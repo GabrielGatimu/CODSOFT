@@ -1,34 +1,46 @@
 import {useState} from "react";
 import {useSelector} from "react-redux";
 
-import '../../styles/custom.css' // shared styles for btns
-import './jobListing.css'
-import JobCard from "../../components/JobCard.jsx";
+import '../../styles/custom.css' // shared styles for btns, flex-containers etc
+import './JobListing.css'
+import JobCard from "../../components/jobs/JobCard.jsx";
 
 export default function JobListing() {
     const jobs = useSelector((state) => state.jobs)
-
-    const [filters, setFilters] = useState({
-        title: '',
-        category: '',
-        experience: '',
-        location: '',
-        salary: ''
-    })
-
-    const [searchItem, setSearchItem] = useState('');
     const [filteredJobs, setFilteredJobs] = useState(jobs)
 
+    // search inputs
+    const [searchItem, setSearchItem] = useState({
+        title_input: '',
+        location_input: '',
+        skill_input: ''
+    })
 
-    const handleInputChange = e => {
-        const searchTerm = e.target.value
-        setSearchItem(searchTerm)
+    //  filters search
+    const [filters, setFilters] = useState({
+        category_filter: '',
+        company_filter: '',
+        type_filter: '',
+        location_filter: '',
+        experience_filter: '',
+    })
 
-        const filteredItems = jobs.filter((job) => {
-            return job.title.toLowerCase().includes(searchTerm.toLowerCase())
+    const handleSearchItemChange = e => {
+        const {name, value} = e.target
+        setSearchItem({
+            ...searchItem,
+            [name]: value
         })
 
-        setFilteredJobs(filteredItems)
+        // filter results
+        const searchResults = jobs.filter(job => {
+            const titleMatch = job.title.toLowerCase().includes(searchItem.title_input.toLowerCase())
+            const locationMatch = job.location.toLowerCase().includes(searchItem.location_input.toLowerCase())
+            const skillMatch = job.skills.some(skill => skill.toLowerCase().includes(searchItem.skill_input.toLowerCase()))
+
+            return titleMatch && locationMatch && skillMatch
+        })
+        setFilteredJobs(value ? searchResults : jobs)
     }
 
     const handleFilterChange = e => {
@@ -36,104 +48,145 @@ export default function JobListing() {
         setFilters({...filters, [name]: value})
     }
 
-    const handleResetFilters = () => {
-        setFilters({
-            title: '',
-            category: '',
-            location: '',
-            experience: '',
-            salary: ''
+    const clearAllSearchInputs = () => {
+        setSearchItem({
+            title_input: '',
+            location_input: '',
+            skill_input: ''
         })
-        setSearchItem('')
+        setFilteredJobs(jobs)
+    }
+    const handleResetFilters = () => {
+        clearAllSearchInputs()
+        setFilters({
+            category_filter: '',
+            company_filter: '',
+            type_filter: '',
+            location_filter: '',
+            experience_filter: '',
+        })
         setFilteredJobs(jobs)
     }
 
+
     const handleSearch = () => {
-        setSearchItem('') // clear search input first
-
-        const advancedFilter = jobs.filter(job => {
-            return (
-                job.title.toLowerCase().includes(filters.title.toLowerCase()) &&
-                job.category.toLowerCase().includes(filters.category.toLowerCase()) &&
-                job.experience.toLowerCase().includes(filters.experience.toLowerCase()) &&
-                job.location.toLowerCase().includes(filters.location.toLowerCase()) &&
-                job.salary.toLowerCase().includes(filters.salary.toLowerCase())
-            )
-        })
-
-        // Applying search filter
-        const searchFilteredJobs = advancedFilter.filter((job) => {
-            return job.title.toLowerCase().includes(searchItem.toLowerCase());
-        });
-
-        setFilteredJobs(searchFilteredJobs);
+        clearAllSearchInputs('')
     }
+
 
     return (
         <div className="px-3.5">
-            {/*<h1>Available Jobs</h1>*/}
-
             {/* Search & Filter Section */}
-            <section className="my-4 md:px-20 mx-auto text-left md:text-center">
-                <div className="filter-container bg-blue-100 px-2 py-2 md:py-1 rounded block md:flex space-x-3 items-center">
-
-                    {/*Search Input*/}
-                    <input
-                        type="text"
-                        value={searchItem}
-                        onChange={handleInputChange}
-                        placeholder="search keyword..."
-                        className="border border-stone-800 p-2 rounded-md mb-2 md:mb-0 w-full md:w-72"
-                    />
+            <section className="my-4 md:px-20">
+                <div className="bg-white shadow-md md:py-1 rounded">
+                    {/*Search Inputs*/}
+                    <div className="custom_flex-container">
+                        <div className="search-container bg-white ml-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
+                                 stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                      d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <input
+                                type="text"
+                                name="title_input"
+                                value={searchItem.title_input}
+                                onChange={handleSearchItemChange}
+                                placeholder="search by keyword..."
+                                className="search-input"
+                            />
+                        </div>
+                        <div className="search-container bg-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
+                                 stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                      d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                            </svg>
+                            <input
+                                type="text"
+                                name="location_input"
+                                value={searchItem.location_input}
+                                onChange={handleSearchItemChange}
+                                placeholder="search by location..."
+                                className="search-input"
+                            />
+                        </div>
+                        <div className="search-container bg-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
+                                 stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                      d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/>
+                            </svg>
+                            <input
+                                type="text"
+                                name="skill_input"
+                                value={searchItem.skill_input}
+                                onChange={handleSearchItemChange}
+                                placeholder="search by skill..."
+                                className="search-input"
+                            />
+                        </div>
+                    </div>
                     {/* Other Filters */}
-                    <div>
-                        <select name="title" value={filters.title} onChange={handleFilterChange}>
-                            <option value="">Select Title</option>
-                            <option value="UI/UX Designer">UI/UX Designer</option>
-                            <option value="Data Scientist">Data Scientist</option>
-                            <option value="Backend Developer">Backend Developer</option>
-                        </select>
-                    </div>
-                    <div>
-                        <select name="title" value={filters.location} onChange={handleFilterChange}>
-                            <option value="">location</option>
-                            <option value="New York">New York</option>
-                            <option value="London">London</option>
-                            <option value="Nairobi">Nairobi</option>
-                        </select>
-                    </div>
-                    <div>
-                        <select name="category" value={filters.category} onChange={handleFilterChange}>
-                            <option value="">Category</option>
-                            <option value="Software Development">Software Development</option>
-                            <option value="Data Science">Data Science</option>
-                        </select>
-                    </div>
-                    {/*<div>*/}
-                    {/*    <select name="experience" value={filters.experience} onChange={handleFilterChange}>*/}
-                    {/*        <option value="">Select Experience</option>*/}
-                    {/*        <option value="0-1 years">0-1 years</option>*/}
-                    {/*        <option value="1-3 years">1-3 years</option>*/}
-                    {/*    </select>*/}
-                    {/*</div>*/}
-                    {/*<div>*/}
-                    {/*    <select name="salary" value={filters.salary} onChange={handleFilterChange}>*/}
-                    {/*        <option value="">Select Salary Range</option>*/}
-                    {/*        <option value="$0 - $50,000">$0 - $50,000</option>*/}
-                    {/*        <option value="$50,000 - $80,000">$50,000 - $80,000</option>*/}
-                    {/*    </select>*/}
-                    {/*</div>*/}
+                    <div className="custom_flex-container filter-container">
+                        {/* filter inputs */}
+                        <div>
+                            <select name="category_filter" value={filters.category_filter} onChange={handleFilterChange}>
+                                <option value="">Category</option>
+                                <option value="Software Development">Software Development</option>
+                                <option value="Data Science">Data Science</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select name="company_filter" value={filters.company_filter} onChange={handleFilterChange}>
+                                <option value="">Company</option>
+                                <option value="Microsoft">Microsoft</option>
+                                <option value="Google">Google</option>
+                                <option value="IBM">IBM</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select name="type_filter" value={filters.type_filter} onChange={handleFilterChange}>
+                                <option value="">Type</option>
+                                <option value="full-time">full-time</option>
+                                <option value="part-time">part-time</option>
+                                <option value="contract">contract</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select name="location_filter" value={filters.location_filter} onChange={handleFilterChange}>
+                                <option value="">location</option>
+                                <option value="remote">remote</option>
+                                <option value="New York">New York</option>
+                                <option value="London">London</option>
+                                <option value="Nairobi">Nairobi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select name="experience_filter" value={filters.experience_filter} onChange={handleFilterChange}>
+                                <option value="">exp</option>
+                                <option value="0-2">0-2 yrs</option>
+                                <option value="2-5">2-5 yrs</option>
+                                <option value="5-10"> 5-10 yrs</option>
+                                <option value="10-50">10+ yrs</option>
+                            </select>
+                        </div>
 
-                    <div className="flex items-center">
-                        <button
-                            className="btn bg-green-600 border border-green-600 "
-                            onClick={handleSearch}>Search
-                        </button>
-                        <button
-                            className="btn bg-stone-800 border border-stone-800"
-                            onClick={handleResetFilters}>Reset
-                        </button>
+                        {/* filter buttons */}
+                        <div className="flex items-center">
+                            <button
+                                className="btn bg-green-600 border border-green-600 "
+                                onClick={handleSearch}>Search
+                            </button>
+                            <button
+                                className="btn bg-stone-800 border border-stone-800"
+                                onClick={handleResetFilters}>Reset
+                            </button>
+                        </div>
                     </div>
+
                 </div>
             </section>
 
@@ -141,11 +194,11 @@ export default function JobListing() {
             {
                 filteredJobs.length === 0
                     ?
-                    <h2 className="flex items-center justify-center">No Jobs Found</h2>
+                    <h2 className="flex items-center justify-center w-full">No Jobs Found</h2>
                     :
-
                     <div>
-                        <h2 className="mx-20 px-2 text-slate-50 mb-8 w-fit bg-green-500">{searchItem ? `${searchItem} jobs` : ''}</h2>
+                        {/* text to display the searched jobs */}
+                        {/*<h2 className="mx-20 px-2 text-slate-50 mb-8 w-fit bg-green-500">{searchItem ? `${searchItem} jobs` : ''}</h2>*/}
                         <section
                             className={`flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center justify-center gap-10 mb-10 md:px-24`}>
                             {

@@ -1,3 +1,7 @@
 .btn{
     @apply text-white rounded-md px-2 py-1  m-2 w-20 hover:bg-transparent hover:text-black hover:border hover:border-stone-800 duration-500
 }
+
+.custom_flex-container{
+    @apply flex flex-col md:flex-row items-center justify-evenly space-x-3 p-2 gap-y-2
+}
