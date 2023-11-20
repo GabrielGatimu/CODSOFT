@@ -15,6 +15,15 @@ export default function JobListing() {
         location_input: '',
         skill_input: ''
     })
+    const clearAllSearchInputs = () => {
+        setSearchItem({
+            title_input: '',
+            location_input: '',
+            skill_input: ''
+        })
+        setFilteredJobs(jobs)
+    }
+
 
     //  filters search
     const [filters, setFilters] = useState({
@@ -25,6 +34,19 @@ export default function JobListing() {
         experience_filter: '',
     })
 
+    const handleResetFilters = () => {
+        clearAllSearchInputs()
+        setFilters({
+            category_filter: '',
+            company_filter: '',
+            type_filter: '',
+            location_filter: '',
+            experience_filter: '',
+        })
+        setFilteredJobs(jobs)
+    }
+
+
     const handleSearchItemChange = e => {
         const {name, value} = e.target
         setSearchItem({
@@ -32,7 +54,7 @@ export default function JobListing() {
             [name]: value
         })
 
-        // filter results
+        // filter jobs
         const searchResults = jobs.filter(job => {
             const titleMatch = job.title.toLowerCase().includes(searchItem.title_input.toLowerCase())
             const locationMatch = job.location.toLowerCase().includes(searchItem.location_input.toLowerCase())
@@ -48,29 +70,21 @@ export default function JobListing() {
         setFilters({...filters, [name]: value})
     }
 
-    const clearAllSearchInputs = () => {
-        setSearchItem({
-            title_input: '',
-            location_input: '',
-            skill_input: ''
-        })
-        setFilteredJobs(jobs)
-    }
-    const handleResetFilters = () => {
-        clearAllSearchInputs()
-        setFilters({
-            category_filter: '',
-            company_filter: '',
-            type_filter: '',
-            location_filter: '',
-            experience_filter: '',
-        })
-        setFilteredJobs(jobs)
-    }
-
-
     const handleSearch = () => {
         clearAllSearchInputs('')
+
+        // filter jobs
+        const searchResults = jobs.filter(job => {
+            const categoryFilter = job.category.toLowerCase().includes(filters.category_filter.toLowerCase())
+            const companyFilter = job.company.toLowerCase().includes(filters.company_filter.toLowerCase())
+            const typeFilter = job.type.toLowerCase().includes(filters.type_filter.toLowerCase())
+            const experienceFilter = job.experience.toLowerCase().includes(filters.experience_filter.toLowerCase())
+            const locationFilter = job.location.toLowerCase().includes(filters.location_filter.toLowerCase())
+
+            return categoryFilter && companyFilter && typeFilter && experienceFilter && locationFilter
+        })
+
+        setFilteredJobs(searchResults)
     }
 
 
@@ -133,7 +147,8 @@ export default function JobListing() {
                     <div className="custom_flex-container filter-container">
                         {/* filter inputs */}
                         <div>
-                            <select name="category_filter" value={filters.category_filter} onChange={handleFilterChange}>
+                            <select name="category_filter" value={filters.category_filter}
+                                    onChange={handleFilterChange}>
                                 <option value="">Category</option>
                                 <option value="Software Development">Software Development</option>
                                 <option value="Data Science">Data Science</option>
@@ -156,7 +171,8 @@ export default function JobListing() {
                             </select>
                         </div>
                         <div>
-                            <select name="location_filter" value={filters.location_filter} onChange={handleFilterChange}>
+                            <select name="location_filter" value={filters.location_filter}
+                                    onChange={handleFilterChange}>
                                 <option value="">location</option>
                                 <option value="remote">remote</option>
                                 <option value="New York">New York</option>
@@ -165,7 +181,8 @@ export default function JobListing() {
                             </select>
                         </div>
                         <div>
-                            <select name="experience_filter" value={filters.experience_filter} onChange={handleFilterChange}>
+                            <select name="experience_filter" value={filters.experience_filter}
+                                    onChange={handleFilterChange}>
                                 <option value="">exp</option>
                                 <option value="0-2">0-2 yrs</option>
                                 <option value="2-5">2-5 yrs</option>
