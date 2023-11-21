@@ -22,6 +22,8 @@ import Contact from "./screens/Contact.jsx";
 import Dashboard from "./screens/dashboards/Dashboard.jsx";
 import Profile from "./screens/Profile.jsx";
 import NotFound from "./components/NotFound.jsx";
+import PrivateRoute from "./components/auth/PrivateRoute.jsx";
+import SignIn from "./screens/auth/SignIn.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -33,11 +35,16 @@ const router = createBrowserRouter(
             <Route path="/blog" element={<Blog/>}/>
             <Route path="/contact" element={<Contact/>}/>
 
-            {/* Dashboard */}
-            <Route path="/dashboard" element={<Dashboard/>}/>
+            <Route path="/signin" element={<SignIn />} />
+            {/* private pages*/}
+            <Route path="" element={<PrivateRoute/>}>
+                {/* Dashboard */}
+                <Route path="/dashboard" element={<Dashboard/>}/>
 
-            {/* Profile Page */}
-            <Route path="/profile" element={<Profile/>}/>
+                {/* Profile Page */}
+                <Route path="/profile" element={<Profile/>}/>
+            </Route>
+
 
             {/* Not Found Page */}
             <Route path="*" element={<NotFound/>}/>

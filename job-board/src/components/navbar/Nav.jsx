@@ -8,7 +8,8 @@ import useAuth from "../../hooks/useAuth.js";
 import useActiveLink from "../../hooks/useActiveLink.js";
 
 export default function Nav() {
-    const {userInfo} = useAuth()
+    const {userInfo, signOut} = useAuth()
+
     const parentLink = useActiveLink() // gets the current page
     const [activeLink, setActiveLink] = useState(parentLink)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -85,20 +86,43 @@ export default function Nav() {
                     <MenuItem href="/contact" onClick={() => handleMenuItemClick('/contact')}>Contact</MenuItem>
                 </Menu>
 
-                {/* action links (login & post buttons) */}
+                {/* userInfo & action links (login & post buttons) */}
                 <div className={`${isMenuOpen ? 'block my-2' : 'hidden'} md:flex text-white items-center`}>
-                    <Link
-                        to={"/login"}
-                        onClick={handleMenuItemClick}
-                        className="ml-1 mr-4"
-                    >Login
-                    </Link>
-                    <Link
-                        to={"/jobs/post"}
-                        onClick={handleMenuItemClick}
-                        className="flex items-center h-12 w-fit px-4 m-4 ml-1 rounded-md bg-green-600 text-white hover:text-white hover:bg-transparent border border-green-600 hover:border hover:border-stone-800 duration-500"
-                    >Post A Job
-                    </Link>
+
+                    {userInfo ?
+                        <>
+                            <p className="font-extrabold text-stone-50 text-xl my-4 md:m-auto">{userInfo.userName}</p>
+
+                            <button
+                                onClick={signOut}
+                                className="btn h-12 flex items-center space-x-1 bg-amber-500 w-fit border border-amber-500"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                          d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
+                                </svg>
+                                <p>Logout</p>
+                            </button>
+
+                        </>
+                        :
+                        <>
+                            <Link
+                                to={"/signin"}
+                                onClick={handleMenuItemClick}
+                                className="ml-1 mr-4"
+                            >Login
+                            </Link>
+                            <Link
+                                to={"/jobs/post"}
+                                onClick={handleMenuItemClick}
+                                className="flex items-center h-12 w-fit px-4 m-4 ml-1 rounded-md bg-green-600 text-white hover:text-white hover:bg-transparent border border-green-600 hover:border hover:border-stone-800 duration-500"
+                            >Post A Job
+                            </Link>
+                        </>
+                    }
+
                 </div>
             </nav>
         </>

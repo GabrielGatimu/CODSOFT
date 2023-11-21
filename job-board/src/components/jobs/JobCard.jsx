@@ -11,7 +11,7 @@ function JobCard({job}) {
 
     return (
         <div
-            className="job-card bg-slate-200 h-72 w-full px-6 py-2 border border-stone-900 dark:border-white rounded-md overflow-hidden">
+            className="job-card bg-slate-200 h-72 w-full px-6 py-2 border border-stone-900 md:border-none dark:border-white rounded-md overflow-hidden">
             <div className="company-info">
                 <img src={job.companyLogo}/>
                 <h4 className="bg-stone-500 text-slate-50 px-1 h-6 rounded">{job.company}</h4>
@@ -36,8 +36,8 @@ function JobCard({job}) {
             </div>
 
             <div className="action-btns flex items-center justify-between border mt-4">
-                <button className="btn bg-stone-900" onClick={viewJob}>View</button>
-                <button className="btn bg-green-600">Apply</button>
+                <button className="btn bg-stone-900 border border-stone-900" onClick={viewJob}>View</button>
+                <button className="btn bg-green-600 border border-green-600">Apply</button>
             </div>
         </div>
     );
