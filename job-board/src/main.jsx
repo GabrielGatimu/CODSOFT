@@ -15,8 +15,8 @@ import App from './App.jsx'
 import './styles/tailwind.css'
 
 import HomePage from "./screens/HomePage.jsx";
-import JobListing from "./screens/jobLisiting/JobListing.jsx";
-import JobDetail from "./screens/jobLisiting/JobDetail.jsx";
+import JobListing from "./screens/jobs/JobListing.jsx";
+import JobDetail from "./screens/jobs/JobDetail.jsx";
 import Blog from "./screens/Blog.jsx";
 import Contact from "./screens/Contact.jsx";
 import Dashboard from "./screens/Dashboard.jsx";

@@ -3,6 +3,7 @@ import {ToastContainer} from "react-toastify";
 
 import './styles/tailwind.css'
 import Nav from "./components/navigation/Nav.jsx";
+import Footer from "./components/navigation/Footer.jsx";
 
 function App() {
     return (
@@ -10,6 +11,7 @@ function App() {
             <Nav/>
             <ToastContainer/>
             <Outlet/>
+            <Footer />
         </main>
 
     )
