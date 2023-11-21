@@ -19,7 +19,7 @@ import JobListing from "./screens/jobLisiting/JobListing.jsx";
 import JobDetail from "./screens/jobLisiting/JobDetail.jsx";
 import Blog from "./screens/Blog.jsx";
 import Contact from "./screens/Contact.jsx";
-import Dashboard from "./screens/dashboards/Dashboard.jsx";
+import Dashboard from "./screens/Dashboard.jsx";
 import Profile from "./screens/Profile.jsx";
 import NotFound from "./components/NotFound.jsx";
 import PrivateRoute from "./components/auth/PrivateRoute.jsx";

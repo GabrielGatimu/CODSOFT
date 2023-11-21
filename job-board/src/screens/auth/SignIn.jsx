@@ -17,7 +17,7 @@ export default function SignIn() {
     const handleSignin = e => {
         e.preventDefault()
 
-        dispatch(setCredentials({accessToken : 'jwt-token', userName: 'John Doe'}))
+        dispatch(setCredentials({accessToken : 'jwt-token', userName: 'John Doe', userRole: 'admin'}))
         navigate(redirectPath)
     }
 

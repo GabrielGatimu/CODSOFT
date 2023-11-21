@@ -2,7 +2,7 @@ import {Outlet} from "react-router-dom";
 import {ToastContainer} from "react-toastify";
 
 import './styles/tailwind.css'
-import Nav from "./components/navbar/Nav.jsx";
+import Nav from "./components/navigation/Nav.jsx";
 
 function App() {
     return (

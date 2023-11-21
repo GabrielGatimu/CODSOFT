@@ -84,11 +84,18 @@ export default function Nav() {
                         Jobs</MenuItem>
                     <MenuItem href="/blog" onClick={() => handleMenuItemClick('/blog')}>Blog</MenuItem>
                     <MenuItem href="/contact" onClick={() => handleMenuItemClick('/contact')}>Contact</MenuItem>
+                    {userInfo &&
+                        <MenuItem
+                            href="/dashboard"
+                            onClick={() => handleMenuItemClick('/dashboard')}
+                        >
+                            Dashboard
+                        </MenuItem>
+                    }
                 </Menu>
 
                 {/* userInfo & action links (login & post buttons) */}
                 <div className={`${isMenuOpen ? 'block my-2' : 'hidden'} md:flex text-white items-center`}>
-
                     {userInfo ?
                         <>
                             <p className="font-extrabold text-stone-50 text-xl my-4 md:m-auto">{userInfo.userName}</p>
@@ -122,7 +129,6 @@ export default function Nav() {
                             </Link>
                         </>
                     }
-
                 </div>
             </nav>
         </>
