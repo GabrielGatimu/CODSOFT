@@ -1,11 +1,11 @@
 import {apiSlice} from "../api.slice.js";
-const JOBS_URL = 'http://localhost:8080/api/v1/jobs'
+const JOBS_URL = '/jobs'
 
 export const jobApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getJobs : builder.mutation({
             query: () => ({
-                url: `${JOBS_URL}/all`,
+                url: `${JOBS_URL}`,
                 method: "GET"
             })
         }),
