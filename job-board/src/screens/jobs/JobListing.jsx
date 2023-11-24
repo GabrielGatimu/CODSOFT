@@ -1,13 +1,36 @@
-import {useState} from "react";
-import {useSelector} from "react-redux";
+import {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {toast} from "react-toastify";
 
 import '../../styles/custom.css' // shared styles for btns, flex-containers etc
 import './JobListing.css'
 import JobCard from "../../components/jobs/JobCard.jsx";
 
+import {useGetJobsMutation} from "../../state/slices/jobs/jobApi.slice.js";
+import {setStateJobs} from "../../state/slices/jobs/job.slice.js";
+import Loader from "../../components/Loader.jsx";
+
 export default function JobListing() {
-    const jobs = useSelector((state) => state.jobs)
+    const dispatch = useDispatch()
+    const [jobs, setJobs] = useState([])
     const [filteredJobs, setFilteredJobs] = useState(jobs)
+    const [getJobsApiCall, {isLoading, error}] = useGetJobsMutation()
+
+    async function fetchJobs() {
+        try {
+            const response = await getJobsApiCall().unwrap()
+            setJobs(response)
+            setFilteredJobs(response)
+            dispatch(setStateJobs({...response}))
+        } catch (err) {
+            console.log(err)
+            toast.error('Failed to get jobs')
+        }
+    }
+
+    useEffect(() => {
+        fetchJobs()
+    }, []);
 
     // search inputs
     const [searchItem, setSearchItem] = useState({
@@ -23,7 +46,6 @@ export default function JobListing() {
         })
         setFilteredJobs(jobs)
     }
-
 
     //  filters search
     const [filters, setFilters] = useState({
@@ -46,7 +68,6 @@ export default function JobListing() {
         })
         setFilteredJobs(jobs)
     }
-
 
     const handleSearchItemChange = e => {
         const {name, value} = e.target
@@ -90,8 +111,8 @@ export default function JobListing() {
         setFilteredJobs(searchResults)
     }
 
-
     return (
+
         <div className="px-3.5">
             {/* Search & Filter Section */}
             <section className="my-2 md:px-20">
@@ -247,9 +268,15 @@ export default function JobListing() {
                         <section
                             className={`flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center justify-center gap-10 mb-10 md:px-24`}>
                             {
-                                filteredJobs.map((job) => (
-                                    <JobCard key={job.id} job={job}/>
-                                ))
+                                isLoading ? (<> <h2> Loading ... </h2><Loader/> </>)
+                                    : (
+                                        filteredJobs.length > 0 ?
+                                            filteredJobs.map((job) => (
+                                                <JobCard key={job.id} job={job}/>
+                                            ))
+                                            :
+                                            <p> No Jobs Posted</p>
+                                    )
                             }
                         </section>
                     </div>)

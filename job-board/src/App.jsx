@@ -1,5 +1,6 @@
 import {Outlet} from "react-router-dom";
 import {ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import './styles/tailwind.css'
 import Nav from "./components/navigation/Nav.jsx";
@@ -11,9 +12,8 @@ function App() {
             <Nav/>
             <ToastContainer/>
             <Outlet/>
-            <Footer />
+            <Footer/>
         </main>
-
     )
 }
 
