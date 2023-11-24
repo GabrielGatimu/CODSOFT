@@ -1,14 +1,13 @@
-import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query";
+import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: ""
+    baseUrl: "", credentials: "include"
 })
 
 export const apiSlice
- = createApi({
+    = createApi({
     baseQuery,
     tagTypes: ["User, Job, JobApplication"],
 
-    // eslint-disable-next-line no-unused-vars
     endpoints: (builder) => ({}),
 })
