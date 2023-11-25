@@ -26,6 +26,10 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM('ADMIN', 'USER'),
             defaultValue: 'USER',
         },
+        auth_source :{
+            type: Sequelize.ENUM('self', 'google'),
+            defaultValue: 'self'
+        },
         status: {
             type: Sequelize.ENUM("pending", "active"),
             defaultValue: "pending",

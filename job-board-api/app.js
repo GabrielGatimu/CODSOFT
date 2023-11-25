@@ -11,10 +11,19 @@ const app = express()
 
 // ----- CORS ---- //
 const corsOptions = {
-    origin: ["http://localhost:5173", "http://192.168.2.107:5173"],
+    origin: ["http://localhost:5173", "http://192.168.0.115:5173"],
     credentials: true
 }
 app.use(cors(corsOptions))
+
+app.options('*',function(req,res,next){
+    res.header("Access-Control-Allow-Origin", 'http://localhost:5173');
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Headers", ['X-Requested-With','content-type','credentials']);
+    res.header('Access-Control-Allow-Methods', 'GET,POST');
+    res.status(200);
+    next()
+})
 
 // app.use(cors())
 
