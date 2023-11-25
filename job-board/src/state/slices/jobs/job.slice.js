@@ -8,10 +8,6 @@ const jobSlice = createSlice({
     name: 'jobs',
     initialState,
     reducers: {
-        // createJob: (state, action) => {
-        // },
-        // removeJob: (state, action) => {
-        // },
         setStateJobs: (state, action) => {
             state.jobs = action.payload
         },

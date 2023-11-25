@@ -21,10 +21,11 @@ db.Sequelize = Sequelize
 db.sequelize = sequelize
 
 // -- models -- //
+const {User} = require('./user.model')(sequelize, Sequelize)
 const {Job} = require('./job.model')(sequelize, Sequelize)
 
 // -- associations -- //
 
-Object.assign(db, {Job})
+Object.assign(db, {User, Job})
 
 module.exports = db

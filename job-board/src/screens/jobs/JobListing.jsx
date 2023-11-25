@@ -1,26 +1,27 @@
 import {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {toast} from "react-toastify";
 
 import '../../styles/custom.css' // shared styles for btns, flex-containers etc
 import './JobListing.css'
 import JobCard from "../../components/jobs/JobCard.jsx";
+import Loader from "../../components/Loader.jsx";
 
 import {useGetJobsMutation} from "../../state/slices/jobs/jobApi.slice.js";
 import {setStateJobs} from "../../state/slices/jobs/job.slice.js";
-import Loader from "../../components/Loader.jsx";
 
 export default function JobListing() {
     const dispatch = useDispatch()
     const [jobs, setJobs] = useState([])
-    const [filteredJobs, setFilteredJobs] = useState(jobs)
+    const [filteredJobs, setFilteredJobs] = useState([])
     const [getJobsApiCall, {isLoading, error}] = useGetJobsMutation()
+    const [page, setPage] = useState(0)
 
-    async function fetchJobs() {
+    async function fetchJobs(pageNumber) {
         try {
-            const response = await getJobsApiCall().unwrap()
-            setJobs(response)
-            setFilteredJobs(response)
+            const response = await getJobsApiCall({page: pageNumber}).unwrap()
+            setJobs(prevJobs => [...prevJobs, ...response.data])
+            setFilteredJobs(prevJobs => [...prevJobs, ...response.data])
             dispatch(setStateJobs({...response}))
         } catch (err) {
             console.log(err)
@@ -29,7 +30,29 @@ export default function JobListing() {
     }
 
     useEffect(() => {
-        fetchJobs()
+        fetchJobs(page)
+    }, [page]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    setPage(prevPage => prevPage + 1)
+                }
+            }, {
+                threshold: 1.0
+            }
+        )
+
+        const target = document.getElementById('load-more-trigger')
+        if (target){
+            observer.observe(target)
+        }
+
+        return () => {
+            if (target){
+                observer.unobserve(target)
+            }
+        }
     }, []);
 
     // search inputs
@@ -112,7 +135,6 @@ export default function JobListing() {
     }
 
     return (
-
         <div className="px-3.5">
             {/* Search & Filter Section */}
             <section className="my-2 md:px-20">
@@ -278,6 +300,9 @@ export default function JobListing() {
                                             <p> No Jobs Posted</p>
                                     )
                             }
+
+                            {/* load more trigger */}
+                            <div id="load-more-trigger" style={{height: '10px'}}></div>
                         </section>
                     </div>)
             }
