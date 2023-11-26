@@ -3,6 +3,13 @@ const AUTH_URL = "http://127.0.0.1:8080/api/v1/auth";
 
 export const authApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
+        google: builder.mutation({
+            query: (data) => ({
+                url: `${AUTH_URL}/google`,
+                method: "POST",
+                body: data,
+            }),
+        }),
         signup: builder.mutation({
             query: (data) => ({
                 url: `${AUTH_URL}/signin`,
@@ -47,6 +54,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+    useGoogleMutation,
     useSignupMutation,
     useVerifyUserMutation,
     useSigninMutation,
