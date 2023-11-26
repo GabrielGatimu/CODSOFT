@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt')
+
 module.exports = (sequelize, Sequelize) => {
     const User = sequelize.define("users", {
         id: {
@@ -26,27 +28,31 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM('ADMIN', 'USER'),
             defaultValue: 'USER',
         },
+        verified: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: false,
+        },
         auth_source :{
-            type: Sequelize.ENUM('self', 'google'),
-            defaultValue: 'self'
-        },
-        status: {
-            type: Sequelize.ENUM("pending", "active"),
-            defaultValue: "pending",
-        },
-        access_code: {
-            type: Sequelize.STRING,
-            allowNull: true,
-            unique: true,
-        },
-        access_code_expires: {
-            type: Sequelize.DATE,
-            allowNull: true,
-        },
+            type: Sequelize.ENUM('self', 'google', 'apple', 'meta', 'github'),
+            defaultValue: 'self',
+            allowNull: false
+        }
     }, {
         freezeTableName: true,
-        timestamps: true
+        timestamps: true,
+        hooks: {
+            // -- hashing password before saving user
+            beforeCreate: async (user) => {
+                const salt = await bcrypt.genSalt(10)
+                user.password = await bcrypt.hash(user.password, salt)
+            }
+        }
     })
+
+    // --  matchPassword prototype method
+    User.prototype.matchPassword = async function (inputPassword) {
+        return await bcrypt.compare(inputPassword, this.password);
+    };
 
     return {User}
 }

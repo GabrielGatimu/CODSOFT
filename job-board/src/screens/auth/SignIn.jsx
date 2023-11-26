@@ -1,28 +1,24 @@
 import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 import {useDispatch} from "react-redux";
+import {GoogleOAuthProvider, GoogleLogin} from "@react-oauth/google";
 
 import '../../styles/custom.css'
 import {setCredentials} from "../../state/slices/auth/auth.slice.js";
 import useAuth from "../../hooks/useAuth.js";
-
-import googleButton from '../../assets/google_signin_buttons/web/1x/btn_google_signin_dark_pressed_web.png'
 
 export default function SignIn() {
     const location = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    // const googleClientId = import.meta.env.VITE_GOOGLE_OAUTH2_CLIENT_ID
     const {userInfo} = useAuth()
+    const googleClientId = import.meta.env.VITE_GOOGLE_OAUTH2_CLIENT_ID
     const redirectPath = location.state ? location.state.path : "/dashboard"
 
-    const googleLogin = async () => {
-        const response = await fetch('http://127.0.0.1:8080/api/v1/request/', {method: 'post'});
+   const getGoogleUser = (credentialResponse) => {
 
-        const data = await response.json();
-        console.log(data);
-        window.location.href = data.url
+       console.log(credentialResponse)
     }
     const handleSignin = e => {
         e.preventDefault()
@@ -39,10 +35,20 @@ export default function SignIn() {
 
     return (
         <div>
-            <button className="btn" onClick={googleLogin}>
-                <img src={googleButton} alt='google sign in'/>
-            </button>
-            <button onClick={handleSignin} className="btn bg-green-600">Login</button>
+            <div className="flex flex-col gap-y-4 ml-4">
+                <button onClick={handleSignin} className="btn bg-green-600">Login</button>
+                <GoogleOAuthProvider clientId={googleClientId}>
+                    <GoogleLogin
+                        onSuccess={credentialResponse => {
+                            getGoogleUser(credentialResponse);
+                        }}
+                        onError={() => {
+                            console.log('Error occurred when signing in with Google');
+                        }}
+                    />
+                </GoogleOAuthProvider>
+            </div>
+
         </div>
     );
 }

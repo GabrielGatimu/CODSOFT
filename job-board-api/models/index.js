@@ -23,9 +23,12 @@ db.sequelize = sequelize
 // -- models -- //
 const {User} = require('./user.model')(sequelize, Sequelize)
 const {Job} = require('./job.model')(sequelize, Sequelize)
+const {Token} = require('./token.model')(sequelize, Sequelize)
 
 // -- associations -- //
 
-Object.assign(db, {User, Job})
+
+
+Object.assign(db, {User, Job, Token})
 
 module.exports = db

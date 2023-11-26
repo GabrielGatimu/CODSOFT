@@ -1,36 +1,276 @@
-const {OAuth2Client} = require('google-auth-library')
-const client = new OAuth2Client()
-const {tokenGenerator} = require('../utils')
+const asyncHandler = require('express-async-handler')
+const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const {Op, Sequelize} = require("sequelize");
 
-const {User} = require('../models')
+const {User, Token} = require('../models')
+const {tokenGenerator, nodemailer} = require('../utils')
 
-const googleAuth = async (req, res) => {
-    const {credential, client_id, email} = req.body
+// const googleAuth = async (req, res, next) => {
+//     try {
+//         const code = req.query.code
+//         const pathUrl = req.query.state || '/'
+//
+//         if (!code) {
+//             return next(new Error('Authorization code not provided'))
+//         }
+//
+//         const {id_token, access_token} = await getGoogleOauthToken({code})
+//         const {name, verified_email, email, picture} = await getGoogleUser({
+//             id_token,
+//             access_token
+//         })
+//
+//         if (!verified_email) {
+//             return next(new Error('Google account not verified'))
+//         }
+//
+//         const user = await User.findOne({where: {email}})
+//         console.log(user)
+//
+//         const originalUrl = authConfig.google_oauth_redirect
+//         if (!user) {
+//             return res.redirect(`${originalUrl}/oauth/error`)
+//         }
+//
+//         // creating access & refresh tokens
+//         const {accessToken, refreshToken} = await tokenGenerator(res, user.id, user.first_name, user.role)
+//
+//         res.redirect(`${originalUrl}${pathUrl}`)
+//     } catch (e) {
+//         const originalUrl = authConfig.google_oauth_redirect
+//         console.log('failed to auth google user', e)
+//         return res.redirect(`${originalUrl}/oauth/error`)
+//     }
+// }
 
-    try {
-        const ticket = await client.verifyIdToken({
-            idToken: credential,
-            audience: client_id
-        })
-        const payload = ticket.getPayload()
-        const userId = payload['sub']
+// @ desc --- Register new user
+// route  --POST-- [base_api]/auth/signup
+const signUp = asyncHandler(async (req, res) => {
+    const {first_name, last_name, email, password, auth_source} = req.body;
 
-        let user = await User.findOne({where: {email}})
-
-        if (!user) {
-            const user = await User.create({
-                first_name: `${given_name}`,
-                last_name: `${family_name}`,
-                email,
-                auth_source: 'google'
-            })
-        }
-
-        const userName = `${user.first_name} ${user.last_name}`
-        const {accessToken} = await tokenGenerator(res, user.id, userName, user.role)
-
-        res.status(200).json({payload, accessToken})
-    } catch (e) {
-        res.status(400).json({err})
+    const userExists = await User.findOne({where: {email}});
+    if (userExists) {
+        res.status(400);
+        throw new Error("Email Already Registered");
     }
+
+    const newUser = await User.create({
+        first_name,
+        last_name,
+        email,
+        password,
+        auth_source,
+        verified: auth_source !== 'self'
+    });
+    if (!newUser) {
+        res.status(500)
+        throw new Error('Failed to register user. Try again later')
+    }
+
+    // -- send verification email -- //
+    if (auth_source === 'self') {
+        // generating verification code
+        const newToken = await Token.create({
+            user_id: newUser.id,
+            token: crypto.randomBytes(20).toString("hex"),
+            action: 'email-verification',
+            expires: Date.now() + 2 * 60 * 60 * 1000 // 2 hours
+        })
+
+        // send email
+        await nodemailer.sendVerificationEmail(
+            newUser.first_name,
+            newUser.email,
+            newToken.token
+        )
+
+        res.status(201).json({
+            message:
+                "Registered Successfully. Check your email to verify your account ",
+        });
+    } else {
+        res.status(201).json({
+            message:
+                "Registered Successfully",
+        });
+    }
+})
+
+// @desc ---- Verify email
+// route --POST-- [base_api]/auth/:userId/verify-email/:confirmationCode
+const verifyEmail = asyncHandler(async (req, res) => {
+    const {userId, verificationCode} = req.params
+
+    const user = await User.findByPk(userId);
+    const token = await Token.findOne({where: {token: verificationCode}})
+
+    if (!user || !token) {
+        res.status(404);
+        throw new Error("Invalid/Expired link!");
+    }
+
+    user.verified = true
+    await user.save()
+    await token.destroy()
+
+    const userName = `${user.first_name} ${user.last_name}`;
+    const {accessToken} = tokenGenerator(
+        res,
+        user.id,
+        userName,
+        user.role
+    );
+
+    res.status(200)
+        .json({message: "Email verified successfully"})
+})
+
+// @ desc ---- User Login -> set cookies(token)
+// route  --POST-- [base_api]/auth/signIn
+const signIn = asyncHandler(async (req, res) => {
+    const {email, password} = req.body;
+    const user = await User.findOne({where: {email}});
+
+    if (!user) {
+        res.status(404);
+        throw new Error("Invalid credentials");
+    }
+
+    if (!user.verified) {
+        // generating verification code
+        const newToken = await Token.create({
+            user_id: user.id,
+            token: crypto.randomBytes(20).toString("hex"),
+            action: 'email-verification',
+            expires: Date.now() + 2 * 60 * 60 * 1000 // 2 hours
+        })
+
+        // send email
+        await nodemailer.sendVerificationEmail(
+            user.first_name,
+            user.email,
+            newToken.token
+        )
+
+        res.status(201).json({
+            message:
+                "Verification email sent to your inbox. Check your email to verify your account ",
+        })
+    }
+
+    if (await user.matchPassword(password)) {
+        const userName = `${user.first_name} ${user.last_name}`;
+        const {accessToken} = await tokenGenerator(
+            res,
+            user.id,
+            userName,
+            user.role
+        );
+
+        return res.status(200).json({accessToken: accessToken});
+    } else {
+        res.status(401);
+        throw new Error("Invalid Credentials");
+    }
+});
+
+// @ desc ---- Logout user -> destroy cookies
+// route  --POST-- [base_api]/auth/sign-out
+const signOut = asyncHandler(async (req, res) => {
+    res.cookie("x-access-token", "", {
+        httpOnly: true,
+        expires: new Date(0),
+    });
+    res.cookie("refresh-token", "", {
+        httpOnly: true,
+        expires: new Date(0),
+    });
+
+    res.status(200).json({message: "Logged Out"});
+});
+
+// -- Forgot & Reset Password -- //
+const forgotPassword = asyncHandler(async (req, res) => {
+    const {email} = req.body;
+
+    const user = await User.findOne({where: {email}});
+
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    } else {
+        if (user.status !== "Active") {
+            res.status(422);
+            throw new Error(
+                "You need to confirm your account first. Check your email for confirmation link"
+            );
+        }
+        const resetToken = crypto.randomBytes(20).toString("hex");
+        const expiresIn = Date.now() + 2 * 60 * 60 * 1000; // 2 hours
+
+        // Update user with the new reset token and expiration time
+        const updateUser = await user.update({
+            access_code: resetToken,
+            access_code_expires: new Date(expiresIn),
+        });
+        if (updateUser) {
+            const sendMail = await sendResetPassword(
+                user.email,
+                user.first_name,
+                user.access_code
+            );
+            if (!sendMail) {
+                res.status(422);
+                throw new Error("Failed to send mail verification");
+            } else {
+                res.status(201).json({
+                    message: "Reset link sent. Check your email to reset your password ",
+                });
+            }
+        } else {
+            res.status(500);
+            throw new Error("Server Error");
+        }
+    }
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const {password, confirmPassword} = req.body;
+    const token = req.params.resetToken;
+
+    console.log(token, ">>>>", req.body);
+    const user = await User.findOne({
+        where: {
+            access_code: token,
+            access_code_expires: {[Op.gt]: Sequelize.fn("NOW")},
+        },
+    });
+    if (!user) {
+        res.status(400);
+        throw new Error("Password reset link is invalid or has expired.");
+    } else {
+        if (password !== confirmPassword) {
+            res.status(400);
+            throw new Error("Passwords do not match");
+        } else {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            await user.update({
+                password: hashedPassword,
+                access_code: null,
+                access_code_expires: null,
+            });
+            res.status(200).json({message: "Your password has been reset"});
+        }
+    }
+});
+
+module.exports = {
+    signUp,
+    verifyEmail,
+    signIn,
+    signOut,
+    forgotPassword,
+    resetPassword,
+
 }

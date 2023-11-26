@@ -1,4 +1,5 @@
 const {OAuth2Client} = require("google-auth-library");
+const {googleAuth} = require("../controllers/auth.controller");
 const router = require('express').Router()
 
 router.post('/', async (req, res, next) => {
@@ -21,5 +22,7 @@ router.post('/', async (req, res, next) => {
 
     res.json({url: authorizeUrl})
 })
+
+// router.post('/google-auth', googleAuth)
 
 module.exports = router
