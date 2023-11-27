@@ -22,7 +22,7 @@ export default function SignIn() {
     const [signinAPICall, {isLoading, error}] = useSigninMutation()
     const [googleAuthAPICall, {googleError}] = useGoogleMutation()
 
-    const getGoogleUser = async (credentialResponse, redirectPath) => {
+    const getGoogleUser = async (credentialResponse) => {
         try {
             // decoding credential
             const decoded = await jwtDecode(credentialResponse.credential)

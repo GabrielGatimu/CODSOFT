@@ -98,7 +98,7 @@ export default function Nav() {
                 <div className={`${isMenuOpen ? 'block my-2' : 'hidden'} md:flex text-white items-center`}>
                     {userInfo ?
                         <>
-                            <p className="font-extrabold text-stone-50 text-xl my-4 md:m-auto">{userInfo.userName}</p>
+                            <p className="font-bold text-stone-50 my-4 md:m-auto">{userInfo.userName}</p>
 
                             <button
                                 onClick={signOut}
