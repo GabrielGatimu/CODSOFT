@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         password: {
             type: Sequelize.STRING,
-            allowNull: false,
+            // allowNull: true
         },
         role: {
             type: Sequelize.ENUM('ADMIN', 'USER'),
@@ -41,10 +41,12 @@ module.exports = (sequelize, Sequelize) => {
         freezeTableName: true,
         timestamps: true,
         hooks: {
-            // -- hashing password before saving user
+            // -- hashing password (if exists -> google auth users do not need to enter password) before saving user
             beforeCreate: async (user) => {
-                const salt = await bcrypt.genSalt(10)
-                user.password = await bcrypt.hash(user.password, salt)
+                if (user.password) {
+                    const salt = await bcrypt.genSalt(10);
+                    user.password = await bcrypt.hash(user.password, salt);
+                }
             }
         }
     })

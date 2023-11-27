@@ -11,7 +11,9 @@ function App() {
         <main className="font-poppins">
             <Nav/>
             <ToastContainer/>
+            <div className="h-[calc(100vh-0rem)]">
             <Outlet/>
+            </div>
             <Footer/>
         </main>
     )

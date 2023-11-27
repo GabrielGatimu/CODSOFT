@@ -6,43 +6,44 @@ const {Op, Sequelize} = require("sequelize");
 const {User, Token} = require('../models')
 const {tokenGenerator, nodemailer} = require('../utils')
 
-// const googleAuth = async (req, res, next) => {
-//     try {
-//         const code = req.query.code
-//         const pathUrl = req.query.state || '/'
-//
-//         if (!code) {
-//             return next(new Error('Authorization code not provided'))
-//         }
-//
-//         const {id_token, access_token} = await getGoogleOauthToken({code})
-//         const {name, verified_email, email, picture} = await getGoogleUser({
-//             id_token,
-//             access_token
-//         })
-//
-//         if (!verified_email) {
-//             return next(new Error('Google account not verified'))
-//         }
-//
-//         const user = await User.findOne({where: {email}})
-//         console.log(user)
-//
-//         const originalUrl = authConfig.google_oauth_redirect
-//         if (!user) {
-//             return res.redirect(`${originalUrl}/oauth/error`)
-//         }
-//
-//         // creating access & refresh tokens
-//         const {accessToken, refreshToken} = await tokenGenerator(res, user.id, user.first_name, user.role)
-//
-//         res.redirect(`${originalUrl}${pathUrl}`)
-//     } catch (e) {
-//         const originalUrl = authConfig.google_oauth_redirect
-//         console.log('failed to auth google user', e)
-//         return res.redirect(`${originalUrl}/oauth/error`)
-//     }
-// }
+// @ desc ---- Google Authentication (Signup/Signin)
+// route  --POST-- [base_api]/auth/google
+const googleAuth = asyncHandler(async (req, res) => {
+    const {email, first_name, last_name} = req.body;
+    const userName = `${first_name} ${last_name}`;
+
+    // check the user with the given Google email
+    const existingUser = await User.findOne({where: {email, auth_source: 'google'}});
+    if (existingUser) {
+        // User exists --> signin
+        const {accessToken} = await tokenGenerator(res, existingUser.id, userName, existingUser.role);
+        res.status(201).json({
+            userName: userName,
+            accessToken: accessToken
+        });    }
+
+    // user does not exist --> signup
+    const newUser = await User.create({
+        first_name,
+        last_name,
+        email,
+        auth_source: 'google',
+        verified: true,
+    });
+
+    if (!newUser) {
+        res.status(500);
+        throw new Error('Failed to signup with Google. Try again later');
+    }
+
+    // signin the new user
+    const {accessToken} = await tokenGenerator(res, newUser.id, userName, newUser.role);
+
+    res.status(201).json({
+        userName: userName,
+        accessToken: accessToken
+    });
+});
 
 // @ desc --- Register new user
 // route  --POST-- [base_api]/auth/signup
@@ -69,32 +70,25 @@ const signUp = asyncHandler(async (req, res) => {
     }
 
     // -- send verification email -- //
-    if (auth_source === 'self') {
-        // generating verification code
-        const newToken = await Token.create({
-            user_id: newUser.id,
-            token: crypto.randomBytes(20).toString("hex"),
-            action: 'email-verification',
-            expires: Date.now() + 2 * 60 * 60 * 1000 // 2 hours
-        })
+    // generating verification code
+    const newToken = await Token.create({
+        user_id: newUser.id,
+        token: crypto.randomBytes(20).toString("hex"),
+        action: 'email-verification',
+        expires: Date.now() + 2 * 60 * 60 * 1000 // 2 hours
+    })
 
-        // send email
-        await nodemailer.sendVerificationEmail(
-            newUser.first_name,
-            newUser.email,
-            newToken.token
-        )
+    // send email
+    await nodemailer.sendVerificationEmail(
+        newUser.first_name,
+        newUser.email,
+        newToken.token
+    )
 
-        res.status(201).json({
-            message:
-                "Registered Successfully. Check your email to verify your account ",
-        });
-    } else {
-        res.status(201).json({
-            message:
-                "Registered Successfully",
-        });
-    }
+    res.status(201).json({
+        message:
+            "Registered Successfully. Check your email to verify your account ",
+    })
 })
 
 // @desc ---- Verify email
@@ -129,7 +123,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
 // @ desc ---- User Login -> set cookies(token)
 // route  --POST-- [base_api]/auth/signIn
 const signIn = asyncHandler(async (req, res) => {
-    const {email, password} = req.body;
+    const {email, password, auth_source} = req.body;
     const user = await User.findOne({where: {email}});
 
     if (!user) {
@@ -137,8 +131,9 @@ const signIn = asyncHandler(async (req, res) => {
         throw new Error("Invalid credentials");
     }
 
+    // -- send verification email if user is !verified
     if (!user.verified) {
-        // generating verification code
+        // verification code
         const newToken = await Token.create({
             user_id: user.id,
             token: crypto.randomBytes(20).toString("hex"),
@@ -159,15 +154,16 @@ const signIn = asyncHandler(async (req, res) => {
         })
     }
 
-    if (await user.matchPassword(password)) {
-        const userName = `${user.first_name} ${user.last_name}`;
-        const {accessToken} = await tokenGenerator(
-            res,
-            user.id,
-            userName,
-            user.role
-        );
+    const userName = `${user.first_name} ${user.last_name}`;
+    const {accessToken} = await tokenGenerator(
+        res,
+        user.id,
+        userName,
+        user.role
+    );
 
+    // compare password
+    if (await user.matchPassword(password)) {
         return res.status(200).json({accessToken: accessToken});
     } else {
         res.status(401);
@@ -266,11 +262,11 @@ const resetPassword = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+    googleAuth,
     signUp,
     verifyEmail,
     signIn,
     signOut,
     forgotPassword,
     resetPassword,
-
 }
