@@ -89,7 +89,7 @@ export default function Nav() {
                             href="/dashboard"
                             onClick={() => handleMenuItemClick('/dashboard')}
                         >
-                            Dashboard
+                            Account
                         </MenuItem>
                     }
                 </Menu>

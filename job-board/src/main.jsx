@@ -24,6 +24,7 @@ import Profile from "./screens/Profile.jsx";
 import NotFound from "./components/NotFound.jsx";
 import PrivateRoute from "./components/auth/PrivateRoute.jsx";
 import SignUpSignIn from "./screens/auth/SignUpSignIn.jsx";
+import Sidebar from "./components/navigation/sidebar/Sidebar.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -38,11 +39,10 @@ const router = createBrowserRouter(
             <Route path="/signin" element={<SignUpSignIn />} />
             {/* private pages*/}
             <Route path="" element={<PrivateRoute/>}>
-                {/* Account */}
+                 Account
                 <Route path="" element={<Account/>}>
                     {/* Profile Page */}
                     <Route path="/dashboard" element={<Profile/>}/>
-                    {/*<Route path="/profile" element={<Profile/>}/>*/}
                     {/*<Route path="/my-jobs" element={<Profile/>}/>*/}
                     {/*<Route path="/applications" element={<Profile/>}/>*/}
                 </Route>

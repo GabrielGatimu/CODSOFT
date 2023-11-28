@@ -32,9 +32,10 @@ export default function SignUpSignIn() {
 
     //  generic toggle function
     const toggleState = (state, setState) => {
-        return setState(prevState => !prevState);
+        setSuccessMessage('') // clear success message -> avoids unambigous messages
+        setState(prevState => !prevState);
     };
-    const [signUpMessage, setSignUpMessage] = useState('')
+    const [successMessage, setSuccessMessage] = useState('')
 
     const [formData, setFormData] = useState({
         first_name: "",
@@ -54,7 +55,7 @@ export default function SignUpSignIn() {
 
     const handleSubmit = async e => {
         e.preventDefault();
-        setSignUpMessage('')
+        setSuccessMessage('')
 
         try {
             let response
@@ -66,13 +67,20 @@ export default function SignUpSignIn() {
                     return;
                 }
                 response = await signupAPICall(formData).unwrap()
-                setSignUpMessage(response.message)
+                setSuccessMessage(response.message)
                 return
             }
 
             response = await signinAPICall({email: formData.email, password: formData.password}).unwrap()
-            dispatch(setCredentials({...response}))
-            navigate(redirectPath)
+
+            // -- set email verification message if user !verified
+            if (response.emailVerificationMessage) {
+                setSuccessMessage(response.emailVerificationMessage)
+                toast.success(response.emailVerificationMessage)
+            } else {
+                dispatch(setCredentials({...response}))
+                navigate(redirectPath)
+            }
         } catch (err) {
             toast.error(err?.data?.message || err.error);
         }
@@ -233,25 +241,23 @@ export default function SignUpSignIn() {
                 )}
 
                 {/* Loading State*/}
-                {(signUpLoading || signInLoading) && <Loader/>}
+                {(signUpLoading || signInLoading) && <div className="flex"><Loader/> Please wait...</div>}
                 {signUpError &&
                     <p className="flex items-center justify-center w-full p-4 rounded  text-red-500">
                         {signUpError.data.message}
                     </p>
-
-                    // console.log(signUpError)
                 }
 
                 {/* Action Buttons */}
-                {(isSignUp && signUpMessage) ?
+                {(successMessage) ?
                     <p className="flex items-center justify-center w-full p-4 rounded   bg-green-500 text-white">
-                        {signUpMessage}
+                        {successMessage}
                     </p>
                     :
                     <button
                         type="submit"
-                        disabled={signUpLoading || signInLoading}
                         className={`btn h-10 bg-blue-500 text-white border border-blue-500`}
+                        disabled={signUpLoading || signInLoading}
                     >
                         {isSignUp ? 'Sign Up' : 'Sign In'}
                     </button>
