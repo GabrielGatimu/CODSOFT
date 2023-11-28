@@ -25,8 +25,8 @@ module.exports = (sequelize, Sequelize) => {
             // allowNull: true
         },
         role: {
-            type: Sequelize.ENUM('ADMIN', 'USER'),
-            defaultValue: 'USER',
+            type: Sequelize.ENUM('employer', 'candidate'),
+            defaultValue: 'candidate',
         },
         verified: {
             type: Sequelize.BOOLEAN,

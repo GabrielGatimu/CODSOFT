@@ -53,7 +53,7 @@ const signUp = asyncHandler(async (req, res) => {
     const userExists = await User.findOne({where: {email}});
     if (userExists) {
         res.status(400);
-        throw new Error("Email Already Registered");
+        throw new Error("This EMAIL is already in use. Use another email");
     }
 
     const newUser = await User.create({
@@ -62,7 +62,7 @@ const signUp = asyncHandler(async (req, res) => {
         email,
         password,
         auth_source,
-        verified: auth_source !== 'self'
+        verified: auth_source === 'google'
     });
     if (!newUser) {
         res.status(500)
@@ -123,7 +123,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
 // @ desc ---- User Login -> set cookies(token)
 // route  --POST-- [base_api]/auth/signIn
 const signIn = asyncHandler(async (req, res) => {
-    const {email, password, auth_source} = req.body;
+    const {email, password} = req.body;
     const user = await User.findOne({where: {email}});
 
     if (!user) {
@@ -133,13 +133,20 @@ const signIn = asyncHandler(async (req, res) => {
 
     // -- send verification email if user is !verified
     if (!user.verified) {
+        // --- destroy old token and assign a new one
+        await Token.destroy({where: {user_id: user.id, action: 'email-verification'}})
+        // await Token.save()
+
         // verification code
+        const verificationCode = crypto.randomBytes(20).toString("hex")
         const newToken = await Token.create({
             user_id: user.id,
-            token: crypto.randomBytes(20).toString("hex"),
+            token: verificationCode,
             action: 'email-verification',
-            expires: Date.now() + 2 * 60 * 60 * 1000 // 2 hours
+            expires: Date.now() + 3 * 60 * 60 * 1000 // 3 hours
         })
+
+        console.log('...' , newToken)
 
         // send email
         await nodemailer.sendVerificationEmail(
@@ -149,7 +156,7 @@ const signIn = asyncHandler(async (req, res) => {
         )
 
         res.status(201).json({
-            message:
+            emailVerificationMessage:
                 "Verification email sent to your inbox. Check your email to verify your account ",
         })
     }

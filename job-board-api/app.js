@@ -11,7 +11,8 @@ const app = express()
 
 // ----- CORS ---- //
 const corsOptions = {
-    origin: ["http://localhost", "http://localhost:5173", "http://192.168.0.115:5173"],
+    origin: ["http://localhost", "http://localhost:5173", "http://192.168.0.115:5173", "http://192.168.0.115:8080"],
+    // origin: '*',
     credentials: true
 }
 app.use(cors(corsOptions))
@@ -27,6 +28,9 @@ require('./routes')(app, base_api)
 app.use(errorMiddleware.notFound)
 app.use(errorMiddleware.errorHandler)
 
+const {Job} = require('./models')
+const {jobsData} = require('./data/cleaned_data')
+
 const port = process.env['PORT'] || 5000
 app.listen(port, async () => {
     console.log(`\tServer alive at port ${port}`)
@@ -35,7 +39,7 @@ app.listen(port, async () => {
             console.log(`\n\t connected to ${process.env['DB']} database \n\t syncing models...\n`)
 
             // sync DB
-            await db.sequelize.sync({alter: true})
+            await db.sequelize.sync({alter:true})
                 .then(() => {
                     console.log(`\n\t models synchronized successfully \n`)
 

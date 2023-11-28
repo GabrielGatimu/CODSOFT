@@ -23,9 +23,8 @@ const sidebarConfig = {
 export default function Sidebar() {
     const { userInfo, signOut } = useAuth();
 
-    console.log(userInfo.role)
-
     const parentLink = useActiveLink();
+    // eslint-disable-next-line no-unused-vars
     const [activeLink, setActiveLink] = useState(parentLink);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 

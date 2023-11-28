@@ -43,8 +43,10 @@ const router = createBrowserRouter(
                 <Route path="" element={<Account/>}>
                     {/* Profile Page */}
                     <Route path="/dashboard" element={<Profile/>}/>
-                    {/*<Route path="/my-jobs" element={<Profile/>}/>*/}
-                    {/*<Route path="/applications" element={<Profile/>}/>*/}
+                    <Route path="/my-jobs" element={<Profile/>}/>
+                    <Route path="/applications" element={<Profile/>}/>
+                    <Route path="/notifications" element={<Profile/>}/>
+                    <Route path="/profile" element={<Profile/>}/>
                 </Route>
             </Route>
 

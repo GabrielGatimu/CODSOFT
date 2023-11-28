@@ -238,7 +238,7 @@ export default function JobListing() {
                         </div>
 
                         {/* filter buttons */}
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-x-4 border-b-2 border-stone-400 pb-1">
                             <button
                                 className="btn bg-green-600 border border-green-600 "
                                 onClick={handleSearch}>Search
