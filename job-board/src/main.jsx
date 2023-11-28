@@ -19,11 +19,11 @@ import JobListing from "./screens/jobs/JobListing.jsx";
 import JobDetail from "./screens/jobs/JobDetail.jsx";
 import Blog from "./screens/Blog.jsx";
 import Contact from "./screens/Contact.jsx";
-import Dashboard from "./screens/Dashboard.jsx";
+import Account from "./components/layout/Account.jsx";
 import Profile from "./screens/Profile.jsx";
 import NotFound from "./components/NotFound.jsx";
 import PrivateRoute from "./components/auth/PrivateRoute.jsx";
-import SignIn from "./screens/auth/SignIn.jsx";
+import SignUpSignIn from "./screens/auth/SignUpSignIn.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -35,16 +35,18 @@ const router = createBrowserRouter(
             <Route path="/blog" element={<Blog/>}/>
             <Route path="/contact" element={<Contact/>}/>
 
-            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signin" element={<SignUpSignIn />} />
             {/* private pages*/}
             <Route path="" element={<PrivateRoute/>}>
-                {/* Dashboard */}
-                <Route path="/dashboard" element={<Dashboard/>}/>
-
-                {/* Profile Page */}
-                <Route path="/profile" element={<Profile/>}/>
+                {/* Account */}
+                <Route path="" element={<Account/>}>
+                    {/* Profile Page */}
+                    <Route path="/dashboard" element={<Profile/>}/>
+                    {/*<Route path="/profile" element={<Profile/>}/>*/}
+                    {/*<Route path="/my-jobs" element={<Profile/>}/>*/}
+                    {/*<Route path="/applications" element={<Profile/>}/>*/}
+                </Route>
             </Route>
-
 
             {/* Not Found Page */}
             <Route path="*" element={<NotFound/>}/>
