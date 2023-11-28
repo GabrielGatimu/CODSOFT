@@ -7,7 +7,7 @@ export default function SidebarItem({href,onClick, children}) {
         <li className="p-2 rounded " >
             <Link to={href} href={href}
                   onClick={onClick}
-                  className={`flex flex-col gap-y-3 items-center ${(activeLink === href) ? 'underline text-blue-800 text-xl' : 'text-stone-950'} hover:text-blue-800 duration-500` }>
+                  className={`w-full flex flex-col gap-y-3 items-center p-1 ${(activeLink === href) ? 'bg-blue-500 w-full text-stone-100 text-xl' : 'text-stone-950'} hover:text-blue-800 duration-500` }>
                 {children}
             </Link>
         </li>

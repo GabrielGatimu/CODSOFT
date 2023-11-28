@@ -6,13 +6,13 @@ import useActiveLink from "../../../hooks/useActiveLink.js";
 import { useState } from "react";
 
 const sidebarConfig = {
-    admin: [
+    employer: [
         { href: "/dashboard", label: "Dashboard" },
         { href: "/my-jobs", label: "Posted Jobs" },
         { href: "/notifications", label: "Notifications" },
         { href: "/profile", label: "Profile" },
     ],
-    USER: [
+    candidate: [
         { href: "/dashboard", label: "Dashboard" },
         { href: "/applications", label: "Applications" },
         { href: "/notifications", label: "Notifications" },
@@ -22,7 +22,9 @@ const sidebarConfig = {
 
 export default function Sidebar() {
     const { userInfo, signOut } = useAuth();
+
     const parentLink = useActiveLink();
+    // eslint-disable-next-line no-unused-vars
     const [activeLink, setActiveLink] = useState(parentLink);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -38,8 +40,8 @@ export default function Sidebar() {
     };
 
     const getSidebarItems = () => {
-        if (userInfo && sidebarConfig[userInfo.userRole]) {
-            return sidebarConfig[userInfo.userRole].map((item) => (
+        if (userInfo && sidebarConfig[userInfo.role]) {
+            return sidebarConfig[userInfo.role].map((item) => (
                 <SidebarItem
                     key={item.href}
                     href={item.href}
@@ -52,7 +54,7 @@ export default function Sidebar() {
         return null;
     };
 
-    if (userInfo && sidebarConfig[userInfo.userRole]) {
+    if (userInfo && sidebarConfig[userInfo.role]) {
         return (
             <div className={`h-${isMenuOpen ? "full" : "[calc(100vh-0rem)]"}`}>
                 <SidebarMenu isMenuOpen={isMenuOpen}>{getSidebarItems()}</SidebarMenu>

@@ -27,8 +27,6 @@ const {Token} = require('./token.model')(sequelize, Sequelize)
 
 // -- associations -- //
 
-
-
 Object.assign(db, {User, Job, Token})
 
 module.exports = db
