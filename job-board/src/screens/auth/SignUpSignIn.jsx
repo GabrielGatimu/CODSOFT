@@ -8,7 +8,7 @@ import {jwtDecode} from "jwt-decode";
 import '../../styles/custom.css'
 import './SignUpSignIn.css'
 import useAuth from "../../hooks/useAuth.js";
-import {useGoogleMutation, useSigninMutation} from "../../state/slices/auth/authApi.slice.js";
+import {useGoogleMutation, useSigninMutation, useSignupMutation} from "../../state/slices/auth/authApi.slice.js";
 import {setCredentials} from "../../state/slices/auth/auth.slice.js";
 import Loader from "../../components/Loader.jsx";
 
@@ -22,7 +22,9 @@ export default function SignUpSignIn() {
     const redirectPath = location.state ? location.state.path : "/dashboard"
 
     // -- API calls
-    const [signinAPICall, {isLoading, error}] = useSigninMutation()
+    let [signupAPICall, {isLoading: signUpLoading, error: signUpError}] = useSignupMutation()
+    const [signinAPICall, {isLoading: signInLoading, error: signInError}] = useSigninMutation()
+
     const [googleAuthAPICall, {googleError}] = useGoogleMutation()
 
     //  -- form state
@@ -58,8 +60,13 @@ export default function SignUpSignIn() {
             let response
 
             if (isSignUp) {
-                // response = await signinAPICall(formData).unwrap()
-                setSignUpMessage('check email')
+                signUpError = ''
+                if (formData.password !== formData.confirm_password) {
+                    toast.error("Passwords do not match. Please check and try again");
+                    return;
+                }
+                response = await signupAPICall(formData).unwrap()
+                setSignUpMessage(response.message)
                 return
             }
 
@@ -67,7 +74,6 @@ export default function SignUpSignIn() {
             dispatch(setCredentials({...response}))
             navigate(redirectPath)
         } catch (err) {
-            console.log(err.data.message)
             toast.error(err?.data?.message || err.error);
         }
     }
@@ -90,7 +96,6 @@ export default function SignUpSignIn() {
             toast.error(e?.data?.message || e.error)
         }
     }
-
 
     useEffect(() => {
         if (userInfo) {
@@ -227,17 +232,26 @@ export default function SignUpSignIn() {
                     </div>
                 )}
 
-                {isLoading && <Loader/>}
+                {/* Loading State*/}
+                {(signUpLoading || signInLoading) && <Loader/>}
+                {signUpError &&
+                    <p className="flex items-center justify-center w-full p-4 rounded  text-red-500">
+                        {signUpError.data.message}
+                    </p>
+
+                    // console.log(signUpError)
+                }
+
                 {/* Action Buttons */}
-                {signUpMessage ?
+                {(isSignUp && signUpMessage) ?
                     <p className="flex items-center justify-center w-full p-4 rounded   bg-green-500 text-white">
                         {signUpMessage}
                     </p>
                     :
                     <button
                         type="submit"
-                        disabled={isLoading}
-                        className="btn h-10 bg-blue-500 text-white border border-blue-500"
+                        disabled={signUpLoading || signInLoading}
+                        className={`btn h-10 bg-blue-500 text-white border border-blue-500`}
                     >
                         {isSignUp ? 'Sign Up' : 'Sign In'}
                     </button>
