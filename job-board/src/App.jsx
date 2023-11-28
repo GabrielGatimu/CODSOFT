@@ -3,18 +3,20 @@ import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import './styles/tailwind.css'
-import Nav from "./components/navigation/Nav.jsx";
+import Nav from "./components/navigation/navbar/Nav.jsx";
 import Footer from "./components/navigation/Footer.jsx";
 
 function App() {
     return (
-        <main className="font-poppins">
+        <main className="min-h-screen w-full font-poppins">
             <Nav/>
             <ToastContainer/>
-            <div className="h-[calc(100vh-0rem)]">
-            <Outlet/>
-            </div>
-            <Footer/>
+            <section className="h-full border border-stone-950">
+                <Outlet/>
+            </section>
+            <footer>
+                <Footer/>
+            </footer>
         </main>
     )
 }
