@@ -97,8 +97,8 @@ export default function Nav() {
                 {/* userInfo & action links (login & post buttons) */}
                 <div className={`${isMenuOpen ? 'block my-2' : 'hidden'} md:flex text-white items-center`}>
                     {userInfo ?
-                        <>
-                            <p className="font-bold text-stone-50 my-4 md:m-auto">{userInfo.userName}</p>
+                        <div className="flex flex-col md:flex-row space-x-2 ">
+                            <p className="font-medium text-stone-50 my-4 mx-2 md:m-auto">{userInfo.userName}</p>
 
                             <button
                                 onClick={signOut}
@@ -112,7 +112,7 @@ export default function Nav() {
                                 <p>Logout</p>
                             </button>
 
-                        </>
+                        </div>
                         :
                         <>
                             <Link

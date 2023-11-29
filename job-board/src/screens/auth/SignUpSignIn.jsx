@@ -256,7 +256,7 @@ export default function SignUpSignIn() {
                     :
                     <button
                         type="submit"
-                        className={`btn h-10 bg-blue-500 text-white border border-blue-500`}
+                        className={`w-full rounded-md h-10 bg-blue-500 hover:bg-blue-700 text-white border border-blue-500`}
                         disabled={signUpLoading || signInLoading}
                     >
                         {isSignUp ? 'Sign Up' : 'Sign In'}

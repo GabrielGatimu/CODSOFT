@@ -14,10 +14,8 @@ import {setStateJobs} from "../../state/slices/jobs/job.slice.js";
 export default function JobListing() {
     const dispatch = useDispatch()
     const [apiTrigger, {isLoading, error}] = useGetJobsMutation();
-
     const jobs = useSelector((state) => state.jobs.jobList);
-    const [filteredJobs, setFilteredJobs] = useState(jobs)
-
+    const [filteredJobs, setFilteredJobs] = useState([])
     const [pageNumber, setPageNumber] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
@@ -33,7 +31,7 @@ export default function JobListing() {
             location_input: '',
             skill_input: ''
         })
-        // setFilteredJobs(jobs)
+        setFilteredJobs(jobs)
     }
 
     //  filters search
@@ -55,7 +53,7 @@ export default function JobListing() {
             location_filter: '',
             experience_filter: '',
         })
-        // setFilteredJobs(jobs)
+        setFilteredJobs(jobs)
     }
 
     const handleSearchItemChange = e => {
@@ -100,21 +98,24 @@ export default function JobListing() {
         setFilteredJobs(searchResults)
     }
 
-
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await apiTrigger(pageNumber).unwrap();
-                dispatch(setStateJobs(response.data));
+                dispatch(setStateJobs(response.data))
 
-                setFilteredJobs(prevJobs => [...prevJobs, ...response.data]);
                 setHasMore(response.next !== null);
-            } catch (error) {
-                console.error(error)
+            } catch (e) {
+                console.error(e)
+                toast.error(error)
             }
         };
         fetchData();
-    }, [apiTrigger, pageNumber, dispatch]);
+    }, [apiTrigger, pageNumber, dispatch, error]);
+
+    useEffect(() => {
+        setFilteredJobs(jobs)
+    }, [jobs]);
 
     const fetchMoreData = () => {
         setPageNumber((prevPageNumber) => prevPageNumber + 1);
@@ -226,11 +227,11 @@ export default function JobListing() {
                         {/* filter buttons */}
                         <div className="flex items-center gap-x-4 border-b-2 border-stone-400 pb-1">
                             <button
-                                className="btn bg-green-600 border border-green-600 "
+                                className="btn green-btn"
                                 onClick={handleSearch}>Search
                             </button>
                             <button
-                                className="btn bg-stone-800 border border-stone-800"
+                                className="btn black-btn"
                                 onClick={handleResetFilters}>Reset
                             </button>
                         </div>
@@ -257,44 +258,47 @@ export default function JobListing() {
                         Jobs Found
                     </h2>)
                     :
-                    (<div>
-                        {/* text to display the searched jobs */}
-                        <h2 className="mx-20 px-2 text-slate-50 mb-8 w-fit bg-green-500">
-                            {(searchItem.title_input || searchItem.location_input || searchItem.skill_input) ?
-                                `${(searchItem.title_input || searchItem.location_input || searchItem.skill_input)} jobs`
-                                : ''}
+                    (
+                        <div>
+                            {/* text to display the searched jobs */}
+                            <h2 className="mx-20 px-2 text-slate-50 mb-8 w-fit bg-green-500">
+                                {(searchItem.title_input || searchItem.location_input || searchItem.skill_input) ?
+                                    `${(searchItem.title_input || searchItem.location_input || searchItem.skill_input)} jobs`
+                                    : ''}
 
-                            {searchButtonClicked ?
-                                (filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter) ?
-                                    `${(filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter)} jobs`
+                                {searchButtonClicked ?
+                                    (filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter) ?
+                                        `${(filters.category_filter || filters.company_filter || filters.type_filter || filters.experience_filter || filters.location_filter)} jobs`
+                                        : ''
+
                                     : ''
-
-                                : ''
-                            }
-                        </h2>
-                        <section>
-                            {/*<Link to="/jobs" className="btn bg-amber-500 fixed">Back to Top</Link>*/}
-                            <InfiniteScroll
-                                className="overflow-y-scroll"
-                                dataLength={jobs.length} //render the next data
-                                next={fetchMoreData}
-                                hasMore={hasMore}
-                                loader={isLoading &&
-                                    <div className="flex items-center"><Loader/> <p>Loading more jobs...</p></div>}
-                                endMessage={!hasMore && <p>No more jobs to show.</p>}
-                            >
-                                <div
-                                    className={`flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center justify-center gap-10 mb-10 md:px-24`}>
-                                    {(filteredJobs.length > 0) &&
-                                        filteredJobs.map((jobItem) => (
-                                            <JobCard key={jobItem.id} job={jobItem}/>
-                                        ))
-                                    }
-                                </div>
-                                {error && <p>{error}</p>}
-                            </InfiniteScroll>
-                        </section>
-                    </div>)
+                                }
+                            </h2>
+                            <section>
+                                {/*<Link to="/jobs" className="btn bg-amber-500 fixed">Back to Top</Link>*/}
+                                <InfiniteScroll
+                                    className="overflow-y-scroll"
+                                    dataLength={jobs.length} //render the next data
+                                    next={fetchMoreData}
+                                    hasMore={hasMore}
+                                    loader={isLoading &&
+                                        <div className="flex items-center"><Loader/> <p>Loading more jobs...</p></div>}
+                                    endMessage={!hasMore && <p>No more jobs to show.</p>}
+                                >
+                                    <div
+                                        className={`flex flex-col px-4 md:grid md:grid-cols-2 lg:grid-cols-3 items-center justify-center gap-10 mb-10 md:px-24`}>
+                                        {(filteredJobs.length > 0) &&
+                                            filteredJobs.map((jobItem) => (
+                                                <JobCard key={jobItem.id} job={jobItem}/>
+                                                // <li key={jobItem.id}>{jobItem.id}</li>
+                                            ))
+                                        }
+                                        {!hasMore && <p>No more jobs to show</p>}
+                                    </div>
+                                </InfiniteScroll>
+                            </section>
+                        </div>
+                    )
             }
         </div>
     )

@@ -36,8 +36,8 @@ function JobCard({job}) {
             </div>
 
             <div className="action-btns">
-                <button className="btn bg-stone-900 border border-stone-900" onClick={viewJob}>View</button>
-                <button className="btn bg-green-600 border border-green-600">Apply</button>
+                <button className="btn black-btn" onClick={viewJob}>View</button>
+                <button className="btn green-btn">Apply</button>
             </div>
         </div>
     );
