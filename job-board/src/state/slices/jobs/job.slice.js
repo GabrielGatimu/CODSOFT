@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 
 const initialState = {
-    jobs: []
+    jobList: []
 }
 
 const jobSlice = createSlice({
@@ -9,7 +9,9 @@ const jobSlice = createSlice({
     initialState,
     reducers: {
         setStateJobs: (state, action) => {
-            state.jobs = action.payload
+            const newJobs  = action.payload
+            state.jobList = state.jobList.concat(newJobs.filter(newJob => !state.jobList.some(oldJob => oldJob.id === newJob.id)))
+            // state.jobList = [...state.jobList, ...action.payload];
         },
     }
 })
