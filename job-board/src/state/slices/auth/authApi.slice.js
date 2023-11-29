@@ -1,5 +1,5 @@
 import { apiSlice } from '../api.slice.js'
-const AUTH_URL = "http://127.0.0.1:8080/api/v1/auth";
+const AUTH_URL = "/auth";
 
 export const authApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({

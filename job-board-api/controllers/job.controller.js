@@ -2,16 +2,15 @@ const {Job} = require('../models')
 
 // -- Get Jobs -- //
 const getJobs = async (req, res) => {
-    const pageNumber = parseInt(req.query.pageNumber) || 0
-    const limit = parseInt(req.query.limit) || 12
+    const pageNumber = +(req.query.pageNumber) || 0
+    const limit = +(req.query.limit) || 12
     const result = {}
-
     const totalJobs = await  Job.count()
+
+    result.totalJobs = totalJobs
 
     let startIndex = pageNumber * limit
     const endIndex = (pageNumber + 1) * limit
-
-    result.totalJobs = totalJobs
 
     if(startIndex > 0){
         result.previous = {

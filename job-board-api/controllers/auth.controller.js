@@ -131,6 +131,11 @@ const signIn = asyncHandler(async (req, res) => {
         throw new Error("Invalid credentials");
     }
 
+    if(user.auth_source !== 'self'){
+        res.status(400);
+        throw new Error(`This email was registered via ${user.auth_source}. To login, use ${user.auth_source}`);
+    }
+
     // -- send verification email if user is !verified
     if (!user.verified) {
         // --- destroy old token and assign a new one
@@ -145,8 +150,6 @@ const signIn = asyncHandler(async (req, res) => {
             action: 'email-verification',
             expires: Date.now() + 3 * 60 * 60 * 1000 // 3 hours
         })
-
-        console.log('...' , newToken)
 
         // send email
         await nodemailer.sendVerificationEmail(

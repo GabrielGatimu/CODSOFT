@@ -1,5 +1,5 @@
 import {apiSlice} from "../api.slice.js";
-const JOBS_URL = 'http://127.0.0.1:8080/api/v1/jobs'
+const JOBS_URL = '/jobs'
 
 export const jobApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({

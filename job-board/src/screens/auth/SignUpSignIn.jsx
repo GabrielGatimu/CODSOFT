@@ -241,7 +241,7 @@ export default function SignUpSignIn() {
                 )}
 
                 {/* Loading State*/}
-                {(signUpLoading || signInLoading) && <div className="flex"><Loader/> Please wait...</div>}
+                {(signUpLoading || signInLoading) && <div className="flex items-center"><Loader/> Please wait...</div>}
                 {signUpError &&
                     <p className="flex items-center justify-center w-full p-4 rounded  text-red-500">
                         {signUpError.data.message}
