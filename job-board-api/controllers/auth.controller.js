@@ -50,6 +50,8 @@ const googleAuth = asyncHandler(async (req, res) => {
 const signUp = asyncHandler(async (req, res) => {
     const {first_name, last_name, email, password, auth_source} = req.body;
 
+    console.log(req.body)
+
     const userExists = await User.findOne({where: {email}});
     if (userExists) {
         res.status(400);

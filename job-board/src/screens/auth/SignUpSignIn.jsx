@@ -82,7 +82,7 @@ export default function SignUpSignIn() {
                 navigate(redirectPath)
             }
         } catch (err) {
-            toast.error(err?.data?.message || err.error);
+            toast.error(err?.data?.message || err?.data?.errors[0]?.msg ||  err.error);
         }
     }
 

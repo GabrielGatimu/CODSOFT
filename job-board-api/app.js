@@ -3,6 +3,7 @@
 const express = require('express')
 const cors = require('cors')
 require('dotenv').config()
+const cookieParser = require('cookie-parser')
 
 const db = require('./models')
 const {errorMiddleware} = require('./middleware')
@@ -19,6 +20,7 @@ app.use(cors(corsOptions))
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+app.use(cookieParser())
 
 // ---- Routes ---- //
 const base_api = '/api/v1'
