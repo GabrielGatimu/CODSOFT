@@ -8,8 +8,8 @@ export default function JobDetail() {
     const {jobId} = useParams();
 
     // selecting job from state
-    // const job = useSelector((state) => state.jobs.find((j) => j.id === parseInt(jobId, 10)));
-    const jobs = useSelector(state => state.jobs.jobs)
+    const job = useSelector((state) => state.jobs.jobList.find((j) => j.id === parseInt(jobId, 10)));
+    const jobs = useSelector(state => state.jobs.jobList)
     console.log(jobs)
     const handleBackClick = () => {
         navigate(-1);
@@ -19,45 +19,44 @@ export default function JobDetail() {
         alert('Apply to the job');
     };
 
-    // if (!job) {
-    //     return <div>Job not found</div>;
-    // }
+    if (!job) {
+        return <div>Job not found</div>;
+    }
 
     return (
-        // <div>
-        //     {/* Back button */}
-        //     <button className="btn bg-stone-900" onClick={handleBackClick}>Back</button>
-        //
-        //     <div
-        //         className="bg-slate-200 h-72 w-full px-6 py-2 border border-stone-900 dark:border-white rounded-md overflow-hidden">
-        //         <div className="company-info">
-        //             <img src={job.companyLogo}/>
-        //             <h4 className="bg-stone-500 text-slate-50 px-1 h-6 rounded">{job.company}</h4>
-        //         </div>
-        //         <h3 className="text-2xl font-extrabold">{job.title}</h3>
-        //         <p className="text-stone-600 my-2">{job.salary}</p>
-        //         <p className="">{job.skills.map((skill) => (
-        //             <span
-        //                 key={skill}
-        //                 className="font-bold text-stone-800"
-        //             > {skill} <span className="text-xl font-extrabold text-amber-600">| </span></span>
-        //         ))}
-        //         </p>
-        //
-        //         <h4>Category: {job.category}</h4>
-        //         <p>Location: {job.location}</p>
-        //         <p>Type: {job.type}</p>
-        //         <p>Experience: {job.experience}</p>
-        //         <p>Description: {job.description}</p>
-        //         <p>Posted on: {job.createdAt}</p>
-        //
-        //         {/* Apply button */}
-        //         <button className="btn bg-green-600" onClick={handleApplyClick}>Apply</button>
-        //     </div>
-        // </div>
-        <>
-        Hello
-        </>
+        <div className="px-2 md:px-20 py-8">
+            {/* Back button */}
+            <button className="btn black-btn mb-4" onClick={handleBackClick}>Back</button>
+
+            <div className="block w-full md:flex justify-center">
+                <div
+                    className="bg-slate-200 h-auto w-auto px-6 py-2 border border-stone-900 md:border-none rounded-md shadow-md overflow-hidden">
+                    <div className="company-info">
+                        <img src={job.companyLogo}/>
+                        <h4 className="bg-stone-500 text-slate-50 px-1 h-6 rounded">{job.company}</h4>
+                    </div>
+                    <h3 className="text-2xl font-extrabold">{job.title}</h3>
+                    <p className="text-stone-600 my-2">{job.salary}</p>
+                    <p className="">{job.skills.map((skill) => (
+                        <span
+                            key={skill}
+                            className="font-bold text-stone-800"
+                        > {skill} <span className="text-xl font-extrabold text-amber-600">| </span></span>
+                    ))}
+                    </p>
+
+                    <h4>Category: {job.category}</h4>
+                    <p>Location: {job.location}</p>
+                    <p>Type: {job.type}</p>
+                    <p>Experience: {job.experience}</p>
+                    <p>Description: {job.description}</p>
+                    <p>Posted on: {job.createdAt}</p>
+
+                    {/* Apply button */}
+                    <button className="btn green-btn" onClick={handleApplyClick}>Apply</button>
+                </div>
+            </div>
+        </div>
     )
 }
 

@@ -11,7 +11,7 @@ function App() {
         <main className="min-h-screen w-full font-poppins">
             <Nav/>
             <ToastContainer/>
-            <section className="h-full border border-stone-950">
+            <section className="h-full">
                 <Outlet/>
             </section>
             <footer>
