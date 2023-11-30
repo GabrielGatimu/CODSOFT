@@ -25,6 +25,11 @@ import NotFound from "./components/NotFound.jsx";
 import PrivateRoute from "./components/auth/PrivateRoute.jsx";
 import SignUpSignIn from "./screens/auth/SignUpSignIn.jsx";
 import Sidebar from "./components/navigation/sidebar/Sidebar.jsx";
+import Dashboard from "./components/Dashboard.jsx";
+import PostedJobs from "./screens/jobs/PostedJobs.jsx";
+import Statistics from "./screens/Statistics.jsx";
+import Applications from "./screens/jobs/Applications.jsx";
+import Favourites from "./screens/jobs/Favourites.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -42,11 +47,16 @@ const router = createBrowserRouter(
                  Account
                 <Route path="" element={<Account/>}>
                     {/* Profile Page */}
-                    <Route path="/dashboard" element={<Profile/>}/>
-                    <Route path="/my-jobs" element={<Profile/>}/>
-                    <Route path="/applications" element={<Profile/>}/>
-                    <Route path="/notifications" element={<Profile/>}/>
+                    <Route path="/dashboard" element={<Dashboard/>}/>
                     <Route path="/profile" element={<Profile/>}/>
+
+                    {/* employer only routes */}
+                    <Route path="/my-jobs" element={<PostedJobs/>}/>
+                    <Route path="/statistics" element={<Statistics/>}/>
+
+                    {/* candidate only routes */}
+                    <Route path="/applications" element={<Applications/>}/>
+                    <Route path="/favourites" element={<Favourites/>}/>
                 </Route>
             </Route>
 
