@@ -8,8 +8,7 @@ import useAuth from "../../../hooks/useAuth.js";
 import useActiveLink from "../../../hooks/useActiveLink.js";
 
 export default function Nav() {
-    const {userInfo, signOut} = useAuth()
-
+    const {userInfo} = useAuth()
     const parentLink = useActiveLink() // gets the current page
     const [activeLink, setActiveLink] = useState(parentLink)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,7 +27,7 @@ export default function Nav() {
     return (
         <>
             <nav
-                className={`${isMenuOpen ? 'divide-y divide-stone-900 border-b-2 border-slate900' : ''}h-auto md:h-28 bg-blue-500 shadow p-5 pl-8 md:px-16 md:flex md:items-center md:justify-between  z-[-1] md:z-auto`}>
+                className={`${isMenuOpen ? 'divide-y divide-stone-900 border-b-2 border-slate900' : ''}h-auto md:h-28 bg-gradient-to-r from-indigo-700 to-indigo-500 shadow p-5 pl-8 md:px-16 md:flex md:items-center md:justify-between  z-[-1] md:z-auto`}>
 
                 {/* search button */}
                 <div className="flex items-center justify-evenly text-white space-x-1 md:space-x-3 mb-2">
@@ -99,19 +98,6 @@ export default function Nav() {
                     {userInfo ?
                         <div className="flex flex-col md:flex-row space-x-2 ">
                             <p className="font-medium text-stone-50 my-4 mx-2 md:m-auto">{userInfo.userName}</p>
-
-                            <button
-                                onClick={signOut}
-                                className="btn h-12 flex items-center space-x-1 bg-amber-500 w-fit border border-amber-500"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                          d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
-                                </svg>
-                                <p>Logout</p>
-                            </button>
-
                         </div>
                         :
                         <>

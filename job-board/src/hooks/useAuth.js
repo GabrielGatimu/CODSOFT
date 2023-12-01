@@ -1,12 +1,7 @@
-import {useDispatch, useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom";
-
-import {removeCredentials} from "../state/slices/auth/auth.slice.js";
+import {useSelector} from "react-redux";
 import {jwtDecode} from "jwt-decode";
 
 const useAuth = () => {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
     const {userInfo} = useSelector((state) => state.auth)
 
     const getUserInfo = () => {
@@ -22,12 +17,7 @@ const useAuth = () => {
         }
     }
 
-    const signOut = () => {
-        dispatch(removeCredentials())
-        navigate("/")
-    }
-
-    return {userInfo: getUserInfo(), signOut}
+    return {userInfo: getUserInfo()}
 }
 
 export default useAuth

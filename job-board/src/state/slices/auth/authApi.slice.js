@@ -32,7 +32,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }),
         signout: builder.mutation({
             query: () => ({
-                url: `${AUTH_URL}/signout`,
+                url: `${AUTH_URL}/sign-out`,
                 method: "POST",
             }),
         }),

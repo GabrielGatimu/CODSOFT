@@ -1,17 +1,50 @@
-import {ChevronFirst, ChevronLast, MoreVertical, UserCircle} from "lucide-react";
-import {createContext, useContext, useState} from "react";
+import {ChevronFirst, ChevronLast, LogOutIcon, MoreVertical, UserCircle} from "lucide-react";
+import {createContext, useContext, useEffect, useState} from "react";
+import {useDispatch} from "react-redux";
+import {toast} from "react-toastify";
+import {Link, useNavigate} from "react-router-dom";
+
+import './sidebarMenu.css'
 import useAuth from "../../../hooks/useAuth.js";
-import {Link} from "react-router-dom";
 import useActiveLink from "../../../hooks/useActiveLink.js";
+import {useSignoutMutation} from "../../../state/slices/auth/authApi.slice.js";
+import {removeCredentials} from "../../../state/slices/auth/auth.slice.js";
 
 const SidebarContext = createContext()
 export default function SidebarMenu({children}) {
-    const [expanded, seExpanded] = useState(true)
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const {userInfo} = useAuth()
+    const [signoutAPICall] = useSignoutMutation()
+    const [expanded, seExpanded] = useState(true)
+    const [moreMenu, setMoreMenu] = useState(false);
+
+    const handleSignOut = async () => {
+        try {
+            await signoutAPICall().unwrap()
+            dispatch(removeCredentials())
+            navigate("/")
+        } catch (e) {
+            toast.error('Failed to logout. Server Error Occurred. Try again later')
+        }
+    }
+
+    const closeMoreMenu = () => {
+        setMoreMenu(false);
+    };
+
+    useEffect(() => {
+        // event listener to close more menu on outside click
+        document.addEventListener('click', closeMoreMenu)
+
+        return () => {
+            document.addEventListener('click', closeMoreMenu)
+        }
+    }, []);
 
     return (
-        <aside className="h-screen">
-            <nav className="h-full flex flex-col bg-white border-r border-r-stone-300 shadow-sm">
+        <aside className={`h-screen ${!expanded ? 'sidebar-not-expanded': ''}`}>
+            <nav className="h-full flex flex-col bg-white border-r border-r-stone-200 shadow-sm">
                 {/* Sidebar Header */}
                 <div className="p-4 pb-2 flex justify-between items-center border-b border-b-stone-300">
                     <img
@@ -36,7 +69,12 @@ export default function SidebarMenu({children}) {
                 {/* user section */}
                 <div className="border-t border-t-stone-300 flex p-3">
                     <UserCircle
-                    className={`w-10 h-10 rounded-md text-indigo-700`}
+                        className={`w-10 h-10 rounded-md text-indigo-700 cursor-pointer`}
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setMoreMenu((prev) => !prev)
+                        }
+                        }
                     />
                     <div className={`
                     flex justify-between items-center 
@@ -50,9 +88,25 @@ export default function SidebarMenu({children}) {
                         </div>
                         <MoreVertical
                             size={27}
-                            className={`rounded hover:bg-stone-200`}
-                            onClick={() => alert('more actions')}
+                            className={`relative rounded hover:bg-stone-200`}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                setMoreMenu((prev) => !prev)
+                            }
+                            }
                         />
+                        {/* More menu options */}
+                        {moreMenu && (
+                            <div className="more-menu">
+                                <div onClick={handleSignOut}>
+                                    <p>Logout</p>
+                                    <LogOutIcon />
+                                </div>
+                                <p> action </p>
+                                <p> action </p>
+                                <p> action </p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </nav>
@@ -60,22 +114,22 @@ export default function SidebarMenu({children}) {
     )
 }
 
-export function SidebarItem({icon, text, alert, href,onclick}) {
+export function SidebarItem({icon, text, alert, href, onclick}) {
     const {expanded} = useContext(SidebarContext);
     const activeLink = useActiveLink()
 
     return (
         <Link to={href}
-            onClick={onclick}
-            className={`
+              onClick={onclick}
+              className={`
         relative flex items-center py-2 px-3 my-1
          font-medium rounded-md cursor-pointer
          transition-colors group
          ${
-                (activeLink === href)
-                ? "bg-gradient-to-r from-indigo-200 to-indigo-100 text-indigo-800"
-                : "hover:bg-indigo-50 text-stone-600"
-        }
+                  (activeLink === href)
+                      ? "bg-gradient-to-r from-indigo-200 to-indigo-100 text-indigo-800"
+                      : "hover:bg-indigo-50 text-stone-600"
+              }
          `}>
             {icon}
             <span
