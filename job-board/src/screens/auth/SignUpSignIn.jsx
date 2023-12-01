@@ -113,7 +113,7 @@ export default function SignUpSignIn() {
 
     return (
         <div className="flex h-full items-center justify-center p-4">
-            <form className="bg-white p-10 rounded shadow-md" onSubmit={handleSubmit}>
+            <form className="bg-white p-10 rounded shadow-lg" onSubmit={handleSubmit}>
                 <h2 className="text-2xl mb-6 font-bold text-stone-900">{isSignUp ? 'Create an Account' : 'Sign In'}</h2>
                 {/* inputs */}
                 {isSignUp && (
@@ -256,7 +256,7 @@ export default function SignUpSignIn() {
                     :
                     <button
                         type="submit"
-                        className={`w-full rounded-md h-10 bg-blue-500 hover:bg-blue-700 text-white border border-blue-500`}
+                        className={`w-full rounded-md h-10 bg-gradient-to-r from-indigo-800 to-indigo-500 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-800 text-white border border-indigo-800`}
                         disabled={signUpLoading || signInLoading}
                     >
                         {isSignUp ? 'Sign Up' : 'Sign In'}

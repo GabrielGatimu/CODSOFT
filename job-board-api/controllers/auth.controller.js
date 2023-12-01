@@ -16,11 +16,12 @@ const googleAuth = asyncHandler(async (req, res) => {
     const existingUser = await User.findOne({where: {email, auth_source: 'google'}});
     if (existingUser) {
         // User exists --> signin
-        const {accessToken} = await tokenGenerator(res, existingUser.id, userName, existingUser.role);
+        const {accessToken} = await tokenGenerator(res, existingUser.id, userName, existingUser.email, existingUser.role);
         res.status(201).json({
             userName: userName,
             accessToken: accessToken
-        });    }
+        });
+    }
 
     // user does not exist --> signup
     const newUser = await User.create({
@@ -37,7 +38,7 @@ const googleAuth = asyncHandler(async (req, res) => {
     }
 
     // signin the new user
-    const {accessToken} = await tokenGenerator(res, newUser.id, userName, newUser.role);
+    const {accessToken} = await tokenGenerator(res, newUser.id, userName, newUser.email, newUser.role);
 
     res.status(201).json({
         userName: userName,
@@ -115,6 +116,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
         res,
         user.id,
         userName,
+        user.email,
         user.role
     );
 
@@ -171,6 +173,7 @@ const signIn = asyncHandler(async (req, res) => {
         res,
         user.id,
         userName,
+        user.email,
         user.role
     );
 

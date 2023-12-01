@@ -1,66 +1,60 @@
-import useAuth from "../../../hooks/useAuth.js";
-import { Navigate } from "react-router-dom";
-import SidebarMenu from "./SidebarMenu.jsx";
-import SidebarItem from "./SidebarItem.jsx";
-import useActiveLink from "../../../hooks/useActiveLink.js";
-import { useState } from "react";
+import {useState} from "react";
+import {
+    BarChart3,
+    Bookmark,
+    BookMarked, BookOpenText,
+    Boxes, Database,
+    LayoutDashboard,
+    LifeBuoy,
+    Receipt,
+    Settings, User,
+    UserCircle
+} from "lucide-react";
 
-const sidebarConfig = {
-    employer: [
-        { href: "/dashboard", label: "Dashboard" },
-        { href: "/my-jobs", label: "Posted Jobs" },
-        { href: "/notifications", label: "Notifications" },
-        { href: "/profile", label: "Profile" },
-    ],
-    candidate: [
-        { href: "/dashboard", label: "Dashboard" },
-        { href: "/applications", label: "Applications" },
-        { href: "/notifications", label: "Notifications" },
-        { href: "/profile", label: "Profile" },
-    ],
-};
+import SidebarMenu, {SidebarItem} from "./SidebarMenu.jsx";
+import useAuth from "../../../hooks/useAuth.js";
+import useActiveLink from "../../../hooks/useActiveLink.js";
 
 export default function Sidebar() {
-    const { userInfo, signOut } = useAuth();
+    const {userInfo} = useAuth()
+    const parentLink = useActiveLink() // gets the current page
+    const [activeLink, setActiveLink] = useState(parentLink)
 
-    const parentLink = useActiveLink();
-    // eslint-disable-next-line no-unused-vars
-    const [activeLink, setActiveLink] = useState(parentLink);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
-    };
-
-    const handleMenuItemClick = (href) => {
-        setActiveLink(href);
-        if (isMenuOpen) {
-            toggleMenu();
-        }
-    };
-
-    const getSidebarItems = () => {
-        if (userInfo && sidebarConfig[userInfo.role]) {
-            return sidebarConfig[userInfo.role].map((item) => (
-                <SidebarItem
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => handleMenuItemClick(item.href)}
-                >
-                    {item.label}
-                </SidebarItem>
-            ));
-        }
-        return null;
-    };
-
-    if (userInfo && sidebarConfig[userInfo.role]) {
-        return (
-            <div className={`h-${isMenuOpen ? "full" : "[calc(100vh-0rem)]"}`}>
-                <SidebarMenu isMenuOpen={isMenuOpen}>{getSidebarItems()}</SidebarMenu>
-            </div>
-        );
-    } else {
-        return <Navigate to={"/signin"} />;
+    const handleClick = (href) => {
+        setActiveLink(href)
     }
+    return (
+        <SidebarMenu>
+            <SidebarItem href="/dashboard" onclick={() => handleClick('/dashboard')} icon={<LayoutDashboard size={20}/>}
+                         text="Dashboard" alert/>
+
+            {userInfo && userInfo.role === 'employer' ?
+                <>
+                    <SidebarItem href="/my-jobs" onclick={() => handleClick('/my-jobs')} icon={<Database size={20}/>}
+                                 text="my jobs"/>
+                    <SidebarItem href="/statistics" onclick={() => handleClick('/statistics')}
+                                 icon={<BarChart3 size={20}/>}
+                                 text="statistics"/>
+                </>
+                :
+
+                <>
+                    <SidebarItem href="/applications" onclick={() => handleClick('/applications')}
+                                 icon={<BookOpenText size={20}/>}
+                                 text="Applications"/>
+                    <SidebarItem href="/favourites" onclick={() => handleClick('/favourites')}
+                                 icon={<BookMarked size={20}/>}
+                                 text="Favourites"/>
+                </>
+            }
+
+            <hr className="mt-8"/>
+            <SidebarItem href="/profile" onclick={() => handleClick('/profile')} icon={<User size={20}/>}
+                         text="My-Profile"
+                         alert
+            />
+            <SidebarItem href="/contact" onclick={() => handleClick('/contact')} icon={<LifeBuoy size={20}/>}
+                         text="Help"/>
+        </SidebarMenu>
+    )
 }
