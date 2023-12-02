@@ -23,7 +23,9 @@ export default function SidebarMenu({children}) {
         try {
             await signoutAPICall().unwrap()
             dispatch(removeCredentials())
+            console.log('hello')
             navigate("/")
+            console.log('hello')
         } catch (e) {
             toast.error('Failed to logout. Server Error Occurred. Try again later')
         }

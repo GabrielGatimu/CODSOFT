@@ -1,13 +1,53 @@
+import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
+import {useDispatch, useSelector} from "react-redux";
+import {Bookmark} from "lucide-react";
+
 import '../../styles/custom.css'
 import './JobCard.css'
-import {useNavigate} from "react-router-dom";
+import {useToggleBookmarkMutation} from "../../state/slices/jobs/jobApi.slice.js";
+import {removeBookmark, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
+import useAuth from "../../hooks/useAuth.js";
 
 function JobCard({job}) {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const {userInfo} = useAuth()
 
     const viewJob = () => {
         navigate(`/jobs/view/${job.id}`)
     }
+
+    const [toggleBookmarkApiCall, {isLoading, error}] = useToggleBookmarkMutation();
+
+    const handleBookmark = async () => {
+        console.log(isJobBookmarked)
+        try {
+            if (!userInfo) {
+                alert('login first in order to save your favourite jobs')
+                return
+            }
+            if (!isJobBookmarked) {
+                // save bookmark to DB
+                const response = await toggleBookmarkApiCall(job.id).unwrap()
+                dispatch(setUserBookmarks([response.bookmark]))
+                isJobBookmarked = true
+                toast.success(response.message)
+            } else {
+                // remove bookmark from DB
+                const response = await toggleBookmarkApiCall(job.id).unwrap()
+                dispatch(removeBookmark({job_id: job.id}))
+                toast.success(response.message)
+            }
+        } catch (e) {
+            console.log(e)
+            toast.error(error)
+        }
+    }
+
+    let isJobBookmarked = useSelector(state =>
+        state.jobs.bookmarkedJobs.some((bookmarkedJob) => bookmarkedJob.job_id === job.id && bookmarkedJob.user_id === userInfo.userId)
+    )
 
     return (
         <div
@@ -16,6 +56,7 @@ function JobCard({job}) {
                 <img src={job.companyLogo}/>
                 <h4 className="bg-stone-500 text-slate-50 px-1 h-6 rounded">{job.company}</h4>
             </div>
+            <h1>{job.id}</h1>
             <h3 className="text-2xl font-extrabold">{job.title}</h3>
             <p className="text-stone-600 my-2">{job.salary}</p>
             <p className="">{job.skills.map((skill) => (
@@ -37,6 +78,20 @@ function JobCard({job}) {
 
             <div className="action-btns">
                 <button className="btn black-btn" onClick={viewJob}>View</button>
+
+                {userInfo ?
+                    (
+                        isJobBookmarked ?
+                            (<Bookmark className="fill-indigo-700 text-indigo-700" onClick={handleBookmark}/>)
+                            :
+                            (<Bookmark onClick={handleBookmark}/>)
+                    ) :
+                    (
+                        <span onClick={handleBookmark} className="cursor-pointer">
+                        <Bookmark/>
+                    </span>
+                    )
+                }
                 <button className="btn green-btn">Apply</button>
             </div>
         </div>
