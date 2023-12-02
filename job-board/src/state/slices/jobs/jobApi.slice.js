@@ -9,6 +9,18 @@ export const jobApiSlice = apiSlice.injectEndpoints({
                 method: "GET"
             })
         }),
+        toggleBookmark: builder.mutation({
+            query: (jobId) => ({
+                url: `${JOBS_URL}/candidate/bookmark/${jobId}`,
+                method: "PUT"
+            })
+        }),
+        getUserBookmarks : builder.mutation({
+            query: () => ({
+                url: `${JOBS_URL}/candidate/bookmarks`,
+                method: "GET"
+            })
+        }),
         // getJob : builder.mutation({}),
         // createJob : builder.mutation({}),
         // editJob : builder.mutation({}),
@@ -17,5 +29,7 @@ export const jobApiSlice = apiSlice.injectEndpoints({
 })
 
 export const {
-    useGetJobsMutation
+    useGetJobsMutation,
+    useToggleBookmarkMutation,
+    useGetUserBookmarksMutation,
 } = jobApiSlice

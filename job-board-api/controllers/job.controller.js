@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const {Job} = require('../models')
+const {Job, Bookmark} = require('../models')
 
 // -- Get Jobs -- //
 const getJobs = asyncHandler(async (req, res) => {
@@ -39,7 +39,7 @@ const getJobs = asyncHandler(async (req, res) => {
 })
 
 const addJob = asyncHandler(async (req, res) => {
-res.send('add')
+    res.send('add')
 })
 
 const viewJob = asyncHandler(async (req, res) => {
@@ -51,7 +51,7 @@ const updateJob = asyncHandler(async (req, res) => {
 })
 
 const deleteJob = asyncHandler(async (req, res) => {
-res.send('delete')
+    res.send('delete')
 })
 
 const getEmployerJobs = asyncHandler(async (req, res) => {
@@ -59,12 +59,39 @@ const getEmployerJobs = asyncHandler(async (req, res) => {
 })
 
 const getCandidateApplications = asyncHandler(async (req, res) => {
-res.send('candidate applications')
+    res.send('candidate applications')
 })
 
-const getCandidateFavouriteJobs = asyncHandler(async (req, res) => {
-res.send('bookmarks')
-})
+// --- Bookmarks --- //
+const bookmarkJob = asyncHandler(async (req, res) => {
+    let {jobId} = req.params
+    jobId = +jobId
+    const userId = +(req.user.userId)
+
+    const existingBookmark = await Bookmark.findOne({where: {user_id: userId, job_id: jobId}});
+
+    if (existingBookmark) {
+        await existingBookmark.destroy();
+        return res.status(200).send({message: 'Job removed from bookmarks'});
+    }
+
+    const bookmark = await Bookmark.create({user_id: userId, job_id: jobId});
+    res.status(200).send({
+        message: 'Job bookmarked successfully ✅',
+        bookmark
+    });
+});
+
+const getCandidateBookmarks = asyncHandler(async (req, res) => {
+    const userId = req.user.userId;
+
+    const bookmarkedJobs = await Bookmark.findAll({
+        where: {user_id: userId},
+        include: [{model: Job, attributes: ['id', 'title']}],
+    });
+
+    res.status(200).send(bookmarkedJobs);
+});
 
 module.exports = {
     getJobs,
@@ -74,5 +101,6 @@ module.exports = {
     deleteJob,
     getEmployerJobs,
     getCandidateApplications,
-    getCandidateFavouriteJobs
+    bookmarkJob,
+    getCandidateBookmarks
 }

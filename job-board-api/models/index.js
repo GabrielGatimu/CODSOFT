@@ -24,9 +24,17 @@ db.sequelize = sequelize
 const {User} = require('./user.model')(sequelize, Sequelize)
 const {Job} = require('./job.model')(sequelize, Sequelize)
 const {Token} = require('./token.model')(sequelize, Sequelize)
+const {Bookmark} = require('./bookmark.model')(sequelize, Sequelize)
 
 // -- associations -- //
+// user --> bookmark
+User.hasMany(Bookmark, {foreignKey: 'user_id'})
+Bookmark.belongsTo(User, {foreignKey: 'user_id'})
 
-Object.assign(db, {User, Job, Token})
+// job --> bookmark
+Job.hasMany(Bookmark, {foreignKey: 'job_id'})
+Bookmark.belongsTo(Job, {foreignKey: 'job_id'})
+
+Object.assign(db, {User, Job, Token, Bookmark})
 
 module.exports = db

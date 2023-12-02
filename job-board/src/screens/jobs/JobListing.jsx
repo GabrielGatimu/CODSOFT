@@ -4,21 +4,32 @@ import {useSelector, useDispatch} from "react-redux";
 import {toast} from "react-toastify";
 import {MapPinIcon, SearchIcon, WrenchIcon} from "lucide-react";
 
-import '../../styles/custom.css' // shared styles for btns, flex-containers etc
+import '../../styles/custom.css' // shared styles
 import './JobListing.css'
 import JobCard from "../../components/jobs/JobCard.jsx";
 import Loader from "../../components/Loader.jsx";
 
-import {useGetJobsMutation} from "../../state/slices/jobs/jobApi.slice.js";
-import {setStateJobs} from "../../state/slices/jobs/job.slice.js";
+import {
+    useGetJobsMutation,
+    useGetUserBookmarksMutation,
+} from "../../state/slices/jobs/jobApi.slice.js";
+import {setStateJobs, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
+import useAuth from "../../hooks/useAuth.js";
 
 export default function JobListing() {
     const dispatch = useDispatch()
-    const [apiTrigger, {isLoading, error}] = useGetJobsMutation();
-    const jobs = useSelector((state) => state.jobs.jobList);
-    const [filteredJobs, setFilteredJobs] = useState([])
     const [pageNumber, setPageNumber] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+
+    const {userInfo} = useAuth()
+    const [getAllJobsApiCall, {isLoading: getJobsLoading, error: getJobsError}] = useGetJobsMutation();
+    const [getBookmarkedJobsApiCall, {
+        isLoading: getBookmarksLoading,
+        error: getBookmarksError
+    }] = useGetUserBookmarksMutation();
+
+    const jobs = useSelector((state) => state.jobs.jobList);
+    const [filteredJobs, setFilteredJobs] = useState([])
 
     // search inputs
     const [searchItem, setSearchItem] = useState({
@@ -102,21 +113,37 @@ export default function JobListing() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await apiTrigger(pageNumber).unwrap();
+                const response = await getAllJobsApiCall(pageNumber).unwrap();
                 dispatch(setStateJobs(response.data))
 
                 setHasMore(response.next !== null);
             } catch (e) {
                 console.error(e)
-                toast.error(error)
+                toast.error(getJobsError)
             }
         };
         fetchData();
-    }, [apiTrigger, pageNumber, dispatch, error]);
+    }, [getAllJobsApiCall, pageNumber, dispatch, getJobsError]);
 
+    // populates filtered jobs from state after jobs are fetched from server -> then gets bookmarks
     useEffect(() => {
         setFilteredJobs(jobs)
-    }, [jobs]);
+    }, [jobs])
+
+    useEffect(() => {
+        const fetchBookmarks = async () => {
+            try {
+                if (userInfo && userInfo.userId) {
+                    const response = await getBookmarkedJobsApiCall().unwrap()
+                    dispatch(setUserBookmarks(response))
+                }
+            } catch (e) {
+                console.log(e)
+                console.log(getBookmarksError)
+            }
+        }
+        fetchBookmarks()
+    }, []);
 
     const fetchMoreData = () => {
         setPageNumber((prevPageNumber) => prevPageNumber + 1);
@@ -130,7 +157,7 @@ export default function JobListing() {
                     {/*Search Inputs*/}
                     <div className="custom_flex-container">
                         <div className="search-container ml-3 md:ml-0">
-                            <SearchIcon />
+                            <SearchIcon/>
                             <input
                                 type="text"
                                 name="title_input"
@@ -141,7 +168,7 @@ export default function JobListing() {
                             />
                         </div>
                         <div className="search-container">
-                            <MapPinIcon />
+                            <MapPinIcon/>
                             <input
                                 type="text"
                                 name="location_input"
@@ -152,7 +179,7 @@ export default function JobListing() {
                             />
                         </div>
                         <div className="search-container">
-                            <WrenchIcon />
+                            <WrenchIcon/>
                             <input
                                 type="text"
                                 name="skill_input"
@@ -269,8 +296,9 @@ export default function JobListing() {
                                     dataLength={jobs.length} //render the next data
                                     next={fetchMoreData}
                                     hasMore={hasMore}
-                                    loader={isLoading &&
-                                        <div className="flex items-center"><Loader/> <p>Loading more jobs...</p></div>}
+                                    loader={getJobsLoading &&
+                                        <div className="flex items-center"><Loader/> <p>Loading more jobs...</p>
+                                        </div>}
                                     endMessage={!hasMore && <p>No more jobs to show.</p>}
                                 >
                                     <div
