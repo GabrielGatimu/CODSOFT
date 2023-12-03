@@ -82,13 +82,13 @@ function JobCard({job}) {
                 {userInfo ?
                     (
                         isJobBookmarked ?
-                            (<Bookmark className="fill-indigo-700 text-indigo-700" onClick={handleBookmark}/>)
+                            (<Bookmark className="cursor-pointer fill-indigo-700 text-indigo-700" onClick={handleBookmark}/>)
                             :
-                            (<Bookmark onClick={handleBookmark}/>)
+                            (<Bookmark className="cursor-pointer" onClick={handleBookmark}/>)
                     ) :
                     (
                         <span onClick={handleBookmark} className="cursor-pointer">
-                        <Bookmark/>
+                        <Bookmark className="cursor-pointer"/>
                     </span>
                     )
                 }

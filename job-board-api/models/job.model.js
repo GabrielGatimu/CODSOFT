@@ -54,6 +54,14 @@ module.exports = (sequelize, Sequelize) => {
             unique: false,
             allowNull: false
         },
+        employer_id: {
+            type: Sequelize.INTEGER,
+            allowNull: true, // for testing since existing data does not have the field
+            references: {
+                model: "users",
+                key: "id"
+            }
+        }
     }, {
         freezeTableName: true
     })
