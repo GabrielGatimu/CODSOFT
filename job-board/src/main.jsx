@@ -30,6 +30,7 @@ import PostedJobs from "./screens/jobs/PostedJobs.jsx";
 import Statistics from "./screens/Statistics.jsx";
 import Applications from "./screens/jobs/Applications.jsx";
 import Favourites from "./screens/jobs/Favourites.jsx";
+import CreateJob from "./screens/jobs/CreateJob.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -52,6 +53,7 @@ const router = createBrowserRouter(
 
                     {/* employer only routes */}
                     <Route path="/my-jobs" element={<PostedJobs/>}/>
+                    <Route path="/create-job" element={<CreateJob/>}/>
                     <Route path="/statistics" element={<Statistics/>}/>
 
                     {/* candidate only routes */}

@@ -17,6 +17,19 @@ const passwordInput = [
         ),
 ];
 
+const jobInputs = [
+    check("title", "Job title is required").not().isEmpty(),
+    check("category", "Category is required").not().isEmpty(),
+    check("company", "Company is required").not().isEmpty(),
+    check("companyLogo", "Company logo is required").not().isEmpty(),
+    check("location", "Location is required").not().isEmpty(),
+    check("type", "Type is required").not().isEmpty(),
+    check("experience", "Experience is required").not().isEmpty(),
+    check("description", "Description is required").not().isEmpty(),
+    check("skills", "Skills are required").isArray({ min: 1 }).withMessage("At least one skill is required"),
+    check("salary", "Salary is required").not().isEmpty(),
+]
+
 const validate = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -26,7 +39,7 @@ const validate = (req, res, next) => {
 };
 
 const inputValidationMiddleware = {
-    signupInputs, passwordInput, validate
+    signupInputs, passwordInput, jobInputs , validate
 }
 
 module.exports = inputValidationMiddleware

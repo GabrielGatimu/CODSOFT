@@ -48,7 +48,7 @@ app.listen(port, async () => {
                     // -- called once --- //
                     // Job.bulkCreate(jobsData)
                     //     .then(() => {
-                    //         console.log(`\n\t data inserted successfully \n`);
+                    //         console.log(`\n\t data inserted successfully \n\n`);
                     //     })
                     //     .catch(error => {
                     //         console.log(`\n\t failed to insert data! \n\t`, error);

@@ -39,8 +39,54 @@ const getJobs = asyncHandler(async (req, res) => {
 })
 
 const addJob = asyncHandler(async (req, res) => {
-    res.send('add')
-})
+    const {
+        title, category, company, companyLogo, location, type, experience, description, skills, salary
+    } = req.body;
+
+    console.log(req.body)
+    const employer_id = req.user.userId;
+
+    try {
+        const newJob = await Job.create({
+            title, category, company, companyLogo, location, type, experience, description, skills, salary, employer_id
+        });
+
+        res.status(201).json(newJob);
+    } catch (error) {
+        if (error.name === 'SequelizeValidationError') {
+            // validation errors
+            const errors = error.errors.map(err => ({
+                field: err.path,
+                message: err.message
+            }));
+
+            res.status(422).json({ success: false, message: 'Validation error', errors });
+        } else {
+            console.error(error);
+            res.status(500).json({ success: false, message: 'Server error occurred' });
+        }
+    }
+});
+
+
+// const addJob = asyncHandler(async (req, res) => {
+//     const {
+//         title, category, company, companyLogo, location, type, experience, description, skills, salary
+//     } = req.body;
+//
+//     const employer_id = req.user.userId
+//
+//     const newJob = await Job.create({
+//         title, category, company, companyLogo, location, type, experience, description, skills, salary, employer_id
+//     });
+//
+//     if (!newJob) {
+//         res.status(500)
+//         throw new Error('failed to create job: server error occurred')
+//     }
+//
+//     res.status(201).json(newJob);
+// });
 
 const viewJob = asyncHandler(async (req, res) => {
     res.send('viewJob')
