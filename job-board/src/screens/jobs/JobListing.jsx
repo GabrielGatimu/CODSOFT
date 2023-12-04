@@ -1,14 +1,12 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {useSelector, useDispatch} from "react-redux";
 import {toast} from "react-toastify";
 import {MapPinIcon, SearchIcon, WrenchIcon} from "lucide-react";
-
 import '../../styles/custom.css' // shared styles
 import './JobListing.css'
 import JobCard from "../../components/jobs/JobCard.jsx";
 import Loader from "../../components/Loader.jsx";
-
 import {
     useGetJobsMutation,
     useGetUserBookmarksMutation,
@@ -17,19 +15,69 @@ import {setStateJobs, setUserBookmarks} from "../../state/slices/jobs/job.slice.
 import useAuth from "../../hooks/useAuth.js";
 
 export default function JobListing() {
+    const bookmarksFetchedRef = useRef(false);
     const dispatch = useDispatch()
     const [pageNumber, setPageNumber] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-
     const {userInfo} = useAuth()
+
+    const jobs = useSelector((state) => state.jobs.jobList);
+    const [filteredJobs, setFilteredJobs] = useState([])
+
     const [getAllJobsApiCall, {isLoading: getJobsLoading, error: getJobsError}] = useGetJobsMutation();
-    const [getBookmarkedJobsApiCall, {
+    const [getBookmarksApiCall, {
         isLoading: getBookmarksLoading,
         error: getBookmarksError
     }] = useGetUserBookmarksMutation();
 
-    const jobs = useSelector((state) => state.jobs.jobList);
-    const [filteredJobs, setFilteredJobs] = useState([])
+    const fetchBookmarks = async () => {
+        try {
+            const bookmarkResponse = await getBookmarksApiCall().unwrap();
+            if (bookmarkResponse.length > 0) {
+                const extractedBookmarks = bookmarkResponse.map((item) => item.job)
+                dispatch(setUserBookmarks(extractedBookmarks));
+            }
+        } catch (e) {
+            console.error(e);
+            console.error(getBookmarksError);
+        }
+    };
+
+    // -- fetches bookmarks only if user is logged in
+    useEffect(() => {
+        if (bookmarksFetchedRef.current) return;
+        bookmarksFetchedRef.current = true;
+
+        if (userInfo) {
+            fetchBookmarks()
+        }
+
+    }, []);
+
+
+    useEffect(() => {
+        const fetchMoreJobs = async () => {
+            try {
+                const response = await getAllJobsApiCall(pageNumber).unwrap();
+                dispatch(setStateJobs(response.data));
+                setHasMore(response.next !== null);
+            } catch (e) {
+                console.error(e);
+                toast.error(getJobsError);
+            }
+        };
+
+        fetchMoreJobs();
+    }, [pageNumber]);
+
+    // populates initial filtered jobs with fetched data
+    useEffect(() => {
+        setFilteredJobs(jobs)
+    }, [jobs])
+
+    const fetchMoreData = () => {
+        setPageNumber((prevPageNumber) => prevPageNumber + 1);
+    };
 
     // search inputs
     const [searchItem, setSearchItem] = useState({
@@ -109,45 +157,6 @@ export default function JobListing() {
 
         setFilteredJobs(searchResults)
     }
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await getAllJobsApiCall(pageNumber).unwrap();
-                dispatch(setStateJobs(response.data))
-
-                setHasMore(response.next !== null);
-            } catch (e) {
-                console.error(e)
-                toast.error(getJobsError)
-            }
-        };
-        fetchData();
-    }, [getAllJobsApiCall, pageNumber, dispatch, getJobsError]);
-
-    // populates filtered jobs from state after jobs are fetched from server -> then gets bookmarks
-    useEffect(() => {
-        setFilteredJobs(jobs)
-    }, [jobs])
-
-    useEffect(() => {
-        const fetchBookmarks = async () => {
-            try {
-                if (userInfo && userInfo.userId) {
-                    const response = await getBookmarkedJobsApiCall().unwrap()
-                    dispatch(setUserBookmarks(response))
-                }
-            } catch (e) {
-                console.log(e)
-                console.log(getBookmarksError)
-            }
-        }
-        fetchBookmarks()
-    }, []);
-
-    const fetchMoreData = () => {
-        setPageNumber((prevPageNumber) => prevPageNumber + 1);
-    };
 
     return (
         <div>
@@ -303,6 +312,8 @@ export default function JobListing() {
                                 >
                                     <div
                                         className={`flex flex-col px-4 md:grid md:grid-cols-2 lg:grid-cols-3 items-center justify-center gap-10 mb-10 md:px-24`}>
+                                        {getBookmarksLoading && <Loader/>}
+
                                         {(filteredJobs.length > 0) &&
                                             filteredJobs.map((jobItem) => (
                                                 <JobCard key={jobItem.id} job={jobItem}/>

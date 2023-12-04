@@ -18,7 +18,7 @@ export default function Favourites() {
     const {userInfo} = useAuth();
     const isEmployer = userInfo.role;
 
-    const fetchJobs = async () => {
+    const fetchBookmarks = async () => {
         try {
             const bookmarkResponse = await getBookmarksApiCall().unwrap();
 
@@ -44,7 +44,7 @@ export default function Favourites() {
 
         // -- check if bookmarks data is available in state
         if (bookmarks.length === 0) {
-            fetchJobs();
+            fetchBookmarks();
         } else {
             // -- use data from state
             setFilteredBookmarks(bookmarks);
