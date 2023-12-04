@@ -11,9 +11,10 @@ export default function JobDetail() {
     console.log(userInfo)
 
     // selecting job from state
-    const job = useSelector((state) => state.jobs.jobList.find((j) => j.id === +(jobId)));
     const jobs = useSelector(state => state.jobs.jobList)
+    const job = useSelector((state) => state.jobs.jobList.find((j) => j.id === +(jobId)));
     console.log(jobs)
+    console.log(job)
     const handleBackClick = () => {
         navigate(-1);
     };
