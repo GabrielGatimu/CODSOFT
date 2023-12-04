@@ -48,7 +48,7 @@ export default function SidebarMenu({children}) {
 
     return (
         <aside className={`h-screen ${!expanded ? 'sidebar-not-expanded': ''}`}>
-            <nav className="h-full flex flex-col bg-white border-r border-r-stone-200 shadow-sm">
+            <nav className="h-full flex flex-col bg-stone-50 border-r border-r-stone-200 shadow-sm">
                 {/* Sidebar Header */}
                 <div className="p-4 pb-2 flex justify-between items-center border-b border-b-stone-300">
                     <img

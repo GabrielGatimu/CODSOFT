@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import './styles/tailwind.css'
 import Nav from "./components/navigation/navbar/Nav.jsx";
 import Footer from "./components/navigation/Footer.jsx";
+import BackToTopButton from "./components/navigation/BackToTopButton.jsx";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
             <footer>
                 <Footer/>
             </footer>
+            <BackToTopButton />
         </main>
     )
 }
