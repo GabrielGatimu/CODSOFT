@@ -22,7 +22,6 @@ export const jobApiSlice = apiSlice.injectEndpoints({
                 body: data
             })
         }),
-
         // --- Bookmarks --- //
         toggleBookmark: builder.mutation({
             query: (jobId) => ({
@@ -32,7 +31,7 @@ export const jobApiSlice = apiSlice.injectEndpoints({
         }),
         getUserBookmarks : builder.mutation({
             query: () => ({
-                url: `${JOBS_URL}/candidate/bookmarks`,
+                url: `${JOBS_URL}/bookmarks`,
                 method: "GET"
             })
         }),

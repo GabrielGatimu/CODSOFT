@@ -8,7 +8,7 @@ import {useGetEmployerJobsMutation} from "../../state/slices/jobs/jobApi.slice.j
 import {setEmployerJobs} from "../../state/slices/jobs/job.slice.js";
 
 export default function PostedJobs() {
-    const dataFetchedRef = useRef(false);
+    const userJobsFetchedRef = useRef(false);
     const jobs = useSelector(state => state.jobs.employerJobs)
     const [filteredJobs, setFilteredJobs] = useState([])
 
@@ -28,8 +28,8 @@ export default function PostedJobs() {
     }
 
     useEffect(() => {
-        if (dataFetchedRef.current) return
-        dataFetchedRef.current = true
+        if (userJobsFetchedRef.current) return
+        userJobsFetchedRef.current = true
 
         // -- check if jobs data is available in state
         if (jobs.length === 0) {

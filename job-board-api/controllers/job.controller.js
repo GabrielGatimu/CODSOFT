@@ -114,12 +114,14 @@ const bookmarkJob = asyncHandler(async (req, res) => {
     });
 });
 
-const getCandidateBookmarks = asyncHandler(async (req, res) => {
+// @ desc ---- Get user bookmarks  @ access -- all
+// route  --POST-- [base_api]/jobs/bookmarks
+const getUserBookmarks = asyncHandler(async (req, res) => {
     const userId = req.user.userId;
 
     const bookmarkedJobs = await Bookmark.findAll({
         where: {user_id: userId},
-        include: [{model: Job, attributes: ['id', 'title']}],
+        include: Job,
     });
 
     res.status(200).send(bookmarkedJobs);
@@ -134,5 +136,5 @@ module.exports = {
     getEmployerJobs,
     getCandidateApplications,
     bookmarkJob,
-    getCandidateBookmarks
+    getUserBookmarks
 }

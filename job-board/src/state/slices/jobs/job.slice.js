@@ -11,14 +11,15 @@ const jobSlice = createSlice({
     initialState,
     reducers: {
         setStateJobs: (state, action) => {
-            const newJobs  = action.payload
+            const newJobs = action.payload
             state.jobList = state.jobList.concat(newJobs.filter(newJob => !state.jobList.some(oldJob => oldJob.id === newJob.id)))
             // state.jobList = [...state.jobList, ...action.payload];
         },
-        setUserBookmarks: (state, action) => {
+        setEmployerJobs: (state, action) => {
             state.employerJobs = [...state.employerJobs, ...action.payload]
-            // const newBookmarks = action.payload
-            // state.bookmarkedJobs = state.bookmarkedJobs.concat(newBookmarks.filter(newFav => !state.bookmarkedJobs.some(oldFav => oldFav.id === newFav.id)))
+        },
+        setUserBookmarks: (state, action) => {
+            state.bookmarkedJobs = [...state.bookmarkedJobs, ...action.payload]
         },
         removeBookmark: (state, action) => {
             const {job_id} = action.payload
@@ -27,9 +28,6 @@ const jobSlice = createSlice({
         // createJob: (state, action) => {
         //     state.employerJobs = [...state.employerJobs, ...action.payload]
         // },
-        setEmployerJobs: (state, action) => {
-            state.employerJobs = [...state.employerJobs, ...action.payload]
-        },
         removeAllUserJobsData: (state, action) => {
             state.bookmarkedJobs = []
             state.employerJobs = []
