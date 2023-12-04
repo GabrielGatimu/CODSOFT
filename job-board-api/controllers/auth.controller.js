@@ -56,9 +56,7 @@ const googleAuth = asyncHandler(async (req, res) => {
 // @ desc --- Register new user
 // route  --POST-- [base_api]/auth/signup
 const signUp = asyncHandler(async (req, res) => {
-    const {first_name, last_name, email, password, auth_source} = req.body;
-
-    console.log(req.body)
+    const {first_name, last_name, email, password, role, auth_source} = req.body;
 
     const userExists = await User.findOne({where: {email}});
     if (userExists) {
@@ -71,6 +69,7 @@ const signUp = asyncHandler(async (req, res) => {
         last_name,
         email,
         password,
+        role,
         auth_source,
         verified: auth_source === 'google'
     });
