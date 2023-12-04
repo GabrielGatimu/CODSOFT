@@ -29,7 +29,7 @@ export default function BackToTopButton () {
     return (
         <div
             className={`${
-                isVisible ? 'fixed bottom-10 right-10' : 'hidden'
+                isVisible ? 'fixed bottom-2 md:bottom-10 right-2 md:right-10' : 'hidden'
             } cursor-pointer`}
             onClick={scrollToTop}
         >

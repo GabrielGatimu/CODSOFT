@@ -20,6 +20,7 @@ router.post('/add', [
     ],
     jobController.addJob);
 router.route('/:jobId')
+    .get(jobController.viewJob)
     .put(authMiddleware.requireEmployer, jobController.updateJob)
     .delete(authMiddleware.requireEmployer, jobController.deleteJob);
 

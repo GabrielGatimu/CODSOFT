@@ -48,7 +48,7 @@ function JobCard({job, employerJob}) {
 
     return (
         <div
-            className="job-card bg-slate-200 h-full w-full px-6 py-2 border border-stone-900 md:border-none dark:border-white rounded-md overflow-hidden">
+            className="job-card bg-slate-200 h-full w-full px-6 py-6 border border-stone-900 md:border-none dark:border-white rounded-md overflow-hidden">
             <div className="details-section">
                 <div className="company-info">
                     <img src={job.companyLogo} alt="company logo"/>
