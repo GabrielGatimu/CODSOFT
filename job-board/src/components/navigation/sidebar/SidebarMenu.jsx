@@ -9,24 +9,26 @@ import useAuth from "../../../hooks/useAuth.js";
 import useActiveLink from "../../../hooks/useActiveLink.js";
 import {useSignoutMutation} from "../../../state/slices/auth/authApi.slice.js";
 import {removeCredentials} from "../../../state/slices/auth/auth.slice.js";
+import {removeAllUserJobsData} from "../../../state/slices/jobs/job.slice.js";
 
 const SidebarContext = createContext()
 export default function SidebarMenu({children}) {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const {userInfo} = useAuth()
-    const [signoutAPICall] = useSignoutMutation()
+    const [signoutAPICall, {error}] = useSignoutMutation()
     const [expanded, seExpanded] = useState(true)
     const [moreMenu, setMoreMenu] = useState(false);
 
     const handleSignOut = async () => {
         try {
             await signoutAPICall().unwrap()
-            dispatch(removeCredentials())
-            console.log('hello')
             navigate("/")
-            console.log('hello')
+            dispatch(removeCredentials()) // remove auth credentials
+            dispatch(removeAllUserJobsData()) // remove personal job data
         } catch (e) {
+            console.log(e)
+            console.log('api error: ', error)
             toast.error('Failed to logout. Server Error Occurred. Try again later')
         }
     }
@@ -90,7 +92,7 @@ export default function SidebarMenu({children}) {
                         </div>
                         <MoreVertical
                             size={27}
-                            className={`relative rounded hover:bg-stone-200`}
+                            className={`relative rounded hover:bg-stone-200 cursor-pointer`}
                             onClick={(e) => {
                                 e.stopPropagation()
                                 setMoreMenu((prev) => !prev)

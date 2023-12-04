@@ -1,7 +1,8 @@
 const asyncHandler = require('express-async-handler')
 const {Job, Bookmark} = require('../models')
 
-// -- Get Jobs -- //
+// @ desc ---- Get Jobs  @ access -- all
+// route  --POST-- [base_api]/jobs
 const getJobs = asyncHandler(async (req, res) => {
     const pageNumber = +(req.query.pageNumber) || 0
     const limit = +(req.query.limit) || 12
@@ -38,12 +39,13 @@ const getJobs = asyncHandler(async (req, res) => {
     return result.data ? res.status(200).send(result) : res.send('No Jobs found')
 })
 
+// @ desc ---- Create Job  @ access -- employer only
+// route  --POST-- [base_api]/jobs/add
 const addJob = asyncHandler(async (req, res) => {
     const {
         title, category, company, companyLogo, location, type, experience, description, skills, salary
     } = req.body;
 
-    console.log(req.body)
     const employer_id = req.user.userId;
 
     try {
@@ -51,7 +53,7 @@ const addJob = asyncHandler(async (req, res) => {
             title, category, company, companyLogo, location, type, experience, description, skills, salary, employer_id
         });
 
-        res.status(201).json(newJob);
+        res.status(201).json({message: "job added successfully", newJob: newJob});
     } catch (error) {
         if (error.name === 'SequelizeValidationError') {
             // validation errors
@@ -60,33 +62,13 @@ const addJob = asyncHandler(async (req, res) => {
                 message: err.message
             }));
 
-            res.status(422).json({ success: false, message: 'Validation error', errors });
+            res.status(422).json({success: false, message: 'Validation error', errors});
         } else {
             console.error(error);
-            res.status(500).json({ success: false, message: 'Server error occurred' });
+            res.status(500).json({success: false, message: 'Server error occurred'});
         }
     }
 });
-
-
-// const addJob = asyncHandler(async (req, res) => {
-//     const {
-//         title, category, company, companyLogo, location, type, experience, description, skills, salary
-//     } = req.body;
-//
-//     const employer_id = req.user.userId
-//
-//     const newJob = await Job.create({
-//         title, category, company, companyLogo, location, type, experience, description, skills, salary, employer_id
-//     });
-//
-//     if (!newJob) {
-//         res.status(500)
-//         throw new Error('failed to create job: server error occurred')
-//     }
-//
-//     res.status(201).json(newJob);
-// });
 
 const viewJob = asyncHandler(async (req, res) => {
     res.send('viewJob')
@@ -100,8 +82,12 @@ const deleteJob = asyncHandler(async (req, res) => {
     res.send('delete')
 })
 
+// @ desc ---- Get Employer's Job  @ access -- employer only
+// route  --POST-- [base_api]/jobs/employer
 const getEmployerJobs = asyncHandler(async (req, res) => {
-    res.send('employer')
+    const employerId = req.user.userId
+    const data = await Job.findAll({where: {employer_id: employerId}})
+    res.status(200).send(data)
 })
 
 const getCandidateApplications = asyncHandler(async (req, res) => {

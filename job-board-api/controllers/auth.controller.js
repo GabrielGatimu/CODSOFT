@@ -13,14 +13,21 @@ const googleAuth = asyncHandler(async (req, res) => {
     const userName = `${first_name} ${last_name}`;
 
     // check the user with the given Google email
-    const existingUser = await User.findOne({where: {email, auth_source: 'google'}});
-    if (existingUser) {
+    const existingUser = await User.findOne({where: {email}});
+    if (existingUser && existingUser.auth_source === 'google') {
         // User exists --> signin
         const {accessToken} = await tokenGenerator(res, existingUser.id, userName, existingUser.email, existingUser.role);
         res.status(201).json({
             userName: userName,
             accessToken: accessToken
         });
+    }else{
+        if (existingUser && existingUser.auth_source !== 'google'){
+            res.status(400)
+            throw new Error('This email was not registered via google. Use email and password to login')
+        }
+        // res.status(409)
+        // throw new Error('Email already registered. Use another email')
     }
 
     // user does not exist --> signup
@@ -189,12 +196,16 @@ const signIn = asyncHandler(async (req, res) => {
 // @ desc ---- Logout user -> destroy cookies
 // route  --POST-- [base_api]/auth/sign-out
 const signOut = asyncHandler(async (req, res) => {
-    res.cookie("x-access-token", "", {
+    res.cookie("x-access-token", " ", {
         httpOnly: true,
+        secure: true,
+        sameSite: "None",
         expires: new Date(0),
     });
-    res.cookie("refresh-token", "", {
+    res.cookie("refresh-token", " ", {
         httpOnly: true,
+        secure: true,
+        sameSite: "None",
         expires: new Date(0),
     });
 

@@ -4,10 +4,12 @@ import {useCreateJobMutation} from '../../state/slices/jobs/jobApi.slice.js';
 import {setEmployerJobs} from '../../state/slices/jobs/job.slice.js';
 import {toast} from 'react-toastify';
 import Loader from '../../components/Loader.jsx';
-import {PlusIcon} from 'lucide-react';
+import { PlusIcon} from 'lucide-react';
+import {useNavigate} from "react-router-dom";
 
 export default function CreateJob() {
     const dispatch = useDispatch();
+    const navigate = useNavigate()
     const [createJobApiCall, {isLoading, error}] = useCreateJobMutation();
 
     const [jobData, setJobData] = useState({
@@ -65,10 +67,9 @@ export default function CreateJob() {
 
         const dataToSend = {...jobData, salary: formattedSalary}
         try {
-            console.log(dataToSend)
             const response = await createJobApiCall(dataToSend).unwrap();
-            console.log(response);
-            // dispatch(setEmployerJobs([response]));
+            toast.success(response.message)
+            dispatch(setEmployerJobs([response.newJob]));
         } catch (err) {
             console.error(err);
             console.error(error)
@@ -79,7 +80,9 @@ export default function CreateJob() {
     return (
         <div>
             <h2>Add Job</h2>
-            {isLoading && <Loader/>}
+            {
+                isLoading && <Loader/>
+            }
             <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
                 {/* Input fields */}
                 <div className="grid grid-cols-1 gap-4">
@@ -221,5 +224,6 @@ export default function CreateJob() {
                 </button>
             </form>
         </div>
-    );
+    )
+
 }
