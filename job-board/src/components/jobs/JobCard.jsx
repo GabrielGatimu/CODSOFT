@@ -9,7 +9,7 @@ import {useToggleBookmarkMutation} from "../../state/slices/jobs/jobApi.slice.js
 import {removeBookmark, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
 import useAuth from "../../hooks/useAuth.js";
 
-function JobCard({job}) {
+function JobCard({job, employerJob}) {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {userInfo} = useAuth()
@@ -21,7 +21,6 @@ function JobCard({job}) {
     const [toggleBookmarkApiCall, {isLoading, error}] = useToggleBookmarkMutation();
 
     const handleBookmark = async () => {
-        console.log(isJobBookmarked)
         try {
             if (!userInfo) {
                 alert('login first in order to save your favourite jobs')
@@ -51,9 +50,10 @@ function JobCard({job}) {
 
     return (
         <div
-            className="job-card bg-slate-200 h-72 w-full px-6 py-2 border border-stone-900 md:border-none dark:border-white rounded-md overflow-hidden">
+            className="job-card bg-slate-200 h-full w-full px-6 py-2 border border-stone-900 md:border-none dark:border-white rounded-md overflow-hidden">
+           <div className="details-section">
             <div className="company-info">
-                <img src={job.companyLogo}/>
+                <img src={job.companyLogo} alt="company logo"/>
                 <h4 className="bg-stone-500 text-slate-50 px-1 h-6 rounded">{job.company}</h4>
             </div>
             <h1>{job.id}</h1>
@@ -75,24 +75,35 @@ function JobCard({job}) {
                 <p>Description: {job.description}</p>
                 <p>Posted on: {job.createdAt}</p>
             </div>
+           </div>
 
-            <div className="action-btns">
+            <div className="action-section action-btns">
                 <button className="btn black-btn" onClick={viewJob}>View</button>
 
-                {userInfo ?
-                    (
-                        isJobBookmarked ?
-                            (<Bookmark className="cursor-pointer fill-indigo-700 text-indigo-700" onClick={handleBookmark}/>)
-                            :
-                            (<Bookmark className="cursor-pointer" onClick={handleBookmark}/>)
-                    ) :
-                    (
-                        <span onClick={handleBookmark} className="cursor-pointer">
+                {/* remove the apply & bookmark when listing employer jobs */}
+                {employerJob ?
+                    <></>
+                    :
+                    <>
+                        {userInfo ?
+                            (
+                                isJobBookmarked ?
+                                    (<Bookmark className="cursor-pointer fill-indigo-700 text-indigo-700"
+                                               onClick={handleBookmark}/>)
+                                    :
+                                    (<Bookmark className="cursor-pointer" onClick={handleBookmark}/>)
+                            ) :
+                            (
+                                <span onClick={handleBookmark} className="cursor-pointer">
                         <Bookmark className="cursor-pointer"/>
                     </span>
-                    )
+                            )
+                        }
+
+                        <button className="btn green-btn">Apply</button>
+                    </>
                 }
-                <button className="btn green-btn">Apply</button>
+
             </div>
         </div>
     );

@@ -21,7 +21,7 @@ import Blog from "./screens/Blog.jsx";
 import Contact from "./screens/Contact.jsx";
 import Account from "./components/layout/Account.jsx";
 import Profile from "./screens/Profile.jsx";
-import NotFound from "./components/NotFound.jsx";
+import ErrorComponent from "./components/error/ErrorComponent.jsx";
 import PrivateRoute from "./components/auth/PrivateRoute.jsx";
 import SignUpSignIn from "./screens/auth/SignUpSignIn.jsx";
 import Sidebar from "./components/navigation/sidebar/Sidebar.jsx";
@@ -31,6 +31,7 @@ import Statistics from "./screens/Statistics.jsx";
 import Applications from "./screens/jobs/Applications.jsx";
 import Favourites from "./screens/jobs/Favourites.jsx";
 import CreateJob from "./screens/jobs/CreateJob.jsx";
+import RequireRole from "./components/auth/RequireRole.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -42,28 +43,36 @@ const router = createBrowserRouter(
             <Route path="/blog" element={<Blog/>}/>
             <Route path="/contact" element={<Contact/>}/>
 
-            <Route path="/signin" element={<SignUpSignIn />} />
+            <Route path="/signin" element={<SignUpSignIn/>}/>
             {/* private pages*/}
-            <Route path="" element={<PrivateRoute/>}>
-                 Account
-                <Route path="" element={<Account/>}>
+            <Route element={<PrivateRoute/>}>
+                Account
+                <Route element={<Account/>}>
                     {/* Profile Page */}
                     <Route path="/dashboard" element={<Dashboard/>}/>
                     <Route path="/profile" element={<Profile/>}/>
 
+                    <Route path="/favourites" element={<Favourites/>}/>
+
                     {/* employer only routes */}
-                    <Route path="/my-jobs" element={<PostedJobs/>}/>
-                    <Route path="/create-job" element={<CreateJob/>}/>
-                    <Route path="/statistics" element={<Statistics/>}/>
+                    <Route element={<RequireRole allowedRole={'employer'}/>}>
+                        <Route path="/my-jobs" element={<PostedJobs/>}/>
+                        <Route path="/create-job" element={<CreateJob/>}/>
+                        <Route path="/statistics" element={<Statistics/>}/>
+                    </Route>
 
                     {/* candidate only routes */}
-                    <Route path="/applications" element={<Applications/>}/>
-                    <Route path="/favourites" element={<Favourites/>}/>
+                    <Route element={<RequireRole allowedRole={'candidate'}/>}>
+                        <Route path="/applications" element={<Applications/>}/>
+                    </Route>
                 </Route>
             </Route>
 
             {/* Not Found Page */}
-            <Route path="*" element={<NotFound/>}/>
+            <Route path="*" element={<ErrorComponent
+                title={'Page Not Found'}
+                description={'Sorry, the page you are looking for cannot be found!\n'}/>}
+            />
         </Route>
     )
 )

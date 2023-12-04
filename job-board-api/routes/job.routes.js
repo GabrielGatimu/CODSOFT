@@ -10,16 +10,17 @@ router.get('/view/:jobId', jobController.viewJob);
 // -- private routes -- //
 router.use(authMiddleware.verifyToken);
 
-// employer routes
+// --- employer routes --- //
+router.get('/employer', authMiddleware.requireEmployer, jobController.getEmployerJobs); // get emp jobs
 router.post('/add', [
+        authMiddleware.requireEmployer,
         inputValidation.jobInputs,
         inputValidation.validate
     ],
     jobController.addJob);
 router.route('/:jobId')
-    .put(jobController.updateJob)
-    .delete(jobController.deleteJob);
-router.get('/employer', jobController.getEmployerJobs);
+    .put(authMiddleware.requireEmployer, jobController.updateJob)
+    .delete(authMiddleware.requireEmployer, jobController.deleteJob);
 
 // candidate routes
 router.put('/candidate/bookmark/:jobId', jobController.bookmarkJob)

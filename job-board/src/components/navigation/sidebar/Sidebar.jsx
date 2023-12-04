@@ -1,14 +1,12 @@
 import {useState} from "react";
 import {
     BarChart3,
-    Bookmark,
-    BookMarked, BookOpenText,
-    Boxes, Database,
+    BookMarked,
+    BookOpenText,
+    Database,
     LayoutDashboard,
     LifeBuoy,
-    Receipt,
-    Settings, User,
-    UserCircle
+    Settings
 } from "lucide-react";
 
 import SidebarMenu, {SidebarItem} from "./SidebarMenu.jsx";
@@ -42,14 +40,14 @@ export default function Sidebar() {
                     <SidebarItem href="/applications" onclick={() => handleClick('/applications')}
                                  icon={<BookOpenText size={20}/>}
                                  text="Applications"/>
-                    <SidebarItem href="/favourites" onclick={() => handleClick('/favourites')}
-                                 icon={<BookMarked size={20}/>}
-                                 text="Favourites"/>
                 </>
             }
+            <SidebarItem href="/favourites" onclick={() => handleClick('/favourites')}
+                         icon={<BookMarked size={20}/>}
+                         text="Favourites"/>
 
             <hr className="mt-8"/>
-            <SidebarItem href="/profile" onclick={() => handleClick('/profile')} icon={<User size={20}/>}
+            <SidebarItem href="/profile" onclick={() => handleClick('/profile')} icon={<Settings size={20}/>}
                          text="My-Profile"
                          alert
             />
