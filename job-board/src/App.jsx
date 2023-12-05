@@ -15,10 +15,10 @@ function App() {
             <section className="min-h-screen">
                 <Outlet/>
             </section>
+            <BackToTopButton />
             <footer>
                 <Footer/>
             </footer>
-            <BackToTopButton />
         </main>
     )
 }
