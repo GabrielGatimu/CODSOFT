@@ -22,6 +22,7 @@ export default function JobListing() {
     const {userInfo} = useAuth()
 
     const jobs = useSelector((state) => state.jobs.jobList);
+    const bookmarks = useSelector((state) => state.jobs.bookmarkedJobs);
     const [filteredJobs, setFilteredJobs] = useState([])
 
     const [getAllJobsApiCall, {isLoading: getJobsLoading, error: getJobsError}] = useGetJobsMutation();
@@ -48,7 +49,7 @@ export default function JobListing() {
         if (bookmarksFetchedRef.current) return;
         bookmarksFetchedRef.current = true;
 
-        if (userInfo) {
+        if (userInfo && bookmarks.length === 0) {
             fetchBookmarks()
         }
 
