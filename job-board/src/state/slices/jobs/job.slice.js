@@ -25,10 +25,7 @@ const jobSlice = createSlice({
             const jobId = action.payload
             state.bookmarkedJobs = state.bookmarkedJobs.filter(bookmark => !(bookmark.id === jobId))
         },
-        // createJob: (state, action) => {
-        //     state.employerJobs = [...state.employerJobs, ...action.payload]
-        // },
-        removeAllUserJobsData: (state, action) => {
+       removeAllUserJobsData: (state, action) => {
             state.bookmarkedJobs = []
             state.employerJobs = []
         }

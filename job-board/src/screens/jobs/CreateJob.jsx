@@ -51,7 +51,6 @@ export default function CreateJob() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(jobData)
         setSalaryError('')
 
         let formattedSalary = ''

@@ -62,7 +62,7 @@ export default function JobDetail() {
                     <p>Posted on: {job.createdAt}</p>
 
                     {/* Apply button */}
-                    {userInfo.userId === job.employer_id ? '' :
+                    {userInfo && (userInfo || userInfo.userId) === job.employer_id ? '' :
                         <button className="btn green-btn" onClick={handleApplyClick}>Apply</button>
                     }
                 </div>
