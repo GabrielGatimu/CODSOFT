@@ -4,15 +4,15 @@ const {authMiddleware, inputValidation} = require('../middleware');
 
 // -- public routes -- //
 router.get('/', jobController.getJobs);
-router.get('/view/:jobId', jobController.viewJob);
+router.get('/:jobId', jobController.viewJob);
 
 // -- private routes -- //
 router.use(authMiddleware.verifyToken);
 
-router.get('/bookmarks', jobController.getUserBookmarks);
+router.get('/view/bookmarks', jobController.getUserBookmarks);
 
 // --- employer only routes --- //
-router.get('/employer', authMiddleware.requireEmployer, jobController.getEmployerJobs); // get emp jobs
+router.get('/my-jobs', authMiddleware.requireEmployer, jobController.getEmployerJobs); // get emp jobs
 router.post('/add', [
         authMiddleware.requireEmployer,
         inputValidation.jobInputs,
@@ -20,12 +20,11 @@ router.post('/add', [
     ],
     jobController.addJob);
 router.route('/:jobId')
-    .get(jobController.viewJob)
     .put(authMiddleware.requireEmployer, jobController.updateJob)
     .delete(authMiddleware.requireEmployer, jobController.deleteJob);
 
 // candidate only routes
-router.put('/candidate/bookmark/:jobId', jobController.bookmarkJob)
-router.get('/candidate', jobController.getCandidateApplications);
+router.put('/bookmark/:jobId', jobController.bookmarkJob)
+router.get('/applications', jobController.getCandidateApplications);
 
 module.exports = router;

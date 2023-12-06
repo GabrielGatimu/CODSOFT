@@ -16,6 +16,7 @@ function JobCard({job, employerJob}) {
     const bookmarks = useSelector(state => state.jobs.bookmarkedJobs)
     let isJobBookmarked = bookmarks.some((bookmarkedJob) => bookmarkedJob.id === job.id)
 
+    // console.log(employerJob)
     const viewJob = () => {
         navigate(`/jobs/view/${job.id}`)
     }
@@ -54,7 +55,7 @@ function JobCard({job, employerJob}) {
                     <img src={job.companyLogo} alt="company logo"/>
                     <h4 className="bg-stone-500 text-slate-50 px-1 h-6 rounded">{job.company}</h4>
                 </div>
-                <h1>{job.id}</h1>
+                {/*<h1>{job.id}</h1>*/}
                 <h3 className="text-2xl font-extrabold">{job.title}</h3>
                 <p className="text-stone-600 my-2">{job.salary}</p>
                 <p className="">{job.skills.map((skill) => (
@@ -78,7 +79,7 @@ function JobCard({job, employerJob}) {
             <div className="action-section action-btns">
                 <button className="btn black-btn" onClick={viewJob}>View</button>
 
-                {/* remove the apply & bookmark when listing employer jobs */}
+                {/* remove the apply button if job was posted by user */}
                 {employerJob ?
                     <></>
                     :

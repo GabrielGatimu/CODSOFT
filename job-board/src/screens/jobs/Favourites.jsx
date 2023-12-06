@@ -25,7 +25,7 @@ export default function Favourites() {
             // update state & bookmark datasource list
             if (bookmarkResponse.length > 0) {
                 const extractedJobs = bookmarkResponse.map((item) => item.job)
-                console.log(extractedJobs)
+
                 dispatch(setUserBookmarks(extractedJobs))
                 setFilteredBookmarks(extractedJobs)
             } else {
@@ -60,7 +60,7 @@ export default function Favourites() {
 
                 {filteredBookmarks.length > 0 ? (
                     filteredBookmarks.map((bookmark) => (
-                        <JobCard key={bookmark.id} job={bookmark} employerJob={isEmployer}/>
+                        <JobCard key={bookmark.id} job={bookmark} employerJob={isEmployer === 'employer' ? true : false}/>
                     ))
                 ) : (
                     <p>You have not bookmarked any jobs</p>

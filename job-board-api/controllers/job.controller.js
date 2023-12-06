@@ -74,13 +74,16 @@ const addJob = asyncHandler(async (req, res) => {
 // route  --POST-- [base_api]/jobs/:jobId
 const viewJob = asyncHandler(async (req, res) => {
     const {jobId} = req.params
-    const job = await Job.findOne({where: {id: jobId}})
+    console.log('getting job')
+    console.log(typeof jobId)
+    const job = await Job.findOne({where: {id: +(jobId)}})
+
     if (!job) {
-        res.status(404).json({
-            message: "Job not found / Employer might have removed it"
+       return res.status(404).json({
+            message: "Job not found or Employer might have removed it"
         })
     }
-    res.status(200).json({job})
+    res.status(200).json(job)
 })
 
 const updateJob = asyncHandler(async (req, res) => {
