@@ -10,7 +10,7 @@ const routes = (app, base_api) => {
     router.use('/request', requestRoutes)
     router.use('/auth', authRoutes)
     router.use('/jobs', jobRoutes)
-    router.use('/user', userRoutes)
+    router.use('/u', userRoutes)
 
     app.use(`${base_api}`, router)
 }

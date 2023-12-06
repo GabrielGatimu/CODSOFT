@@ -1,5 +1,5 @@
 import { apiSlice } from '../api.slice.js'
-const PROFILE_URL = "/user/profile";
+const PROFILE_URL = "/u/profile";
 
 export const profileApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({

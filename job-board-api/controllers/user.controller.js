@@ -4,14 +4,29 @@ const {User} = require("../models");
 
 // ---- Get user profile
 const getUserProfile = asyncHandler(async (req, res) => {
-    res.status(200).json(req.user);
+    const userId = req.user.userId;
+    const user = await User.findByPk(userId)
+
+    if (!user){
+        res.status(404)
+        throw new Error('User not found')
+    }
+    res.status(200).json(user);
 });
 
 // ---- Update user profile
 const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findByPk(req.user.id);
+    const userId = req.user.userId;
+    const user = await User.findByPk(userId);
 
     if (user) {
+        if(req.body.email && (req.body.email !== user.email)){
+            const existingEmail = await User.findOne({where: {email: req.body.email}})
+            if (existingEmail){
+                res.status(409)
+                throw new Error('Such EMAIL is already in use. Use another one')
+            }
+        }
         user.first_name = req.body.first_name || user.first_name;
         user.last_name = req.body.last_name || user.last_name;
         user.email = req.body.email || user.email;
@@ -33,7 +48,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
 // ---- Delete user profile
 const deleteUserProfile = asyncHandler(async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const user = await User.findByPk(userId);
 
     if (!user) {
