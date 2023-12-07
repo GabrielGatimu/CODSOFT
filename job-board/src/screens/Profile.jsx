@@ -4,10 +4,12 @@ import {toast} from "react-toastify";
 import {useGetUserMutation, useUpdateUserMutation} from "../state/slices/profile/profileApi.slice.js";
 import Loader from "../components/Loader.jsx";
 import {setCredentials} from "../state/slices/auth/auth.slice.js";
+import {useNavigate} from "react-router-dom";
 
 export default function Profile() {
     const dataFetchedRef = useRef(false)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const [getProfile, {isLoading: getProfileLoading, error: getProfileError}] = useGetUserMutation()
     const [updateProfile, {isLoading: updateProfileLoading, error: updateProfileError}] = useUpdateUserMutation()
     const [successMessage, setSuccessMessage] = useState('')
@@ -47,14 +49,14 @@ export default function Profile() {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        console.log(userData)
         if (userData.password !== userData.confirm_password) {
             toast.error("Passwords do not match");
         } else {
 
             try {
                 const response = await updateProfile(userData).unwrap();
-                dispatch(setCredentials({response}))
+                console.log(response)
+                // dispatch(setCredentials({response}))
                 toast.success("Profile Updated");
             } catch (err) {
                 toast.error(err?.data?.message || err.error);
@@ -65,7 +67,7 @@ export default function Profile() {
 
 
     return (
-        <div className="flex h-full items-center justify-center border border-red-500">
+        <div className="flex h-full items-center justify-center rounded border border-indigo-600">
             {getProfileError && <p className="flex items-center justify-center w-full p-4 rounded  text-red-500">
                 {getProfileError.data.message}
             </p>
@@ -210,13 +212,21 @@ export default function Profile() {
                             {successMessage}
                         </p>
                         :
-                        <button
-                            type="submit"
-                            className={`w-full rounded-md h-10 bg-gradient-to-r from-indigo-800 to-indigo-500 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-800 text-white border border-indigo-800`}
-                            disabled={updateProfileLoading}
-                        >
-                            Update
-                        </button>
+                        <div className="flex items-center space-x-2 justify-between">
+                            <button
+                                type="submit"
+                                className={`w-full rounded-md h-10 bg-gradient-to-r from-indigo-800 to-indigo-500 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-800 text-white border border-indigo-800`}
+                                disabled={updateProfileLoading}
+                            >
+                                Update
+                            </button>
+                            <button
+                                onClick={() => navigate('/dashboard')}
+                                className={`w-full rounded-md h-10 bg-gradient-to-r from-red-700 to-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-700 text-white border border-red-500`}
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     }
                 </form>
             }
