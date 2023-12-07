@@ -16,7 +16,6 @@ function JobCard({job, userIsEmployer}) {
     const bookmarks = useSelector(state => state.jobs.bookmarkedJobs)
     let isJobBookmarked = bookmarks.some((bookmarkedJob) => bookmarkedJob.id === job.id)
 
-    // console.log(employerJob)
     const viewJob = () => {
         navigate(`/jobs/view/${job.id}`)
     }
@@ -94,6 +93,7 @@ function JobCard({job, userIsEmployer}) {
                         ) : (
                             <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
                         )}
+
                         {!userIsEmployer && <button className="btn green-btn">Apply</button>}
                     </>
                     :

@@ -20,7 +20,7 @@ export default function JobDetail() {
     const jobs = useSelector((state) => state.jobs.jobList)
     const [getJobApiCall, {isLoading, error}] = useGetJobMutation()
 
-    // const {BookmarkIcon, isJobBookmarked} = useBookmark(job)
+        // const {BookmarkIcon, isJobBookmarked} = useBookmark(job)
 
     useEffect(() => {
         if (fetchJobRef.current) return
@@ -94,6 +94,7 @@ export default function JobDetail() {
                                     <p>Posted on: {job.createdAt}</p>
 
                                     {/* Apply button */}
+
                                     {userInfo &&
                                         <div className="flex items center justify-between">
                                             {

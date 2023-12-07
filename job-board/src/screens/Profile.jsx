@@ -1,14 +1,11 @@
 import {useEffect, useState, useRef} from "react";
-import {useDispatch} from "react-redux";
+import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {useGetUserMutation, useUpdateUserMutation} from "../state/slices/profile/profileApi.slice.js";
 import Loader from "../components/Loader.jsx";
-import {setCredentials} from "../state/slices/auth/auth.slice.js";
-import {useNavigate} from "react-router-dom";
 
 export default function Profile() {
     const dataFetchedRef = useRef(false)
-    const dispatch = useDispatch()
     const navigate = useNavigate()
     const [getProfile, {isLoading: getProfileLoading, error: getProfileError}] = useGetUserMutation()
     const [updateProfile, {isLoading: updateProfileLoading, error: updateProfileError}] = useUpdateUserMutation()
@@ -55,13 +52,11 @@ export default function Profile() {
 
             try {
                 const response = await updateProfile(userData).unwrap();
-                console.log(response)
-                // dispatch(setCredentials({response}))
-                toast.success("Profile Updated");
+                toast.success(response.message);
+                navigate('/dashboard')
             } catch (err) {
                 toast.error(err?.data?.message || err.error);
             }
-
         }
     }
 
