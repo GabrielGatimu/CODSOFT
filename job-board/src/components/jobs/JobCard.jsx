@@ -9,7 +9,7 @@ import {useToggleBookmarkMutation} from "../../state/slices/jobs/jobApi.slice.js
 import {removeBookmark, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
 import useAuth from "../../hooks/useAuth.js";
 
-function JobCard({job, employerJob}) {
+function JobCard({job, userIsEmployer}) {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {userInfo} = useAuth()
@@ -76,33 +76,33 @@ function JobCard({job, employerJob}) {
                 </div>
             </div>
 
+            {/* -- this section hides apply button if user is an employer : (employers cannot apply for jobs)*/}
             <div className="action-section action-btns">
-                <button className="btn black-btn" onClick={viewJob}>View</button>
+                <button className="btn black-btn" onClick={viewJob}>
+                    View
+                </button>
 
-                {/* remove the apply button if job was posted by user */}
-                {employerJob ?
-                    <></>
-                    :
+                {/* check if user is logged in */}
+                {userInfo ?
                     <>
-                        {userInfo ?
-                            (
-                                isJobBookmarked ?
-                                    (<Bookmark className="cursor-pointer fill-indigo-700 text-indigo-700"
-                                               onClick={handleBookmark}/>)
-                                    :
-                                    (<Bookmark className="cursor-pointer" onClick={handleBookmark}/>)
-                            ) :
-                            (
-                                <span onClick={handleBookmark} className="cursor-pointer">
-                        <Bookmark className="cursor-pointer"/>
-                    </span>
-                            )
-                        }
-
+                        {/* employer shows View and Bookmark buttons only */}
+                        {isJobBookmarked ? (
+                            <Bookmark
+                                className="cursor-pointer fill-indigo-700 text-indigo-700"
+                                onClick={handleBookmark}
+                            />
+                        ) : (
+                            <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
+                        )}
+                        {!userIsEmployer && <button className="btn green-btn">Apply</button>}
+                    </>
+                    :
+                    // User is not logged in, show all buttons
+                    <>
+                        <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
                         <button className="btn green-btn">Apply</button>
                     </>
                 }
-
             </div>
         </div>
     );

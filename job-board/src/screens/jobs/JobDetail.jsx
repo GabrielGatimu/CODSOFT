@@ -8,6 +8,9 @@ import {useEffect, useRef, useState} from "react";
 import {toast} from "react-toastify";
 import Loader from "../../components/Loader.jsx";
 
+import useBookmark from "../../hooks/useBookmark.jsx";
+import {Bookmark} from "lucide-react";
+
 export default function JobDetail() {
     const fetchJobRef = useRef(false);
     const navigate = useNavigate();
@@ -15,8 +18,9 @@ export default function JobDetail() {
     const {userInfo} = useAuth()
     const [job, setJob] = useState(null)
     const jobs = useSelector((state) => state.jobs.jobList)
-
     const [getJobApiCall, {isLoading, error}] = useGetJobMutation()
+
+    // const {BookmarkIcon, isJobBookmarked} = useBookmark(job)
 
     useEffect(() => {
         if (fetchJobRef.current) return
@@ -90,8 +94,17 @@ export default function JobDetail() {
                                     <p>Posted on: {job.createdAt}</p>
 
                                     {/* Apply button */}
-                                    {userInfo && (userInfo || userInfo.userId) === job.employer_id ? '' :
-                                        <button className="btn green-btn" onClick={handleApplyClick}>Apply</button>
+                                    {userInfo &&
+                                        <div className="flex items center justify-between">
+                                            {
+                                                userInfo.role !== 'employer' &&
+                                                < button
+                                                    className="btn green-btn"
+                                                    onClick={handleApplyClick}> Apply < /button>
+                                            }
+                                            <Bookmark />
+                                            {/*<BookmarkIcon />*/}
+                                        </div>
                                     }
                                 </div>
                             )

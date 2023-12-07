@@ -35,6 +35,7 @@ export default function SignUpSignIn() {
         setSuccessMessage('') // clear success message -> avoids unambigous messages
         setState(prevState => !prevState);
     };
+
     const [successMessage, setSuccessMessage] = useState('')
 
     const [formData, setFormData] = useState({

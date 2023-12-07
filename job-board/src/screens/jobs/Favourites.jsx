@@ -16,7 +16,8 @@ export default function Favourites() {
     const [getBookmarksApiCall, {isLoading, error}] = useGetUserBookmarksMutation();
     const dispatch = useDispatch();
     const {userInfo} = useAuth();
-    const isEmployer = userInfo.role;
+    const isEmployer = userInfo.role === 'employer';
+    console.log(isEmployer)
 
     const fetchBookmarks = async () => {
         try {
@@ -60,7 +61,7 @@ export default function Favourites() {
 
                 {filteredBookmarks.length > 0 ? (
                     filteredBookmarks.map((bookmark) => (
-                        <JobCard key={bookmark.id} job={bookmark} employerJob={isEmployer === 'employer' ? true : false}/>
+                        <JobCard key={bookmark.id} job={bookmark} userIsEmployer={isEmployer}/>
                     ))
                 ) : (
                     <p>You have not bookmarked any jobs</p>
