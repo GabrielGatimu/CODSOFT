@@ -13,14 +13,14 @@ function JobCard({job, userIsEmployer}) {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {userInfo} = useAuth()
+    // bookmark
+    const [toggleBookmarkApiCall, {isLoading, error}] = useToggleBookmarkMutation();
     const bookmarks = useSelector(state => state.jobs.bookmarkedJobs)
     let isJobBookmarked = bookmarks.some((bookmarkedJob) => bookmarkedJob.id === job.id)
 
     const viewJob = () => {
         navigate(`/jobs/view/${job.id}`)
     }
-
-    const [toggleBookmarkApiCall, {isLoading, error}] = useToggleBookmarkMutation();
 
     const handleBookmark = async () => {
         try {
@@ -45,6 +45,7 @@ function JobCard({job, userIsEmployer}) {
             toast.error(error)
         }
     }
+
 
     return (
         <div

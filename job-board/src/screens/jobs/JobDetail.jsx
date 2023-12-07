@@ -1,26 +1,35 @@
+import {useEffect, useRef, useState} from "react";
 import {Link, useNavigate, useParams} from 'react-router-dom';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {toast} from "react-toastify";
+import {Bookmark} from "lucide-react";
 
 import '../../styles/custom.css'
 import useAuth from "../../hooks/useAuth.js";
-import {useGetJobMutation} from "../../state/slices/jobs/jobApi.slice.js";
-import {useEffect, useRef, useState} from "react";
-import {toast} from "react-toastify";
+import {useGetJobMutation, useToggleBookmarkMutation} from "../../state/slices/jobs/jobApi.slice.js";
 import Loader from "../../components/Loader.jsx";
-
-import useBookmark from "../../hooks/useBookmark.jsx";
-import {Bookmark} from "lucide-react";
+import {removeBookmark, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
 
 export default function JobDetail() {
     const fetchJobRef = useRef(false);
+    const dispatch = useDispatch()
     const navigate = useNavigate();
     const {jobId} = useParams();
+    // user
     const {userInfo} = useAuth()
+    const isUserEmployer = userInfo.role === 'employer'
+
+    // job
     const [job, setJob] = useState(null)
     const jobs = useSelector((state) => state.jobs.jobList)
-    const [getJobApiCall, {isLoading, error}] = useGetJobMutation()
-
-        // const {BookmarkIcon, isJobBookmarked} = useBookmark(job)
+    const [getJobApiCall, {isLoading: getJobLoading, error: getJobError}] = useGetJobMutation()
+    //  bookmark
+    const [toggleBookmarkApiCall, {
+        isLoading: getBookmarkLoading,
+        error: getBookmarkError
+    }] = useToggleBookmarkMutation();
+    const bookmarks = useSelector(state => state.jobs.bookmarkedJobs)
+    const [isJobBookmarked, setIsJobBookmarked] = useState(false)
 
     useEffect(() => {
         if (fetchJobRef.current) return
@@ -31,12 +40,40 @@ export default function JobDetail() {
             getJob()
         } else {
             setJob(stateJob)
+            const checkBookmark = bookmarks.some((bookmarkedJob) => bookmarkedJob.id === stateJob.id)
+            setIsJobBookmarked(checkBookmark)
         }
     }, []);
+
+    const handleBookmark = async () => {
+        try {
+            if (!userInfo) {
+                alert('login first in order to save your favourite jobs')
+                return
+            }
+            if (!isJobBookmarked) {
+                // save bookmark to DB
+                const response = await toggleBookmarkApiCall(job.id).unwrap()
+                dispatch(setUserBookmarks([job]))
+                setIsJobBookmarked(true)
+                toast.success(response.message)
+            } else {
+                // remove bookmark from DB
+                const response = await toggleBookmarkApiCall(job.id).unwrap()
+                dispatch(removeBookmark(job.id))
+                setIsJobBookmarked(false)
+                toast.success(response.message)
+            }
+        } catch (e) {
+            console.log(e)
+            toast.error(getBookmarkError)
+        }
+    }
 
     const getJob = async () => {
         try {
             const jobData = await getJobApiCall(jobId).unwrap()
+            console.log(jobData)
             setJob(jobData)
         } catch (e) {
             // console.error(e)
@@ -64,7 +101,7 @@ export default function JobDetail() {
             }
 
             <div className="block w-full md:flex justify-center">
-                {isLoading ?
+                {getJobLoading ?
                     <><Loader/> <p>loading...</p></>
                     :
                     ((job !== null) ?
@@ -93,24 +130,32 @@ export default function JobDetail() {
                                     <p>Description: {job.description}</p>
                                     <p>Posted on: {job.createdAt}</p>
 
-                                    {/* Apply button */}
-
-                                    {userInfo &&
-                                        <div className="flex items center justify-between">
-                                            {
-                                                userInfo.role !== 'employer' &&
-                                                < button
-                                                    className="btn green-btn"
-                                                    onClick={handleApplyClick}> Apply < /button>
+                                    {/* Apply & Bookmark button */}
+                                    {userInfo ?
+                                        <>
+                                            {isJobBookmarked ? (
+                                                <Bookmark
+                                                    className="cursor-pointer fill-indigo-700 text-indigo-700"
+                                                    onClick={handleBookmark}
+                                                />
+                                            ) : (
+                                                <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
+                                            )
                                             }
-                                            <Bookmark />
-                                            {/*<BookmarkIcon />*/}
-                                        </div>
+                                            {!isUserEmployer && <button className="btn green-btn">Apply</button>}
+                                        </>
+                                        :
+                                        <>
+                                            <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
+                                            <button onClick={handleApplyClick} className="btn green-btn">Apply</button>
+                                        </>
                                     }
                                 </div>
                             )
                             : (
-                                <p>Job not found or Employer might have removed it</p>
+                                <p>Job not found or Employer might have removed it
+                                    {getJobError && <>{getJobError}</>}
+                                </p>
                             )
                     )
                 }
