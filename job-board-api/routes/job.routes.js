@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const {jobController} = require('../controllers');
-const {authMiddleware, inputValidation} = require('../middleware');
+const {authMiddleware, fileMiddleware, inputValidation} = require('../middleware');
 
 // -- public routes -- //
 router.get('/', jobController.getJobs);
@@ -25,6 +25,7 @@ router.route('/:jobId')
 
 // candidate only routes
 router.put('/bookmark/:jobId', jobController.bookmarkJob)
+router.post('/apply', fileMiddleware.upload , jobController.applyJob)
 router.get('/applications', jobController.getCandidateApplications);
 
 module.exports = router;

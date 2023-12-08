@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const {Job, Bookmark} = require('../models')
+const {Job, Bookmark, JobApplication} = require('../models')
 
 // @ desc ---- Get Jobs  @ access -- all
 // route  --POST-- [base_api]/jobs
@@ -139,6 +139,22 @@ const getUserBookmarks = asyncHandler(async (req, res) => {
     res.status(200).send(bookmarkedJobs);
 });
 
+// @ desc ---- job application  @ access -- candidate
+// route  --POST-- [base_api]/jobs/:jobId/apply
+const applyJob = asyncHandler(async (req, res) => {
+    const user_id = req.user.userId
+    const job_id = 1
+    const resumePath = req.file.filename
+
+    const application = await JobApplication.create({
+        user_id, job_id, resumePath
+    })
+    if (!application){
+        res.status(500)
+        throw new Error('failed to upload resume')
+    }
+    res.status(201).json({message: 'application completed successfully', details: application})
+})
 module.exports = {
     getJobs,
     addJob,
@@ -148,5 +164,6 @@ module.exports = {
     getEmployerJobs,
     getCandidateApplications,
     bookmarkJob,
-    getUserBookmarks
+    getUserBookmarks,
+    applyJob
 }

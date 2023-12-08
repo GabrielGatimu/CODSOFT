@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {useDispatch, useSelector} from "react-redux";
 import {Bookmark} from "lucide-react";
@@ -8,6 +8,7 @@ import './JobCard.css'
 import {useToggleBookmarkMutation} from "../../state/slices/jobs/jobApi.slice.js";
 import {removeBookmark, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
 import useAuth from "../../hooks/useAuth.js";
+import Overlay from "../error/Overlay.jsx";
 
 function JobCard({job, userIsEmployer}) {
     const navigate = useNavigate()
@@ -26,7 +27,13 @@ function JobCard({job, userIsEmployer}) {
         try {
             if (!userInfo) {
                 alert('login first in order to save your favourite jobs')
-                return
+                // return (
+                //     <Overlay>
+                //         <div className="flex items-center justify-center w-full">
+                //             <Link to={'/signin'}>Login Here</Link>
+                //         </div>
+                //     </Overlay>
+                // )
             }
             if (!isJobBookmarked) {
                 // save bookmark to DB
@@ -42,10 +49,10 @@ function JobCard({job, userIsEmployer}) {
             }
         } catch (e) {
             console.log(e)
+            {e?.status === 403 && toast.error('login to save your favourite jobs')}
             toast.error(error)
         }
     }
-
 
     return (
         <div
@@ -101,7 +108,7 @@ function JobCard({job, userIsEmployer}) {
                     // User is not logged in, show all buttons
                     <>
                         <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
-                        <button className="btn green-btn">Apply</button>
+                        <button onClick={viewJob} className="btn green-btn">Apply</button>
                     </>
                 }
             </div>

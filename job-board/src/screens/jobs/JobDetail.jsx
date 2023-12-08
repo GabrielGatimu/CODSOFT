@@ -17,7 +17,7 @@ export default function JobDetail() {
     const {jobId} = useParams();
     // user
     const {userInfo} = useAuth()
-    const isUserEmployer = userInfo.role === 'employer'
+    const isUserEmployer = userInfo && userInfo.role === 'employer'
 
     // job
     const [job, setJob] = useState(null)
@@ -86,7 +86,10 @@ export default function JobDetail() {
     };
 
     const handleApplyClick = () => {
-        alert('Apply to the job');
+        if (!userInfo){
+          return  alert('login first in order to apply for a job')
+        }
+        navigate('/apply')
     };
 
     return (
@@ -131,25 +134,30 @@ export default function JobDetail() {
                                     <p>Posted on: {job.createdAt}</p>
 
                                     {/* Apply & Bookmark button */}
-                                    {userInfo ?
-                                        <>
-                                            {isJobBookmarked ? (
-                                                <Bookmark
-                                                    className="cursor-pointer fill-indigo-700 text-indigo-700"
-                                                    onClick={handleBookmark}
-                                                />
-                                            ) : (
-                                                <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
+                                    <>
+                                        {userInfo ?
+                                            (<div className="flex items-center justify-between">
+                                                {isJobBookmarked ? (
+                                                    <Bookmark
+                                                        className="cursor-pointer fill-indigo-700 text-indigo-700"
+                                                        onClick={handleBookmark}
+                                                    />
+                                                ) : (
+                                                    <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
+                                                )
+                                                }
+                                                {!isUserEmployer && <button onClick={handleApplyClick} className="btn green-btn">Apply</button>}
+                                            </div>)
+                                            :
+                                            (<div className="flex items-center justify-between">
+                                                    <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
+                                                    <button onClick={handleApplyClick} className="btn green-btn">Apply
+                                                    </button>
+                                                </div>
                                             )
-                                            }
-                                            {!isUserEmployer && <button className="btn green-btn">Apply</button>}
-                                        </>
-                                        :
-                                        <>
-                                            <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
-                                            <button onClick={handleApplyClick} className="btn green-btn">Apply</button>
-                                        </>
-                                    }
+                                        }
+                                    </>
+                                    {isUserEmployer && <p className="p-2 my-4 text-center leading-loose rounded bg-gradient-to-r from-amber-600 to-amber-500 text-white">Sorry, employers are not permitted to apply for jobs <br/> Create a <span className="px-1 rounded bg-stone-700">candidate account</span> to apply for this job</p>}
                                 </div>
                             )
                             : (
