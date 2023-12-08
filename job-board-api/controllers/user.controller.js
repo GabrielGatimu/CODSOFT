@@ -5,7 +5,13 @@ const {User} = require("../models");
 // ---- Get user profile
 const getUserProfile = asyncHandler(async (req, res) => {
     const userId = req.user.userId;
-    const user = await User.findByPk(userId)
+    const user = await User.findByPk(userId, {
+        attributes: {
+            exclude: [
+                "password"
+            ]
+        }
+    })
 
     if (!user){
         res.status(404)
