@@ -32,6 +32,7 @@ import Applications from "./screens/jobs/Applications.jsx";
 import Favourites from "./screens/jobs/Favourites.jsx";
 import CreateJob from "./screens/jobs/CreateJob.jsx";
 import RequireRole from "./components/auth/RequireRole.jsx";
+import Apply from "./screens/jobs/Apply.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -46,7 +47,12 @@ const router = createBrowserRouter(
             <Route path="/signin" element={<SignUpSignIn/>}/>
             {/* private pages*/}
             <Route element={<PrivateRoute/>}>
-                Account
+                {/* candidate only route */}
+                <Route element={<RequireRole allowedRole={'candidate'}/>}>
+                    <Route path="/apply" element={<Apply/>}/>
+                </Route>
+
+                {/* routes with account layout */}
                 <Route element={<Account/>}>
                     {/* Profile Page */}
                     <Route path="/dashboard" element={<Dashboard/>}/>
@@ -63,6 +69,7 @@ const router = createBrowserRouter(
 
                     {/* candidate only routes */}
                     <Route element={<RequireRole allowedRole={'candidate'}/>}>
+                        <Route path="/apply" element={<Apply/>}/>
                         <Route path="/applications" element={<Applications/>}/>
                     </Route>
                 </Route>

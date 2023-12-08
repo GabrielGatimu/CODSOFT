@@ -25,12 +25,14 @@ const {User} = require('./user.model')(sequelize, Sequelize)
 const {Job} = require('./job.model')(sequelize, Sequelize)
 const {Token} = require('./token.model')(sequelize, Sequelize)
 const {Bookmark} = require('./bookmark.model')(sequelize, Sequelize)
+const {JobApplication}= require('./jobApplication.model')(sequelize, Sequelize)
 
 // -- associations -- //
 // user(employer) --> job
 User.hasMany(Job, {foreignKey: 'employer_id'})
 Job.belongsTo(User, {foreignKey: 'employer_id'})
 
+// --- Bookmarks --- //
 // user --> bookmark
 User.hasMany(Bookmark, {foreignKey: 'user_id'})
 Bookmark.belongsTo(User, {foreignKey: 'user_id'})
@@ -39,6 +41,24 @@ Bookmark.belongsTo(User, {foreignKey: 'user_id'})
 Job.hasMany(Bookmark, {foreignKey: 'job_id'})
 Bookmark.belongsTo(Job, {foreignKey: 'job_id'})
 
-Object.assign(db, {User, Job, Token, Bookmark})
+// --- Applications --- //
+// user --> job application
+User.hasMany(JobApplication, { foreignKey: 'user_id' });
+// job application --> user
+JobApplication.belongsTo(User, {
+        foreignKey: 'user_id',
+        onDelete: 'CASCADE',
+});
+
+// job --> job application
+Job.hasMany(JobApplication, { foreignKey: 'job_id' });
+// job application --> job
+JobApplication.belongsTo(Job, {
+        foreignKey: 'job_id',
+        onDelete: 'CASCADE',
+});
+
+
+Object.assign(db, {User, Job, Token, Bookmark, JobApplication})
 
 module.exports = db
