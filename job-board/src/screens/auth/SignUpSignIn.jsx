@@ -6,7 +6,6 @@ import {toast} from "react-toastify";
 import {jwtDecode} from "jwt-decode";
 
 import '../../styles/custom.css'
-import './SignUpSignIn.css'
 import useAuth from "../../hooks/useAuth.js";
 import {useGoogleMutation, useSigninMutation, useSignupMutation} from "../../state/slices/auth/authApi.slice.js";
 import {setCredentials} from "../../state/slices/auth/auth.slice.js";
@@ -24,7 +23,6 @@ export default function SignUpSignIn() {
     // -- API calls
     let [signupAPICall, {isLoading: signUpLoading, error: signUpError}] = useSignupMutation()
     const [signinAPICall, {isLoading: signInLoading, error: signInError}] = useSigninMutation()
-
     const [googleAuthAPICall, {googleError}] = useGoogleMutation()
 
     //  -- form state
@@ -36,8 +34,6 @@ export default function SignUpSignIn() {
         setState(prevState => !prevState);
     };
 
-    const [successMessage, setSuccessMessage] = useState('')
-
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
@@ -45,6 +41,8 @@ export default function SignUpSignIn() {
         password: "",
         confirm_password: ""
     });
+
+    const [successMessage, setSuccessMessage] = useState('')
     const [showPassword, setShowPassword] = useState(false)
 
     const handleInputChange = (e) => {
@@ -69,6 +67,7 @@ export default function SignUpSignIn() {
                 }
                 response = await signupAPICall(formData).unwrap()
                 setSuccessMessage(response.message)
+                setFormData({})
                 return
             }
 

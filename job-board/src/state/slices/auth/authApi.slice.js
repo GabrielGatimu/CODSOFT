@@ -18,8 +18,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
             }),
         }),
         verifyUser: builder.mutation({
-            query: (confirmationCode) => ({
-                url: `${AUTH_URL}/verify/${confirmationCode}`,
+            query: ( verificationCode) => ({
+                url: `${AUTH_URL}/verify-email/${verificationCode}`,
                 method: "POST",
             }),
         }),
@@ -44,10 +44,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
             }),
         }),
         resetPassword: builder.mutation({
-            query: (accessCode, data) => ({
-                url: `${AUTH_URL}/reset-password/${accessCode}`,
+            query: (data ) => ({
+                url: `${AUTH_URL}/reset-password/${data.resetToken}`,
                 method: "PUT",
-                body: data,
+                body: data.formData,
             }),
         }),
     }),

@@ -14,25 +14,30 @@ import store from "./state/store.js";
 import App from './App.jsx'
 import './styles/tailwind.css'
 
+import ErrorComponent from "./components/error/ErrorComponent.jsx";
+// -- screens -- //
 import HomePage from "./screens/HomePage.jsx";
 import JobListing from "./screens/jobs/JobListing.jsx";
 import JobDetail from "./screens/jobs/JobDetail.jsx";
+import Apply from "./screens/jobs/Apply.jsx";
 import Blog from "./screens/Blog.jsx";
 import Contact from "./screens/Contact.jsx";
-import Account from "./components/layout/Account.jsx";
+
+import Account from "./components/layout/Account.jsx"; // account layout
 import Profile from "./screens/Profile.jsx";
-import ErrorComponent from "./components/error/ErrorComponent.jsx";
-import PrivateRoute from "./components/auth/PrivateRoute.jsx";
-import SignUpSignIn from "./screens/auth/SignUpSignIn.jsx";
-import Sidebar from "./components/navigation/sidebar/Sidebar.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import PostedJobs from "./screens/jobs/PostedJobs.jsx";
 import Statistics from "./screens/Statistics.jsx";
 import Applications from "./screens/jobs/Applications.jsx";
 import Favourites from "./screens/jobs/Favourites.jsx";
 import CreateJob from "./screens/jobs/CreateJob.jsx";
+// -- auth -- //
+import PrivateRoute from "./components/auth/PrivateRoute.jsx";
 import RequireRole from "./components/auth/RequireRole.jsx";
-import Apply from "./screens/jobs/Apply.jsx";
+import SignUpSignIn from "./screens/auth/SignUpSignIn.jsx";
+import EmailVerification from "./screens/auth/EmailVerification.jsx";
+import ForgotPassword from "./screens/auth/ForgotPassword.jsx";
+import ResetPassword from "./screens/auth/ResetPassword.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -45,6 +50,10 @@ const router = createBrowserRouter(
             <Route path="/contact" element={<Contact/>}/>
 
             <Route path="/signin" element={<SignUpSignIn/>}/>
+            <Route path="/forgot-password" element={<ForgotPassword />}/>
+            <Route path="/reset-password/:resetToken" element={<ResetPassword />}/>
+            <Route path="/verify-email/:verificationCode" element={<EmailVerification />}/>
+
             {/* private pages*/}
             <Route element={<PrivateRoute/>}>
                 {/* candidate only route */}

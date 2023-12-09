@@ -10,10 +10,10 @@ router.post('/signup',
         inputValidation.validate
     ],
     authController.signUp)
-router.post('/:userId/verify-email/:verificationCode', authController.verifyEmail)
+router.post('/verify-email/:verificationCode', authController.verifyEmail)
 router.post('/signin', authController.signIn)
 router.post('/sign-out', authController.signOut)
 router.post('/forgot-password', authController.forgotPassword)
-router.post('/reset-password', authController.resetPassword)
+router.put('/reset-password/:resetToken', authController.resetPassword)
 
 module.exports = router

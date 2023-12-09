@@ -25,3 +25,15 @@
 .custom_flex-container{
     @apply flex flex-col md:flex-row items-center justify-evenly space-x-3 p-2 gap-y-2
 }
+
+/* inputs */
+.input-group{
+    @apply mb-4
+}
+
+label {
+    @apply block text-stone-600 text-sm font-bold mb-2
+}
+input {
+    @apply w-full p-2 border rounded
+}
