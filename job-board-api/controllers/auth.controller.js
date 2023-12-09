@@ -1,10 +1,35 @@
 const asyncHandler = require('express-async-handler')
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const {Op, Sequelize} = require("sequelize");
-
 const {User, Token} = require('../models')
 const {tokenGenerator, nodemailer} = require('../utils')
+
+const resendEmailToUnverifiedUser = asyncHandler(async (user) => {
+    // --- destroy old token and assign a new one
+    await Token.destroy({where: {user_id: user.id, action: 'email-verification'}})
+    // await Token.save()
+
+    // verification code
+    const verificationCode = crypto.randomBytes(20).toString("hex")
+    const newToken = await Token.create({
+        user_id: user.id,
+        token: verificationCode,
+        action: 'email-verification',
+        expires: Date.now() + 3 * 60 * 60 * 1000 // 3 hours
+    })
+
+    // send email
+    await nodemailer.sendVerificationEmail(
+        user.first_name,
+        user.email,
+        newToken.token
+    )
+
+    res.status(201).json({
+        emailVerificationMessage:
+            "Verification email sent to your inbox. Check your email to verify your account ",
+    })
+})
 
 // @ desc ---- Google Authentication (Signup/Signin)
 // route  --POST-- [base_api]/auth/google
@@ -21,8 +46,8 @@ const googleAuth = asyncHandler(async (req, res) => {
             userName: userName,
             accessToken: accessToken
         });
-    }else{
-        if (existingUser && existingUser.auth_source !== 'google'){
+    } else {
+        if (existingUser && existingUser.auth_source !== 'google') {
             res.status(400)
             throw new Error('This email was not registered via google. Use email and password to login')
         }
@@ -103,31 +128,38 @@ const signUp = asyncHandler(async (req, res) => {
 // @desc ---- Verify email
 // route --POST-- [base_api]/auth/:userId/verify-email/:confirmationCode
 const verifyEmail = asyncHandler(async (req, res) => {
-    const {userId, verificationCode} = req.params
+    const {verificationCode} = req.params
 
-    const user = await User.findByPk(userId);
     const token = await Token.findOne({where: {token: verificationCode}})
 
-    if (!user || !token) {
+    if (!token) {
         res.status(404);
         throw new Error("Invalid/Expired link!");
     }
-
+    const user = await User.findByPk(token.user_id);
     user.verified = true
-    await user.save()
-    await token.destroy()
+    const verifiedUser = await user.save()
+    const removeToken = await token.destroy()
 
-    const userName = `${user.first_name} ${user.last_name}`;
-    const {accessToken} = tokenGenerator(
-        res,
-        user.id,
-        userName,
-        user.email,
-        user.role
-    );
+    if (verifiedUser && removeToken) {
+        const userName = `${user.first_name} ${user.last_name}`;
+        const {accessToken} = tokenGenerator(
+            res,
+            user.id,
+            userName,
+            user.email,
+            user.role
+        );
 
-    res.status(200)
-        .json({message: "Email verified successfully"})
+      return res.status(200)
+            .json({
+                message: "Email verified successfully",
+                accessToken: accessToken
+            })
+    } else {
+        res.status(500);
+        throw new Error("Server Error occurred when verifying user. Try again later");
+    }
 })
 
 // @ desc ---- User Login -> set cookies(token)
@@ -141,50 +173,27 @@ const signIn = asyncHandler(async (req, res) => {
         throw new Error("Invalid credentials");
     }
 
-    if(user.auth_source !== 'self'){
+    if (user.auth_source !== 'self') {
         res.status(400);
         throw new Error(`This email was registered via ${user.auth_source}. To login, use ${user.auth_source}`);
     }
 
-    // -- send verification email if user is !verified
+    // -- resend verification email if user is !verified
     if (!user.verified) {
-        // --- destroy old token and assign a new one
-        await Token.destroy({where: {user_id: user.id, action: 'email-verification'}})
-        // await Token.save()
-
-        // verification code
-        const verificationCode = crypto.randomBytes(20).toString("hex")
-        const newToken = await Token.create({
-            user_id: user.id,
-            token: verificationCode,
-            action: 'email-verification',
-            expires: Date.now() + 3 * 60 * 60 * 1000 // 3 hours
-        })
-
-        // send email
-        await nodemailer.sendVerificationEmail(
-            user.first_name,
-            user.email,
-            newToken.token
-        )
-
-        res.status(201).json({
-            emailVerificationMessage:
-                "Verification email sent to your inbox. Check your email to verify your account ",
-        })
+        return resendEmailToUnverifiedUser(user)
     }
-
-    const userName = `${user.first_name} ${user.last_name}`;
-    const {accessToken} = await tokenGenerator(
-        res,
-        user.id,
-        userName,
-        user.email,
-        user.role
-    );
 
     // compare password
     if (await user.matchPassword(password)) {
+        const userName = `${user.first_name} ${user.last_name}`;
+        const {accessToken} = await tokenGenerator(
+            res,
+            user.id,
+            userName,
+            user.email,
+            user.role
+        );
+
         return res.status(200).json({accessToken: accessToken});
     } else {
         res.status(401);
@@ -211,78 +220,82 @@ const signOut = asyncHandler(async (req, res) => {
     res.status(200).json({message: "Logged Out"});
 });
 
-// -- Forgot & Reset Password -- //
+// @desc ---- Forgot Password
+// route --POST-- [base_api]/auth/forgot-password
 const forgotPassword = asyncHandler(async (req, res) => {
-    const {email} = req.body;
+        const {email} = req.body;
 
-    const user = await User.findOne({where: {email}});
+        const user = await User.findOne({where: {email}});
 
-    if (!user) {
-        res.status(404);
-        throw new Error("User not found");
-    } else {
-        if (user.status !== "Active") {
-            res.status(422);
-            throw new Error(
-                "You need to confirm your account first. Check your email for confirmation link"
-            );
-        }
-        const resetToken = crypto.randomBytes(20).toString("hex");
-        const expiresIn = Date.now() + 2 * 60 * 60 * 1000; // 2 hours
-
-        // Update user with the new reset token and expiration time
-        const updateUser = await user.update({
-            access_code: resetToken,
-            access_code_expires: new Date(expiresIn),
-        });
-        if (updateUser) {
-            const sendMail = await sendResetPassword(
-                user.email,
-                user.first_name,
-                user.access_code
-            );
-            if (!sendMail) {
-                res.status(422);
-                throw new Error("Failed to send mail verification");
-            } else {
-                res.status(201).json({
-                    message: "Reset link sent. Check your email to reset your password ",
-                });
-            }
+        if (!user) {
+            res.status(404);
+            throw new Error("User not found");
         } else {
-            res.status(500);
-            throw new Error("Server Error");
+            // -- resend verification email if user is !verified
+            if (!user.verified) {
+                return resendEmailToUnverifiedUser(user)
+            }
+
+            // --- destroy any existing token and assign a new one
+            await Token.destroy({where: {user_id: user.id, action: 'password-reset'}})
+
+            // verification code
+            const verificationCode = crypto.randomBytes(20).toString("hex")
+            const newToken = await Token.create({
+                user_id: user.id,
+                token: verificationCode,
+                action: 'password-reset',
+                expires: Date.now() + 3 * 60 * 60 * 1000 // 3 hours
+            })
+
+            // send email
+             await nodemailer.sendResetPassword(
+                user.first_name,
+                user.email,
+                newToken.token
+            )
+            res.status(201).json({
+                passwordResetMessage:
+                    "A password reset email has been sent to your inbox. Check your email to reset your password ",
+            })
         }
-    }
-});
+    })
 
+// @desc ---- Reset Password
+// route --PUT-- [base_api]/auth/reset-password/:resetToken
 const resetPassword = asyncHandler(async (req, res) => {
-    const {password, confirmPassword} = req.body;
-    const token = req.params.resetToken;
+    const {password, confirm_password} = req.body;
+    const {resetToken} = req.params;
 
-    console.log(token, ">>>>", req.body);
-    const user = await User.findOne({
+    console.log(req.body, resetToken)
+
+    if (password !== confirm_password) {
+        res.status(400);
+        throw new Error("Passwords do not match");
+    }
+
+    const token = await Token.findOne({
         where: {
-            access_code: token,
-            access_code_expires: {[Op.gt]: Sequelize.fn("NOW")},
+            action: 'password-reset',
+            token: resetToken,
         },
     });
-    if (!user) {
+    const user = await User.findByPk(token.user_id);
+
+    if (!user || !token) {
         res.status(400);
         throw new Error("Password reset link is invalid or has expired.");
     } else {
-        if (password !== confirmPassword) {
-            res.status(400);
-            throw new Error("Passwords do not match");
-        } else {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            await user.update({
-                password: hashedPassword,
-                access_code: null,
-                access_code_expires: null,
-            });
-            res.status(200).json({message: "Your password has been reset"});
+        user.password = await bcrypt.hash(password, 10)
+        const updatedUser = await user.save()
+        const removeToken = await token.destroy()
+
+        if (!updatedUser || !removeToken) {
+            res.status(500);
+            throw new Error("Server Error occurred when updating user. Try again later");
         }
+
+        res.status(200).json({message: "Your password has been reset"});
     }
 });
 
