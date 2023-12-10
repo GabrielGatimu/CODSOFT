@@ -1,4 +1,4 @@
-import {Link, useNavigate} from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {useDispatch, useSelector} from "react-redux";
 import {Bookmark} from "lucide-react";
@@ -8,7 +8,6 @@ import './JobCard.css'
 import {useToggleBookmarkMutation} from "../../state/slices/jobs/jobApi.slice.js";
 import {removeBookmark, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
 import useAuth from "../../hooks/useAuth.js";
-import Overlay from "../error/Overlay.jsx";
 
 function JobCard({job, userIsEmployer}) {
     const navigate = useNavigate()
@@ -102,12 +101,12 @@ function JobCard({job, userIsEmployer}) {
                             <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
                         )}
 
-                        {!userIsEmployer && <button className="btn green-btn">Apply</button>}
+                        {!userIsEmployer && <button onClick={viewJob} className="btn green-btn">Apply</button>}
                     </>
                     :
                     // User is not logged in, show all buttons
                     <>
-                        <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
+                        <Bookmark className="cursor-pointer" onClick={viewJob}/>
                         <button onClick={viewJob} className="btn green-btn">Apply</button>
                     </>
                 }

@@ -143,8 +143,10 @@ const getUserBookmarks = asyncHandler(async (req, res) => {
 // route  --POST-- [base_api]/jobs/:jobId/apply
 const applyJob = asyncHandler(async (req, res) => {
     const user_id = req.user.userId
-    const job_id = 1
+    const job_id = req.params.jobId
     const resumePath = req.file.filename
+
+    console.log(user_id, job_id, resumePath, req.file)
 
     const application = await JobApplication.create({
         user_id, job_id, resumePath

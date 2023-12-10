@@ -264,10 +264,8 @@ const forgotPassword = asyncHandler(async (req, res) => {
 // @desc ---- Reset Password
 // route --PUT-- [base_api]/auth/reset-password/:resetToken
 const resetPassword = asyncHandler(async (req, res) => {
-    const {password, confirm_password} = req.body;
+    const { password, confirm_password } = req.body;
     const {resetToken} = req.params;
-
-    console.log(req.body, resetToken)
 
     if (password !== confirm_password) {
         res.status(400);
@@ -280,13 +278,16 @@ const resetPassword = asyncHandler(async (req, res) => {
             token: resetToken,
         },
     });
-    const user = await User.findByPk(token.user_id);
 
-    if (!user || !token) {
+
+    if (!token) {
         res.status(400);
         throw new Error("Password reset link is invalid or has expired.");
     } else {
-        user.password = await bcrypt.hash(password, 10)
+        const user = await User.findByPk(token.user_id);
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+        user.password = hashedPassword
         const updatedUser = await user.save()
         const removeToken = await token.destroy()
 

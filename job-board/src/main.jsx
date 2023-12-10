@@ -58,7 +58,7 @@ const router = createBrowserRouter(
             <Route element={<PrivateRoute/>}>
                 {/* candidate only route */}
                 <Route element={<RequireRole allowedRole={'candidate'}/>}>
-                    <Route path="/apply" element={<Apply/>}/>
+                    <Route path="/:jobId/apply" element={<Apply/>}/>
                 </Route>
 
                 {/* routes with account layout */}
@@ -78,7 +78,6 @@ const router = createBrowserRouter(
 
                     {/* candidate only routes */}
                     <Route element={<RequireRole allowedRole={'candidate'}/>}>
-                        <Route path="/apply" element={<Apply/>}/>
                         <Route path="/applications" element={<Applications/>}/>
                     </Route>
                 </Route>

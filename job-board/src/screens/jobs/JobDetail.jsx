@@ -14,15 +14,17 @@ export default function JobDetail() {
     const fetchJobRef = useRef(false);
     const dispatch = useDispatch()
     const navigate = useNavigate();
-    const {jobId} = useParams();
+
     // user
     const {userInfo} = useAuth()
     const isUserEmployer = userInfo && userInfo.role === 'employer'
 
     // job
+    const {jobId} = useParams();
     const [job, setJob] = useState(null)
     const jobs = useSelector((state) => state.jobs.jobList)
     const [getJobApiCall, {isLoading: getJobLoading, error: getJobError}] = useGetJobMutation()
+
     //  bookmark
     const [toggleBookmarkApiCall, {
         isLoading: getBookmarkLoading,
@@ -85,11 +87,11 @@ export default function JobDetail() {
         navigate(-1);
     };
 
-    const handleApplyClick = () => {
+    const handleApply = () => {
         if (!userInfo){
           return  alert('login first in order to apply for a job')
         }
-        navigate('/apply')
+        navigate(`/${jobId}/apply`)
     };
 
     return (
@@ -146,12 +148,12 @@ export default function JobDetail() {
                                                     <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
                                                 )
                                                 }
-                                                {!isUserEmployer && <button onClick={handleApplyClick} className="btn green-btn">Apply</button>}
+                                                {!isUserEmployer && <button onClick={handleApply} className="btn green-btn">Apply</button>}
                                             </div>)
                                             :
                                             (<div className="flex items-center justify-between">
                                                     <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
-                                                    <button onClick={handleApplyClick} className="btn green-btn">Apply
+                                                    <button onClick={handleApply} className="btn green-btn">Apply
                                                     </button>
                                                 </div>
                                             )

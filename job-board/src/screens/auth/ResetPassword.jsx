@@ -4,7 +4,7 @@ import {toast} from "react-toastify";
 
 import '../../styles/custom.css'
 import Loader from "../../components/Loader.jsx";
-import { useResetPasswordMutation} from "../../state/slices/auth/authApi.slice.js";
+import {useResetPasswordMutation} from "../../state/slices/auth/authApi.slice.js";
 import BackButton from "../../components/navigation/BackButton.jsx";
 
 export default function ResetPassword() {
@@ -38,20 +38,18 @@ export default function ResetPassword() {
         }
 
         try {
-            const dataToSend = new FormData()
-
-            console.log(formData, resetToken)
-
-            dataToSend.append('resetToken', resetToken)
-            dataToSend.append('formData', formData)
-            console.log('new form data', dataToSend)
+            const dataToSend = {
+                formData,
+                resetToken
+            }
 
             const response = await resetPasswordApiCall(dataToSend).unwrap();
             setMessage(response.message)
             toast.success(response.message);
         } catch (e) {
             console.log(e)
-            toast.error(e?.data.message);
+            console.log(error)
+            toast.error(e?.data?.message);
         }
     };
     return (
@@ -146,7 +144,10 @@ export default function ResetPassword() {
 
                     <div className="flex flex-col gap-y-3">
                         {message ?
-                            <p className="p-2 rounded bg-gradient-to-r from-green-600 to-green-500 text-white text-center">{message}</p> :
+                            <>
+                                <p className="p-2 rounded bg-gradient-to-r from-green-600 to-green-500 text-white text-center">{message}</p>
+                            </>
+                            :
                             <button
                                 type="submit"
                                 className={`w-full rounded-md h-10 bg-gradient-to-r from-indigo-800 to-indigo-500 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-800 text-white border border-indigo-800`}
@@ -154,13 +155,15 @@ export default function ResetPassword() {
                             > Confirm
                             </button>
                         }
-                        {/*<span className="underline text-indigo-800 cursor-pointer">*/}
-                        {/*    <Link to="/signin"> Back to Login</Link>*/}
-                        {/*</span>*/}
+                        <span className="underline text-indigo-800 cursor-pointer">
+                            <Link to="/signin"> {message ? 'Go to Login' : 'Cancel'}</Link>
+                        </span>
+
                     </div>
                 </form>
             </div>
         </>
-    );
+    )
+
 }
 

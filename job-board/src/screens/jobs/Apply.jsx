@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 // import { uploadResume } from '../../api/candidateApi';
 import {toast} from 'react-toastify';
 import BackButton from "../../components/navigation/BackButton.jsx";
@@ -10,11 +10,16 @@ import {useApplyJobMutation} from "../../state/slices/jobs/jobApi.slice.js";
 export default function Apply () {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [resume, setResume] = useState(null);
-    const [about, setAbout] = useState('');
+
+    // user
     const {userInfo} = useAuth()
     const userName = `${userInfo.userName.split(' ').join('-').toLowerCase()}`
+    const [resume, setResume] = useState(null);
+    const [about, setAbout] = useState('');
+
+    // job
     const [applyJob, {isLoading, error}] = useApplyJobMutation()
+    const {jobId} = useParams()
 
     const handleResumeChange = (e) => {
         const selectedResume = e.target.files[0];
@@ -44,8 +49,8 @@ export default function Apply () {
             formData.append('resume', resume);
             formData.append('about', about);
 
-            const response = await applyJob(formData).unwrap()
-            console.log(response.message)
+            const response = await applyJob(formData, jobId).unwrap()
+            console.log(response)
             toast.success('Application submitted successfully!');
         } catch (e) {
             console.error(e);

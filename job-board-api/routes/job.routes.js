@@ -25,7 +25,7 @@ router.route('/:jobId')
 
 // candidate only routes
 router.put('/bookmark/:jobId', jobController.bookmarkJob)
-router.post('/apply', fileMiddleware.upload , jobController.applyJob)
+router.post('/:jobId/apply', fileMiddleware.upload , jobController.applyJob)
 router.get('/applications', jobController.getCandidateApplications);
 
 module.exports = router;
