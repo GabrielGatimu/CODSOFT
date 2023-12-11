@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const {Job, Bookmark, JobApplication} = require('../models')
+const {Job, Bookmark, JobApplication, User} = require('../models')
 
 // @ desc ---- Get Jobs  @ access -- all
 // route  --POST-- [base_api]/jobs
@@ -91,10 +91,31 @@ const deleteJob = asyncHandler(async (req, res) => {
 // route  --POST-- [base_api]/jobs/employer
 const getEmployerJobs = asyncHandler(async (req, res) => {
     const employerId = req.user.userId
-    console.log(req.user, 'this is user')
-    const data = await Job.findAll({where: {employer_id: employerId}})
+
+    const  data = await Job.findAll({
+        where: {employer_id: employerId},
+        // include: [{
+        //     model: JobApplication,
+        //     include: User
+        // }]
+        include: JobApplication
+    })
+
     res.status(200).send(data)
 })
+
+// @ desc ---- Get Job Applicants  @ access -- employer only
+// route  --POST-- [base_api]/jobs/applicants/:jobId
+const getJobApplicants = asyncHandler(async (req, res) => {
+    const {jobId} = req.params;
+
+    const applicants = await JobApplication.findAll({
+        where: { job_id: jobId },
+        include: User,
+    });
+
+    res.status(200).json(applicants);
+});
 
 // --- Bookmarks --- //
 const bookmarkJob = asyncHandler(async (req, res) => {
@@ -164,6 +185,7 @@ const getCandidateApplications = asyncHandler(async (req, res) => {
 
     res.status(200).send(applications)
 })
+
 module.exports = {
     getJobs,
     addJob,
@@ -171,6 +193,7 @@ module.exports = {
     updateJob,
     deleteJob,
     getEmployerJobs,
+    getJobApplicants,
     getCandidateApplications,
     bookmarkJob,
     getUserBookmarks,

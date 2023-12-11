@@ -81,8 +81,8 @@ export default function PostedJobs() {
                             <div
                                 className="px-4 flex items-center justify-between">
                                 <p className="text-sm text-stone-500"><span
-                                    className="font-bold text-stone-800">50</span> applicants</p>
-                                <Link to={'/applicants'}
+                                    className="font-bold text-stone-800">{jobItem.applications.length}</span> applicants</p>
+                                <Link to={`/applicants/${jobItem.id}`}
                                       className="text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:bg-gradient-to-l hover:from-indigo-600 hover:to-indigo-500 border border-indigo-500 rounded px-2"
                                 >View all</Link>
                             </div>

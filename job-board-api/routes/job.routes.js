@@ -13,6 +13,7 @@ router.get('/view/bookmarks', jobController.getUserBookmarks);
 
 // --- employer only routes --- //
 router.get('/me/my-jobs', authMiddleware.requireEmployer, jobController.getEmployerJobs); // get emp jobs
+router.get('/applicants/:jobId', authMiddleware.requireEmployer, jobController.getJobApplicants); // get job applicants
 
 router.post('/add', [
         authMiddleware.requireEmployer,

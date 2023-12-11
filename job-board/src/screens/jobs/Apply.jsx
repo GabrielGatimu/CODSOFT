@@ -115,5 +115,5 @@ export default function Apply() {
             </form>
         </div>
     );
-};
+}
 

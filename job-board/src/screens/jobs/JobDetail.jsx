@@ -13,6 +13,7 @@ import {
 } from "../../state/slices/jobs/jobApi.slice.js";
 import Loader from "../../components/Loader.jsx";
 import {removeBookmark, setUserApplications, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
+import {formatDate} from "../../utils/date.util.js";
 
 export default function JobDetail() {
     const dataFetchedRef = useRef(false);
@@ -173,7 +174,7 @@ export default function JobDetail() {
                                     <p>Type: {job.type}</p>
                                     <p>Experience: {job.experience}</p>
                                     <p>Description: {job.description}</p>
-                                    <p>Posted on: {job.createdAt}</p>
+                                    <p>Posted on: {formatDate(job.createdAt)}</p>
 
                                     {/* Apply & Bookmark button */}
                                     <>
@@ -211,9 +212,10 @@ export default function JobDetail() {
                                         }
                                     </>
                                     {isUserEmployer &&
-                                        <p className="p-2 my-4 text-center leading-loose rounded bg-gradient-to-r from-amber-600 to-amber-500 text-white">Sorry,
-                                            employers are not permitted to apply for jobs <br/> Create a <span
-                                                className="px-1 rounded bg-stone-700">candidate account</span> to apply
+                                        <p className="p-2 my-4 text-center leading-loose rounded bg-gradient-to-r from-amber-600 to-amber-500 text-white"><span
+                                            className="px-1 mr-1 rounded bg-stone-700">NOTE: </span>
+                                            Employers are not viable to apply for jobs <br/> Create a <span
+                                                className="px-1 rounded bg-stone-500">candidate account</span> to apply
                                             for this job</p>}
                                 </div>
                             )
