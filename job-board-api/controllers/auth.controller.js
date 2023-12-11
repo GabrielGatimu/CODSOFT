@@ -143,7 +143,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
 
     if (verifiedUser && removeToken) {
         const userName = `${user.first_name} ${user.last_name}`;
-        const {accessToken} = tokenGenerator(
+        const {accessToken} = await tokenGenerator(
             res,
             user.id,
             userName,

@@ -8,21 +8,24 @@ import './JobListing.css'
 import JobCard from "../../components/jobs/JobCard.jsx";
 import Loader from "../../components/Loader.jsx";
 import {
-    useGetJobsMutation,
+    useGetJobsMutation, useGetMyApplicationsMutation,
     useGetUserBookmarksMutation,
 } from "../../state/slices/jobs/jobApi.slice.js";
-import {setStateJobs, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
+import {setStateJobs, setUserApplications, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
 import useAuth from "../../hooks/useAuth.js";
 
 export default function JobListing() {
-    const bookmarksFetchedRef = useRef(false);
+    const dataFetchedRef = useRef(false);
     const dispatch = useDispatch()
+
+    const [searchButtonClicked, setSearchButtonClicked] = useState(false)
     const [pageNumber, setPageNumber] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const {userInfo} = useAuth()
 
     const jobs = useSelector((state) => state.jobs.jobList);
     const bookmarks = useSelector((state) => state.jobs.bookmarkedJobs);
+    const jobApplications = useSelector(state => state.jobs.userApplications)
     const [filteredJobs, setFilteredJobs] = useState([])
 
     const [getAllJobsApiCall, {isLoading: getJobsLoading, error: getJobsError}] = useGetJobsMutation();
@@ -30,29 +33,28 @@ export default function JobListing() {
         isLoading: getBookmarksLoading,
         error: getBookmarksError
     }] = useGetUserBookmarksMutation();
+    const [getApplications, {
+        isLoading: getApplicationsLoading,
+        error: getApplicationsError
+    }] = useGetMyApplicationsMutation()
 
-    const fetchBookmarks = async () => {
-        try {
-            const bookmarkResponse = await getBookmarksApiCall().unwrap();
-            if (bookmarkResponse.length > 0) {
-                const extractedBookmarks = bookmarkResponse.map((item) => item.job)
-                dispatch(setUserBookmarks(extractedBookmarks));
-            }
-        } catch (e) {
-            console.error(e);
-            console.error(getBookmarksError);
-        }
-    };
 
     // -- fetches bookmarks only if user is logged in
     useEffect(() => {
-        if (bookmarksFetchedRef.current) return;
-        bookmarksFetchedRef.current = true;
+        if (dataFetchedRef.current) return;
+        dataFetchedRef.current = true;
 
-        if (userInfo && bookmarks.length === 0) {
-            fetchBookmarks()
+        if (userInfo) {
+            if (bookmarks.length === 0) {
+                // fetch bookmarks from server
+                fetchBookmarks()
+            }
+
+            if (jobApplications.length === 0) {
+                // fetch applied-to jobs from server
+                fetchApplications()
+            }
         }
-
     }, []);
 
 
@@ -75,6 +77,34 @@ export default function JobListing() {
     useEffect(() => {
         setFilteredJobs(jobs)
     }, [jobs])
+
+    const fetchBookmarks = async () => {
+        try {
+            const bookmarkResponse = await getBookmarksApiCall().unwrap();
+            if (bookmarkResponse.length > 0) {
+                const extractedBookmarks = bookmarkResponse.map((item) => item.job)
+                dispatch(setUserBookmarks(extractedBookmarks));
+            }
+        } catch (e) {
+            console.error(e);
+            console.error(getBookmarksError);
+        }
+    };
+
+    const fetchApplications = async () => {
+        try {
+            const response = await getApplications().unwrap()
+
+            if (response.length > 0) {
+                const extractedJobApplications = response.map(item => item.job)
+                dispatch(setUserApplications(extractedJobApplications))
+            }
+        } catch (e) {
+            console.error(e)
+            console.error(getApplicationsError)
+            toast.error(getApplicationsError)
+        }
+    }
 
     const fetchMoreData = () => {
         setPageNumber((prevPageNumber) => prevPageNumber + 1);
@@ -140,7 +170,6 @@ export default function JobListing() {
         setFilters({...filters, [name]: value})
     }
 
-    const [searchButtonClicked, setSearchButtonClicked] = useState(false)
     const handleSearch = () => {
         setSearchButtonClicked(true)
         clearAllSearchInputs('')

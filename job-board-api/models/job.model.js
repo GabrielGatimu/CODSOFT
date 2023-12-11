@@ -63,7 +63,13 @@ module.exports = (sequelize, Sequelize) => {
             }
         }
     }, {
-        freezeTableName: true
+        freezeTableName: true,
+        timestamps: true,
+        uniqueKeys: {
+            unique_employer_job: {
+                fields: ['title', 'company']
+            }
+        }
     })
 
     return {Job}

@@ -69,10 +69,13 @@ export default function CreateJob() {
             const response = await createJobApiCall(dataToSend).unwrap();
             toast.success(response.message)
             dispatch(setEmployerJobs([response.newJob]));
-        } catch (err) {
-            console.error(err);
-            console.error(error)
-            toast.error('Failed to add job. Please try again later');
+
+            setTimeout(() => {
+                navigate('/my-jobs')
+            }, 6000)
+        } catch (e) {
+            console.error(e);
+            toast.error(e?.data?.message);
         }
     };
 

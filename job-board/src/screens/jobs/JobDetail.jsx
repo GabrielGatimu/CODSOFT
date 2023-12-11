@@ -6,12 +6,16 @@ import {Bookmark} from "lucide-react";
 
 import '../../styles/custom.css'
 import useAuth from "../../hooks/useAuth.js";
-import {useGetJobMutation, useToggleBookmarkMutation} from "../../state/slices/jobs/jobApi.slice.js";
+import {
+    useGetJobMutation,
+    useGetMyApplicationsMutation,
+    useToggleBookmarkMutation
+} from "../../state/slices/jobs/jobApi.slice.js";
 import Loader from "../../components/Loader.jsx";
-import {removeBookmark, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
+import {removeBookmark, setUserApplications, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
 
 export default function JobDetail() {
-    const fetchJobRef = useRef(false);
+    const dataFetchedRef = useRef(false);
     const dispatch = useDispatch()
     const navigate = useNavigate();
 
@@ -25,7 +29,21 @@ export default function JobDetail() {
     const jobs = useSelector((state) => state.jobs.jobList)
     const [getJobApiCall, {isLoading: getJobLoading, error: getJobError}] = useGetJobMutation()
 
-    //  bookmark
+    // applications
+    const jobApplications = useSelector(state => state.jobs.userApplications)
+    const [getApplications, {
+        isLoading: getApplicationsLoading,
+        error: getApplicationsError
+    }] = useGetMyApplicationsMutation()
+    let isJobApplied = false;
+    {
+        job ?
+            isJobApplied = jobApplications.some((appliedJob) => appliedJob.id === job.id)
+            :
+            isJobApplied = false
+    }
+
+    //  bookmarks
     const [toggleBookmarkApiCall, {
         isLoading: getBookmarkLoading,
         error: getBookmarkError
@@ -34,8 +52,8 @@ export default function JobDetail() {
     const [isJobBookmarked, setIsJobBookmarked] = useState(false)
 
     useEffect(() => {
-        if (fetchJobRef.current) return
-        fetchJobRef.current = true
+        if (dataFetchedRef.current) return
+        dataFetchedRef.current = true
 
         const stateJob = jobs.find(j => j.id === +(jobId));
         if (!stateJob) {
@@ -45,6 +63,11 @@ export default function JobDetail() {
             const checkBookmark = bookmarks.some((bookmarkedJob) => bookmarkedJob.id === stateJob.id)
             setIsJobBookmarked(checkBookmark)
         }
+
+        if (userInfo && jobApplications.length === 0) {
+            fetchApplications()
+        }
+
     }, []);
 
     const handleBookmark = async () => {
@@ -83,13 +106,29 @@ export default function JobDetail() {
         }
     }
 
+    const fetchApplications = async () => {
+        try {
+            const response = await getApplications().unwrap()
+
+            if (response.length > 0) {
+                const extractedJobApplications = response.map(item => item.job)
+                dispatch(setUserApplications(extractedJobApplications))
+            }
+        } catch (e) {
+            console.error(e)
+            console.error(getApplicationsError)
+            toast.error(getApplicationsError)
+        }
+    }
+
+
     const handleBackClick = () => {
         navigate(-1);
     };
 
     const handleApply = () => {
-        if (!userInfo){
-          return  alert('login first in order to apply for a job')
+        if (!userInfo) {
+            return alert('login first in order to apply for a job')
         }
         navigate(`/${jobId}/apply`)
     };
@@ -99,14 +138,15 @@ export default function JobDetail() {
             {/* Back button */}
             <button className="btn black-btn mb-4" onClick={handleBackClick}>Back</button>
             {userInfo &&
-                <>
+                <button
+                    className="text-white rounded-md mx-4 px-2 py-1 w-fit cursor-pointer  bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-indigo-400  hover:from-indigo-600 hover:to-indigo-400 border border-indigo-500">
                     <Link to={'/dashboard'}
-                          className="mx-4 text-white py-1 px-2 rounded-md w-fit bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-indigo-400  hover:from-indigo-600 hover:to-indigo-400">Dashboard</Link>
-                </>
+                    >Dashboard</Link>
+                </button>
             }
 
             <div className="block w-full md:flex justify-center">
-                {getJobLoading ?
+                {(getJobLoading || getApplicationsLoading) ?
                     <><Loader/> <p>loading...</p></>
                     :
                     ((job !== null) ?
@@ -148,7 +188,18 @@ export default function JobDetail() {
                                                     <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
                                                 )
                                                 }
-                                                {!isUserEmployer && <button onClick={handleApply} className="btn green-btn">Apply</button>}
+                                                {!isUserEmployer &&
+                                                    <>
+                                                        {isJobApplied ?
+                                                            <div>Applied ✅</div>
+                                                            :
+                                                            <button onClick={handleApply}
+                                                                    className="btn green-btn">Apply
+                                                            </button>
+                                                        }
+                                                    </>
+                                                }
+
                                             </div>)
                                             :
                                             (<div className="flex items-center justify-between">
@@ -159,7 +210,11 @@ export default function JobDetail() {
                                             )
                                         }
                                     </>
-                                    {isUserEmployer && <p className="p-2 my-4 text-center leading-loose rounded bg-gradient-to-r from-amber-600 to-amber-500 text-white">Sorry, employers are not permitted to apply for jobs <br/> Create a <span className="px-1 rounded bg-stone-700">candidate account</span> to apply for this job</p>}
+                                    {isUserEmployer &&
+                                        <p className="p-2 my-4 text-center leading-loose rounded bg-gradient-to-r from-amber-600 to-amber-500 text-white">Sorry,
+                                            employers are not permitted to apply for jobs <br/> Create a <span
+                                                className="px-1 rounded bg-stone-700">candidate account</span> to apply
+                                            for this job</p>}
                                 </div>
                             )
                             : (
