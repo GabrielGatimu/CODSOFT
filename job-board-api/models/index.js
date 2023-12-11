@@ -27,7 +27,7 @@ const {Token} = require('./token.model')(sequelize, Sequelize)
 const {Bookmark} = require('./bookmark.model')(sequelize, Sequelize)
 const {JobApplication}= require('./jobApplication.model')(sequelize, Sequelize)
 
-// -- associations -- //
+// -- associations -- /
 // user(employer) --> job
 User.hasMany(Job, {foreignKey: 'employer_id'})
 Job.belongsTo(User, {foreignKey: 'employer_id'})

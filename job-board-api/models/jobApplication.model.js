@@ -27,7 +27,12 @@ module.exports = (sequelize, Sequelize) => {
         }
     }, {
         freezeTableName: true,
-        timestamps: true
+        timestamps: true,
+        uniqueKeys: {
+            unique_user_job: {
+                fields: ['user_id', 'job_id']
+            }
+        }
     });
 
     return {JobApplication};

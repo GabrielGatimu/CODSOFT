@@ -1,4 +1,4 @@
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {useDispatch, useSelector} from "react-redux";
 import {Bookmark} from "lucide-react";
@@ -8,16 +8,20 @@ import './JobCard.css'
 import {useToggleBookmarkMutation} from "../../state/slices/jobs/jobApi.slice.js";
 import {removeBookmark, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
 import useAuth from "../../hooks/useAuth.js";
-import Overlay from "../error/Overlay.jsx";
 
 function JobCard({job, userIsEmployer}) {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {userInfo} = useAuth()
     // bookmark
-    const [toggleBookmarkApiCall, {isLoading, error}] = useToggleBookmarkMutation();
     const bookmarks = useSelector(state => state.jobs.bookmarkedJobs)
+    const [toggleBookmarkApiCall, {isLoading: bookmarkLoading, error: bookmarkError}] = useToggleBookmarkMutation();
+
+    // applications
+    const jobApplications = useSelector(state => state.jobs.userApplications)
+
     let isJobBookmarked = bookmarks.some((bookmarkedJob) => bookmarkedJob.id === job.id)
+    let isJobApplied = jobApplications.some((appliedJob) => appliedJob.id === job.id)
 
     const viewJob = () => {
         navigate(`/jobs/view/${job.id}`)
@@ -49,8 +53,10 @@ function JobCard({job, userIsEmployer}) {
             }
         } catch (e) {
             console.log(e)
-            {e?.status === 403 && toast.error('login to save your favourite jobs')}
-            toast.error(error)
+            {
+                e?.status === 403 && toast.error('login to save your favourite jobs')
+            }
+            toast.error(bookmarkError)
         }
     }
 
@@ -60,7 +66,7 @@ function JobCard({job, userIsEmployer}) {
             <div className="details-section">
                 <div className="company-info">
                     <img src={job.companyLogo} alt="company logo"/>
-                    <h4 className="bg-stone-500 text-slate-50 px-1 h-6 rounded">{job.company}</h4>
+                    <h4 className="bg-stone-500 text-slate-50 px-1 h-fit rounded">{job.company}</h4>
                 </div>
                 {/*<h1>{job.id}</h1>*/}
                 <h3 className="text-2xl font-extrabold">{job.title}</h3>
@@ -102,12 +108,20 @@ function JobCard({job, userIsEmployer}) {
                             <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
                         )}
 
-                        {!userIsEmployer && <button className="btn green-btn">Apply</button>}
+                        {isJobApplied ?
+                            <>
+                                <div className="text-stone-500">Applied ✅</div>
+                            </>
+                            :
+                            <>
+                                {!userIsEmployer && <button onClick={viewJob} className="btn green-btn">Apply</button>}
+                            </>
+                        }
                     </>
                     :
                     // User is not logged in, show all buttons
                     <>
-                        <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
+                        <Bookmark className="cursor-pointer" onClick={viewJob}/>
                         <button onClick={viewJob} className="btn green-btn">Apply</button>
                     </>
                 }

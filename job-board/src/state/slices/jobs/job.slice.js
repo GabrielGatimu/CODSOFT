@@ -3,7 +3,8 @@ import {createSlice} from "@reduxjs/toolkit";
 const initialState = {
     jobList: [],
     bookmarkedJobs: [],
-    employerJobs: []
+    employerJobs: [],
+    userApplications: []
 }
 
 const jobSlice = createSlice({
@@ -25,12 +26,15 @@ const jobSlice = createSlice({
             const jobId = action.payload
             state.bookmarkedJobs = state.bookmarkedJobs.filter(bookmark => !(bookmark.id === jobId))
         },
-       removeAllUserJobsData: (state, action) => {
+        removeAllUserJobsData: (state) => {
             state.bookmarkedJobs = []
             state.employerJobs = []
+        },
+        setUserApplications: (state, action) => {
+            state.userApplications = [...state.userApplications, ...action.payload]
         }
     }
 })
 
-export const {setStateJobs, setUserBookmarks, removeBookmark, setEmployerJobs, removeAllUserJobsData} = jobSlice.actions
+export const {setStateJobs, setUserBookmarks, removeBookmark, setEmployerJobs, removeAllUserJobsData, setUserApplications} = jobSlice.actions
 export default jobSlice.reducer

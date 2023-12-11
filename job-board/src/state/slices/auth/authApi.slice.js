@@ -44,11 +44,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
             }),
         }),
         resetPassword: builder.mutation({
-            query: (data ) => ({
+            query: (data) => ({
                 url: `${AUTH_URL}/reset-password/${data.resetToken}`,
                 method: "PUT",
                 body: data.formData,
-            }),
+                }
+            ),
+
         }),
     }),
 });

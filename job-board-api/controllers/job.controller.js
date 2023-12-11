@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const {Job, Bookmark, JobApplication} = require('../models')
+const {Job, Bookmark, JobApplication, User} = require('../models')
 
 // @ desc ---- Get Jobs  @ access -- all
 // route  --POST-- [base_api]/jobs
@@ -42,31 +42,26 @@ const getJobs = asyncHandler(async (req, res) => {
 // @ desc ---- Create Job  @ access -- employer only
 // route  --POST-- [base_api]/jobs/add
 const addJob = asyncHandler(async (req, res) => {
+    const employer_id = req.user.userId;
     const {
         title, category, company, companyLogo, location, type, experience, description, skills, salary
     } = req.body;
 
-    const employer_id = req.user.userId;
+    const existingJob = await Job.findOne({where: {title, company}})
+    if (existingJob) {
+        res.status(409)
+        throw new Error('You already created a similar job. Change the title or the company name')
+    }
 
-    try {
-        const newJob = await Job.create({
-            title, category, company, companyLogo, location, type, experience, description, skills, salary, employer_id
-        });
+    const newJob = await Job.create({
+        title, category, company, companyLogo, location, type, experience, description, skills, salary, employer_id
+    });
+    if (newJob) {
+        res.status(201).json({message: "job created successfully", newJob: newJob});
 
-        res.status(201).json({message: "job added successfully", newJob: newJob});
-    } catch (error) {
-        if (error.name === 'SequelizeValidationError') {
-            // validation errors
-            const errors = error.errors.map(err => ({
-                field: err.path,
-                message: err.message
-            }));
-
-            res.status(422).json({success: false, message: 'Validation error', errors});
-        } else {
-            console.error(error);
-            res.status(500).json({success: false, message: 'Server error occurred'});
-        }
+    } else {
+        console.error(error);
+        res.status(500).json({success: false, message: 'Server error occurred'});
     }
 });
 
@@ -74,12 +69,10 @@ const addJob = asyncHandler(async (req, res) => {
 // route  --POST-- [base_api]/jobs/:jobId
 const viewJob = asyncHandler(async (req, res) => {
     const {jobId} = req.params
-    console.log('getting job')
-    console.log(typeof jobId)
     const job = await Job.findOne({where: {id: +(jobId)}})
 
     if (!job) {
-       return res.status(404).json({
+        return res.status(404).json({
             message: "Job not found or Employer might have removed it"
         })
     }
@@ -98,13 +91,31 @@ const deleteJob = asyncHandler(async (req, res) => {
 // route  --POST-- [base_api]/jobs/employer
 const getEmployerJobs = asyncHandler(async (req, res) => {
     const employerId = req.user.userId
-    const data = await Job.findAll({where: {employer_id: employerId}})
+
+    const  data = await Job.findAll({
+        where: {employer_id: employerId},
+        // include: [{
+        //     model: JobApplication,
+        //     include: User
+        // }]
+        include: JobApplication
+    })
+
     res.status(200).send(data)
 })
 
-const getCandidateApplications = asyncHandler(async (req, res) => {
-    res.send('candidate applications')
-})
+// @ desc ---- Get Job Applicants  @ access -- employer only
+// route  --POST-- [base_api]/jobs/applicants/:jobId
+const getJobApplicants = asyncHandler(async (req, res) => {
+    const {jobId} = req.params;
+
+    const applicants = await JobApplication.findAll({
+        where: { job_id: jobId },
+        include: User,
+    });
+
+    res.status(200).json(applicants);
+});
 
 // --- Bookmarks --- //
 const bookmarkJob = asyncHandler(async (req, res) => {
@@ -139,22 +150,42 @@ const getUserBookmarks = asyncHandler(async (req, res) => {
     res.status(200).send(bookmarkedJobs);
 });
 
+// --- Applications --- //
 // @ desc ---- job application  @ access -- candidate
 // route  --POST-- [base_api]/jobs/:jobId/apply
 const applyJob = asyncHandler(async (req, res) => {
     const user_id = req.user.userId
-    const job_id = 1
+    const job_id = req.params.jobId
     const resumePath = req.file.filename
+
+    const existingApplication = await JobApplication.findOne({where: {user_id, job_id}})
+    if (existingApplication) {
+        res.status(409)
+        throw new Error('You have already applied for this job')
+    }
 
     const application = await JobApplication.create({
         user_id, job_id, resumePath
     })
-    if (!application){
+    if (!application) {
         res.status(500)
         throw new Error('failed to upload resume')
     }
     res.status(201).json({message: 'application completed successfully', details: application})
 })
+
+// @ desc ---- get candidate applications  @ access -- candidate
+// route  --GET-- [base_api]/jobs/applications
+const getCandidateApplications = asyncHandler(async (req, res) => {
+    const userId = req.user.userId
+    const applications = await JobApplication.findAll({
+        where: {user_id: userId},
+        include: Job
+    })
+
+    res.status(200).send(applications)
+})
+
 module.exports = {
     getJobs,
     addJob,
@@ -162,6 +193,7 @@ module.exports = {
     updateJob,
     deleteJob,
     getEmployerJobs,
+    getJobApplicants,
     getCandidateApplications,
     bookmarkJob,
     getUserBookmarks,

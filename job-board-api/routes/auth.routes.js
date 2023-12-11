@@ -13,6 +13,8 @@ router.post('/signup',
 router.post('/verify-email/:verificationCode', authController.verifyEmail)
 router.post('/signin', authController.signIn)
 router.post('/sign-out', authController.signOut)
+
+// -- password reset
 router.post('/forgot-password', authController.forgotPassword)
 router.put('/reset-password/:resetToken', authController.resetPassword)
 

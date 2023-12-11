@@ -10,13 +10,16 @@ import useAuth from '../../hooks/useAuth.js';
 
 export default function Favourites() {
     const bookmarksFetchedRef = useRef(false);
-    const bookmarks = useSelector((state) => state.jobs.bookmarkedJobs);
-    const [filteredBookmarks, setFilteredBookmarks] = useState([]);
-
-    const [getBookmarksApiCall, {isLoading, error}] = useGetUserBookmarksMutation();
     const dispatch = useDispatch();
+
+    // user
     const {userInfo} = useAuth();
     const isEmployer = userInfo.role === 'employer';
+
+    // bookmarks
+    const bookmarks = useSelector((state) => state.jobs.bookmarkedJobs);
+    const [filteredBookmarks, setFilteredBookmarks] = useState([]);
+    const [getBookmarksApiCall, {isLoading, error}] = useGetUserBookmarksMutation();
 
     const fetchBookmarks = async () => {
         try {

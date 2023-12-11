@@ -12,7 +12,9 @@ router.use(authMiddleware.verifyToken);
 router.get('/view/bookmarks', jobController.getUserBookmarks);
 
 // --- employer only routes --- //
-router.get('/my-jobs', authMiddleware.requireEmployer, jobController.getEmployerJobs); // get emp jobs
+router.get('/me/my-jobs', authMiddleware.requireEmployer, jobController.getEmployerJobs); // get emp jobs
+router.get('/applicants/:jobId', authMiddleware.requireEmployer, jobController.getJobApplicants); // get job applicants
+
 router.post('/add', [
         authMiddleware.requireEmployer,
         inputValidation.jobInputs,
@@ -25,7 +27,7 @@ router.route('/:jobId')
 
 // candidate only routes
 router.put('/bookmark/:jobId', jobController.bookmarkJob)
-router.post('/apply', fileMiddleware.upload , jobController.applyJob)
-router.get('/applications', jobController.getCandidateApplications);
+router.post('/:jobId/apply', fileMiddleware.upload , jobController.applyJob)
+router.get('/me/applications', jobController.getCandidateApplications);
 
 module.exports = router;
