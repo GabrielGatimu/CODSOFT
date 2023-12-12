@@ -1,0 +1,33 @@
+import {useState} from 'react';
+import {Document, Page} from 'react-pdf';
+
+import './PdfComponent.css'
+export default function PdfComponent({pdf}) {
+    const [numPages, setNumPages] = useState();
+    const [pageNumber, setPageNumber] = useState(1);
+
+    function onDocumentLoadSuccess({numPages}) {
+        setNumPages(numPages);
+    }
+
+    return (
+        <div className="pdf-container">
+            <p>
+                Page {pageNumber} of {numPages}
+            </p>
+            <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
+                {
+                    Array.apply(null, Array(numPages))
+                        .map((x, i) => i + 1)
+                        .map((page, i) => {
+                                return (
+                                    <Page key={i} pageNumber={page} renderTextLayer={false} renderAnnotationLayer={false}/>
+                                )
+                            }
+                        )
+                }
+            </Document>
+
+        </div>
+    );
+}

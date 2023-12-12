@@ -21,7 +21,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
-app.use(express.static('uploads'))
+app.use('/files', express.static('uploads'))
 
 // ---- Routes ---- //
 const base_api = '/api/v1'

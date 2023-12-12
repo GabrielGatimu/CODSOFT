@@ -1,0 +1,4 @@
+.pdf-container {
+    background-image: linear-gradient(to top, #48c6ef 0%, #6f86d6 100%);
+    @apply p-10 m-4 rounded
+}
