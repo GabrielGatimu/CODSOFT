@@ -79,10 +79,10 @@ export default function ViewApplicants() {
                 <span className="font-semibold text-stone-950 mr-3 text-xl">Applicants:</span> <span className="ml-2 text-green-600 text-xl">{applicants ? applicants.length : '0'}</span>
                 <br/>
             </header>
-            <section className="flex items-center justify-center gap-10 flex-wrap mt-20 ">
+            <section className="flex flex-col divide-y divide-slate-500 items-center gap-8 mt-4 border-t-2 border-t-stone-950 ">
             {/* Applicants data */}
             {applicants && applicants.map((applicant) => (
-                <div key={applicant.id} className="my-4 p-4">
+                <div key={applicant.id} className="my-4 mt-0 p-4">
                     <h3 className="font-semibold text-stone-800">
                         {applicant.user?.first_name} {applicant.user?.last_name}
                     </h3>
