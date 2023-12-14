@@ -1,10 +1,10 @@
 const JWT = require("jsonwebtoken");
 const asyncHandler = require('express-async-handler')
-const {User}  = require('../models')
+const {User} = require('../models')
 
 const verifyToken = asyncHandler(async (req, res, next) => {
-    const access_token =
-        req.headers["x-access-token"] || req.cookies["x-access-token"]
+    const authHeader = req.header('Authorization')
+    const access_token = authHeader && authHeader.split(' ')[1]
 
     if (!access_token) {
         return res.status(403).json({
@@ -18,11 +18,15 @@ const verifyToken = asyncHandler(async (req, res, next) => {
         process.env["JWT_SECRET_ACCESS_TOKEN"],
         (err, decoded) => {
             if (err) {
-                res.status(401);
-                throw new Error("Unauthorized!");
+                if (err.name === 'TokenExpiredError') {
+                    res.status(401)
+                    throw new Error("Token has expired")
+                } else {
+                    res.status(401);
+                    throw new Error("Unauthorized!");
+                }
             }
 
-            // console.log(decoded)
             req.user = decoded;
             next();
         }
@@ -30,7 +34,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
 })
 
 const requireEmployer = asyncHandler(async (req, res, next) => {
-    const user = await  User.findOne({where: {id: req.user.userId}});
+    const user = await User.findOne({where: {id: req.user.userId}});
 
     if (!user) {
         req.status(404);
@@ -47,7 +51,7 @@ const requireEmployer = asyncHandler(async (req, res, next) => {
 })
 
 const requireCandidate = asyncHandler(async (req, res, next) => {
-    const user = await  User.findOne({where: {id: req.user.userId}});
+    const user = await User.findOne({where: {id: req.user.userId}});
 
     if (!user) {
         req.status(404);

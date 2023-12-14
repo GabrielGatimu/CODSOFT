@@ -4,20 +4,23 @@ import {useSelector} from 'react-redux';
 import {toast} from 'react-toastify';
 import {pdfjs} from "react-pdf";
 
+import './ViewApplicant.css'
 import Loader from '../../components/Loader.jsx';
 import {useGetJobApplicationsMutation, useGetJobMutation} from '../../state/slices/jobs/jobApi.slice.js';
 import {formatDate} from "../../utils/date.util.js";
 import PdfComponent from "../../components/pdf/PdfComponent.jsx";
 
-import pdf from '../../../../job-board-api/uploads/1702395893502-john-ben.pdf'
+import pdfFile from '../../../../job-board-api/uploads/1702395893502-john-ben.pdf'
+import {useGetUserResumeMutation} from "../../state/slices/profile/profileApi.slice.js";
 
 export default function ViewApplicants() {
+    const dataFetchedRef = useRef(false);
+
+    // react-pdf config
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
         'pdfjs-dist/build/pdf.worker.min.js',
         import.meta.url,
     ).toString();
-
-    const dataFetchedRef = useRef(false);
 
     // job
     const {jobId} = useParams();
@@ -51,6 +54,34 @@ export default function ViewApplicants() {
         }
     };
 
+    // pdf
+    const [pdf, setPdf] = useState(pdfFile);
+    const [viewingPdf, setViewingPdf] = useState(false);
+    const [selectedPdf, setSelectedPdf] = useState(null);
+    const [getResume, {isLoading, error}] = useGetUserResumeMutation()
+
+    const fetchResume = async (resumeName) => {
+        try {
+            const response = await getResume(resumeName)
+            console.log(response) // buffer stream
+            // setPdf(response)
+
+        } catch (e) {
+            console.error(e)
+        }
+    }
+    const handleViewResume = async (resumePath) => {
+        // setPdf(`http://localhost:8080/api/v1/jobs/resume/${resumePath}`)
+        await fetchResume(resumePath)
+
+        setSelectedPdf(resumePath);
+        setViewingPdf(true);
+    };
+
+    const handleClosePdf = () => {
+        setViewingPdf(false);
+    };
+
     useEffect(() => {
         if (dataFetchedRef.current) return;
         dataFetchedRef.current = true;
@@ -64,46 +95,50 @@ export default function ViewApplicants() {
     }, []);
 
 
-    const handleViewResume = (resumePath) => {
-        // window.open(`http://localhost:8080/api/v1/jobs/${resumePath}`, '_blank');
-        console.log(resumePath)
-
-    };
-
     return (
         <div className="px-2 md:px-8">
             {(getJobLoading || getApplicationsLoading) && <Loader/>}
             <header className="">
-                <span className="font-semibold text-stone-950 mr-3 text-xl">Job:</span> <span className=" ml-20 text-stone-800 text-xl italic">{job?.title}</span>
+                <span className="font-semibold text-stone-950 mr-3 text-xl">Job:</span> <span
+                className=" ml-20 text-stone-800 text-xl italic">{job?.title}</span>
                 <br/>
-                <span className="font-semibold text-stone-950 mr-3 text-xl">Applicants:</span> <span className="ml-2 text-green-600 text-xl">{applicants ? applicants.length : '0'}</span>
+                <span className="font-semibold text-stone-950 mr-3 text-xl">Applicants:</span> <span
+                className="ml-2 text-green-600 text-xl">{applicants ? applicants.length : '0'}</span>
                 <br/>
             </header>
-            <section className="flex items-center justify-center gap-10 flex-wrap mt-20 ">
-            {/* Applicants data */}
-            {applicants && applicants.map((applicant) => (
-                <div key={applicant.id} className="my-4 p-4">
-                    <h3 className="font-semibold text-stone-800">
-                        {applicant.user?.first_name} {applicant.user?.last_name}
-                    </h3>
-                    <p className="text-stone-600">
-                        Applied on: {formatDate(applicant.createdAt)}
-                    </p>
-                    <button
-                        onClick={() => handleViewResume(applicant.resumePath)}
-                        className="btn black-btn mt-4"
-                    >
-                        View Resume
-                    </button>
+            <section
+                className="flex flex-col md:flex-row items-center justify-between gap-8 mt-4 border-t-2 border-t-stone-950 ">
+                {/* Applicants data */}
+                {applicants && applicants.map((applicant) => (
+                    <div key={applicant.id} className="applicant my-4 mt-2 p-4 rounded w-fit md:w-full">
+                        <h3 className="font-semibold text-stone-800">
+                            {applicant.user?.first_name} {applicant.user?.last_name}
+                        </h3>
+                        <p className="text-stone-600">
+                            Applied on: {formatDate(applicant.createdAt)}
+                        </p>
+                        <button
+                            onClick={() => handleViewResume(applicant.resumePath)}
+                            className="w-fit rounded py-1 px-2 text-white border border-indigo-500 bg-gradient-to-r from-indigo-700 to-indigo-500 hover:from-indigo-500 hover:to-indigo-700 mt-4"
+                        >
+                            View Resume
+                        </button>
 
-                    <PdfComponent pdf={pdf} />
-                </div>
-            ))}
-            {applicants.length === 0 &&
-                <p className="text-xl md:text-2xl text-indigo-700">
-                    Oops! No one has applied to this job. Check later.
-                </p>
-            }
+                        {viewingPdf && selectedPdf === applicant.resumePath && (
+                            <>
+                                {isLoading && <Loader/>}
+                                {/*{error && <p>{error}</p>}*/}
+                                <PdfComponent pdf={pdf} onClose={handleClosePdf}/>
+                            </>
+                        )}
+
+                    </div>
+                ))}
+                {applicants.length === 0 &&
+                    <p className="text-xl md:text-2xl text-indigo-700">
+                        Oops! No one has applied to this job. Check later.
+                    </p>
+                }
             </section>
         </div>
     );

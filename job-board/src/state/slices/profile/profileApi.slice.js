@@ -1,4 +1,5 @@
-import { apiSlice } from '../api.slice.js'
+import {apiSlice} from '../api.slice.js'
+
 const PROFILE_URL = "/u/profile";
 
 export const profileApiSlice = apiSlice.injectEndpoints({
@@ -8,6 +9,12 @@ export const profileApiSlice = apiSlice.injectEndpoints({
                 url: `${PROFILE_URL}`,
                 method: "GET",
             }),
+        }),
+        getUserResume: builder.mutation({
+            query: (resumeName) => ({
+                url: `/jobs/resume/${resumeName}`,
+                method: "GET"
+            })
         }),
         updateUser: builder.mutation({
             query: (data) => ({
@@ -27,6 +34,7 @@ export const profileApiSlice = apiSlice.injectEndpoints({
 
 export const {
     useGetUserMutation,
+    useGetUserResumeMutation,
     useUpdateUserMutation,
     useDeleteUserMutation
 } = profileApiSlice;

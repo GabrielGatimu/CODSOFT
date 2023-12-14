@@ -10,6 +10,7 @@ router.get('/:jobId', jobController.viewJob);
 router.use(authMiddleware.verifyToken);
 
 router.get('/view/bookmarks', jobController.getUserBookmarks);
+router.get('/resume/:resumeName', jobController.getResume); // get candidate resume
 
 // --- employer only routes --- //
 router.get('/me/my-jobs', authMiddleware.requireEmployer, jobController.getEmployerJobs); // get emp jobs

@@ -154,6 +154,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
       return res.status(200)
             .json({
                 message: "Email verified successfully",
+                // user: ,
                 accessToken: accessToken
             })
     } else {
@@ -194,7 +195,15 @@ const signIn = asyncHandler(async (req, res) => {
             user.role
         );
 
-        return res.status(200).json({accessToken: accessToken});
+        const userData = {
+            userName,
+            email: user.email,
+            role: user.role
+        }
+        return res.status(200).json({
+            user: userData,
+            accessToken: accessToken
+        });
     } else {
         res.status(401);
         throw new Error("Invalid Credentials");
@@ -204,19 +213,7 @@ const signIn = asyncHandler(async (req, res) => {
 // @ desc ---- Logout user -> destroy cookies
 // route  --POST-- [base_api]/auth/sign-out
 const signOut = asyncHandler(async (req, res) => {
-    res.cookie("x-access-token", " ", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        expires: new Date(0),
-    });
-    res.cookie("refresh-token", " ", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        expires: new Date(0),
-    });
-
+    console.log(req.user)
     res.status(200).json({message: "Logged Out"});
 });
 
