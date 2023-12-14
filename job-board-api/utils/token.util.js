@@ -18,19 +18,19 @@ const tokenGenerator = async (res, userId, userName, email, role) => {
         }
     );
 
-    res.cookie("x-access-token", accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "Strict",
-        maxAge: 24 * 60 * 60 * 1000, // -- 1 day
-    });
-
-    res.cookie("refresh-token", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "Strict",
-        maxAge: 14 * 24 * 60 * 60 * 1000, // -- 14 days
-    });
+    // res.cookie("x-access-token", accessToken, {
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: "Strict",
+    //     maxAge: 24 * 60 * 60 * 1000, // -- 1 day
+    // });
+    //
+    // res.cookie("refresh-token", refreshToken, {
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: "Strict",
+    //     maxAge: 14 * 24 * 60 * 60 * 1000, // -- 14 days
+    // });
 
     return { accessToken, refreshToken };
 }

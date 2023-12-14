@@ -1,3 +1,4 @@
+const path = require('path')
 const asyncHandler = require('express-async-handler')
 const {Job, Bookmark, JobApplication, User} = require('../models')
 
@@ -105,7 +106,7 @@ const getEmployerJobs = asyncHandler(async (req, res) => {
 })
 
 // @ desc ---- Get Job Applicants  @ access -- employer only
-// route  --POST-- [base_api]/jobs/applicants/:jobId
+// route  --GET-- [base_api]/jobs/applicants/:jobId
 const getJobApplicants = asyncHandler(async (req, res) => {
     const {jobId} = req.params;
 
@@ -116,6 +117,23 @@ const getJobApplicants = asyncHandler(async (req, res) => {
 
     res.status(200).json(applicants);
 });
+
+// @ desc ---- Get Resume  @ access -- all
+// route  --GET-- [base_api]/jobs/resume/:resumeName
+const getResume = asyncHandler(async (req, res, next) => {
+    const {resumeName} = req.params;
+    const filePath = path.join(__dirname, '../uploads', resumeName)
+    res.status(200).sendFile(filePath, (err) => {
+        if (err){
+            console.log('server error',err)
+            next(err)
+        }else {
+            console.log('Resume sent:', resumeName)
+            // next()
+        }
+    })
+});
+
 
 // --- Bookmarks --- //
 const bookmarkJob = asyncHandler(async (req, res) => {
@@ -194,6 +212,7 @@ module.exports = {
     deleteJob,
     getEmployerJobs,
     getJobApplicants,
+    getResume,
     getCandidateApplications,
     bookmarkJob,
     getUserBookmarks,
