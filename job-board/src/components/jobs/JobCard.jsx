@@ -8,11 +8,14 @@ import './JobCard.css'
 import {useToggleBookmarkMutation} from "../../state/slices/jobs/jobApi.slice.js";
 import {removeBookmark, setUserBookmarks} from "../../state/slices/jobs/job.slice.js";
 import useAuth from "../../hooks/useAuth.js";
+import useActiveLink from "../../hooks/useActiveLink.js";
 
 function JobCard({job, userIsEmployer}) {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const activeLink = useActiveLink()
     const {userInfo} = useAuth()
+
     // bookmark
     const bookmarks = useSelector(state => state.jobs.bookmarkedJobs)
     const [toggleBookmarkApiCall, {isLoading: bookmarkLoading, error: bookmarkError}] = useToggleBookmarkMutation();
@@ -26,6 +29,16 @@ function JobCard({job, userIsEmployer}) {
     const viewJob = () => {
         navigate(`/jobs/view/${job.id}`)
     }
+
+    const editJob = () => {
+        navigate(`/jobs/edit/${job.id}`)
+    }
+
+    const deleteJob = () => {
+        alert('Sure that you want to delete this job?')
+
+    }
+
 
     const handleBookmark = async () => {
         try {
@@ -98,25 +111,40 @@ function JobCard({job, userIsEmployer}) {
                 {/* check if user is logged in */}
                 {userInfo ?
                     <>
-                        {/* employer shows View and Bookmark buttons only */}
-                        {isJobBookmarked ? (
-                            <Bookmark
-                                className="cursor-pointer fill-indigo-700 text-indigo-700"
-                                onClick={handleBookmark}
-                            />
-                        ) : (
-                            <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
-                        )}
+                        {userIsEmployer && activeLink === '/my-jobs' ? (
+                            <>
+                                {/* employer shows View and Bookmark buttons only */}
+                                <button className="btn green-btn" onClick={editJob}>
+                                    Edit
+                                </button>
+                                <button className="btn danger-btn" onClick={deleteJob}>
+                                    Delete
+                                </button>
 
-                        {isJobApplied ?
-                            <>
-                                <div className="text-stone-500">Applied ✅</div>
                             </>
-                            :
+                        ) : (
                             <>
-                                {!userIsEmployer && <button onClick={viewJob} className="btn green-btn">Apply</button>}
+                                {isJobBookmarked ? (
+                                    <Bookmark
+                                        className="cursor-pointer fill-indigo-700 text-indigo-700"
+                                        onClick={handleBookmark}
+                                    />
+                                ) : (
+                                    <Bookmark className="cursor-pointer" onClick={handleBookmark}/>
+                                )}
+
+                                {isJobApplied ?
+                                    <>
+                                        <div className="text-stone-500">Applied ✅</div>
+                                    </>
+                                    :
+                                    <>
+                                        {!userIsEmployer &&
+                                            <button onClick={viewJob} className="btn green-btn">Apply</button>}
+                                    </>
+                                }
                             </>
-                        }
+                        )}
                     </>
                     :
                     // User is not logged in, show all buttons
@@ -127,7 +155,8 @@ function JobCard({job, userIsEmployer}) {
                 }
             </div>
         </div>
-    );
+    )
+
 }
 
 export default JobCard;

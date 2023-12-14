@@ -34,13 +34,13 @@ import Contact from "./screens/Contact.jsx";
 
 import Account from "./components/layout/Account.jsx"; // account layout
 import Profile from "./screens/Profile.jsx";
-import Dashboard from "./components/Dashboard.jsx";
+import Dashboard from "./components/dashboard/Dashboard.jsx";
 import PostedJobs from "./screens/jobs/PostedJobs.jsx";
 import Applicants from "./screens/jobs/ViewApplicants.jsx";
 import Statistics from "./screens/Statistics.jsx";
 import Applications from "./screens/jobs/Applications.jsx";
 import Favourites from "./screens/jobs/Favourites.jsx";
-import CreateJob from "./screens/jobs/CreateJob.jsx";
+import AddEditJob from "./screens/jobs/AddEditJob.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -76,7 +76,8 @@ const router = createBrowserRouter(
                     <Route element={<RequireRole allowedRole={'employer'}/>}>
                         <Route path="/my-jobs" element={<PostedJobs/>}/>
                         <Route path="/applicants/:jobId" element={<Applicants />}/>
-                        <Route path="/create-job" element={<CreateJob/>}/>
+                        <Route path="/jobs/edit/:jobId" element={<AddEditJob />}/>
+                        <Route path="/create-job" element={<AddEditJob />}/>
                         <Route path="/statistics" element={<Statistics/>}/>
                     </Route>
 
@@ -98,8 +99,8 @@ const router = createBrowserRouter(
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <Provider store={store}>
-        <React.StrictMode>
+        {/*<React.StrictMode>*/}
             <RouterProvider router={router}/>
-        </React.StrictMode>
+        {/*</React.StrictMode>*/}
     </Provider>
 )

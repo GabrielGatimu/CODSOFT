@@ -70,6 +70,7 @@ const addJob = asyncHandler(async (req, res) => {
 // route  --POST-- [base_api]/jobs/:jobId
 const viewJob = asyncHandler(async (req, res) => {
     const {jobId} = req.params
+
     const job = await Job.findOne({where: {id: +(jobId)}})
 
     if (!job) {
@@ -81,7 +82,15 @@ const viewJob = asyncHandler(async (req, res) => {
 })
 
 const updateJob = asyncHandler(async (req, res) => {
-    res.send('update')
+   const {jobId} = req.params
+
+    const job = await Job.findByPk(+(jobId))
+    if(!job){
+        res.status(404);
+        throw new Error("Job not found / already deleted");
+    }
+
+    res.status(200).json({message: 'job updated successfully', details: job})
 })
 
 const deleteJob = asyncHandler(async (req, res) => {
