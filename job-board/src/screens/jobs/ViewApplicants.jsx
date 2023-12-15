@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import {toast} from 'react-toastify';
 import {pdfjs} from "react-pdf";
@@ -9,7 +9,6 @@ import Loader from '../../components/Loader.jsx';
 import {useGetJobApplicationsMutation, useGetJobMutation} from '../../state/slices/jobs/jobApi.slice.js';
 import {formatDate} from "../../utils/date.util.js";
 import PdfComponent from "../../components/pdf/PdfComponent.jsx";
-import {useGetUserResumeMutation} from "../../state/slices/profile/profileApi.slice.js";
 
 export default function ViewApplicants() {
     const dataFetchedRef = useRef(false);
@@ -22,8 +21,6 @@ export default function ViewApplicants() {
     // pdf
     const [pdf, setPdf] = useState(null);
     const [viewingPdf, setViewingPdf] = useState(false);
-    const [selectedPdf, setSelectedPdf] = useState(null);
-    const [getResume, {isLoading, error}] = useGetUserResumeMutation()
 
     // job
     const {jobId} = useParams();
@@ -57,21 +54,9 @@ export default function ViewApplicants() {
         }
     };
 
-    const fetchResume = async (resumePath) => {
-        try {
-            // console.log(resumePath)
-            // const response = await getResume(resumePath)
-            // console.log(response)
-            // setPdf(response)
-        } catch (e) {
-            console.error(e)
-        }
-    }
     const handleViewResume = async (resumePath) => {
-        // await fetchResume(resumePath)
-        setPdf(resumePath)
-        setSelectedPdf(resumePath);
         setViewingPdf(true);
+        setPdf(resumePath)
     };
 
     const handleClosePdf = () => {
@@ -102,39 +87,54 @@ export default function ViewApplicants() {
                 className="ml-2 text-green-600 text-xl">{applicants ? applicants.length : '0'}</span>
                 <br/>
             </header>
-            <section
-                className="flex flex-col md:flex-row items-center justify-between gap-8 mt-4 border-t-2 border-t-stone-950 ">
-                {/* Applicants data */}
-                {applicants && applicants.map((applicant) => (
-                    <div key={applicant.id} className="applicant my-4 mt-2 p-4 rounded w-fit md:w-full">
-                        <h3 className="font-semibold text-stone-800">
-                            {applicant.user?.first_name} {applicant.user?.last_name}
-                        </h3>
-                        <p className="text-stone-600">
-                            Applied on: {formatDate(applicant.createdAt)}
-                        </p>
-                        <button
-                            onClick={() => handleViewResume(applicant.resumePath)}
-                            className="w-fit rounded py-1 px-2 text-white border border-indigo-500 bg-gradient-to-r from-indigo-700 to-indigo-500 hover:from-indigo-500 hover:to-indigo-700 mt-4"
-                        >
-                            View Resume
-                        </button>
 
-                        {viewingPdf && selectedPdf === applicant.resumePath && (
-                            <>
-                                {isLoading && <Loader/>}
-                                <PdfComponent pdf={pdf} onClose={handleClosePdf}/>
-                            </>
-                        )}
+            <section className="mt-4 border-t-2 border-t-slate-800">
+                {applicants.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table
+                            className="mt-2 min-w-full bg-gradient-to-br from-stone-200 to-indigo-200 border border-slate-500 rounded-md">
+                            <thead>
+                            <tr className="text-indigo-700">
+                                <th>Name</th>
+                                <th>Applied On</th>
+                                <th className="text-center">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {applicants.map((applicant) => (
+                                <tr key={applicant.id} className="hover:bg-gray-100 transition duration-300">
+                                    <td>
+                                        {applicant.user?.first_name} {applicant.user?.last_name}
+                                    </td>
+                                    <td className="text-stone-700">
+                                        {formatDate(applicant.createdAt)}
+                                    </td>
+                                    <td className="actions-cell">
+                                        <button
+                                            onClick={() => handleViewResume(applicant.resumePath)}
+                                            className="more-action-btn bg-slate-700"
+                                        >
+                                           View Resume
+                                        </button>
+
+                                        <button className="more-action-btn bg-green-600">all info</button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+
+                        {/* view pdf component */}
+                        {viewingPdf && <PdfComponent pdf={pdf} onClose={handleClosePdf}/>}
 
                     </div>
-                ))}
-                {applicants.length === 0 &&
-                    <p className="text-xl md:text-2xl text-indigo-700">
+                ) : (
+                    <p className="mt-6 text-xl md:text-2xl text-indigo-700">
                         Oops! No one has applied to this job. Check later.
                     </p>
-                }
+                )}
             </section>
+
         </div>
     );
 }

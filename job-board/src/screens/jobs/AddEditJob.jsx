@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {useCreateJobMutation, useGetJobMutation, useUpdateJobMutation} from '../../state/slices/jobs/jobApi.slice.js';
-import {removeEmployerJob, setEmployerJobs} from '../../state/slices/jobs/job.slice.js';
+import {setEmployerJobs} from '../../state/slices/jobs/job.slice.js';
 import {toast} from 'react-toastify';
 import Loader from '../../components/Loader.jsx';
 import {PlusIcon, SaveIcon} from 'lucide-react';
@@ -16,6 +16,7 @@ export default function AddEditJob() {
 
     //job
     const {jobId} = useParams()
+    // let jobs = useSelector(state => state.jobs.employerJobs)
     const [createJobApiCall, {isLoading: createJobLoading, error: createJobError}] = useCreateJobMutation();
     const [getJobApiCall, {isLoading: getJobLoading, error: getJobError}] = useGetJobMutation();
     const [updateJobApiCall, {isLoading: updateJobLoading, error: updateJobError}] = useUpdateJobMutation();
@@ -85,8 +86,7 @@ export default function AddEditJob() {
                 dispatch(setEmployerJobs([response.newJob]));
             } else {
                 response = await updateJobApiCall(dataToSend).unwrap()
-                // dispatch(removeEmployerJob(jobId))
-                // dispatch(setEmployerJobs([response.details]))
+                // should update state --> employer jobs --> updated job
             }
 
             setTimeout(() => {
@@ -103,7 +103,6 @@ export default function AddEditJob() {
     const getJob = async () => {
         try {
             const response = await getJobApiCall(jobId).unwrap()
-            console.log(response)
             setJobData({...response})
         } catch (e) {
             console.error(e)
