@@ -9,8 +9,6 @@ import Loader from '../../components/Loader.jsx';
 import {useGetJobApplicationsMutation, useGetJobMutation} from '../../state/slices/jobs/jobApi.slice.js';
 import {formatDate} from "../../utils/date.util.js";
 import PdfComponent from "../../components/pdf/PdfComponent.jsx";
-
-import pdfFile from '../../../../job-board-api/uploads/1702395893502-john-ben.pdf'
 import {useGetUserResumeMutation} from "../../state/slices/profile/profileApi.slice.js";
 
 export default function ViewApplicants() {
@@ -21,6 +19,11 @@ export default function ViewApplicants() {
         'pdfjs-dist/build/pdf.worker.min.js',
         import.meta.url,
     ).toString();
+    // pdf
+    const [pdf, setPdf] = useState(null);
+    const [viewingPdf, setViewingPdf] = useState(false);
+    const [selectedPdf, setSelectedPdf] = useState(null);
+    const [getResume, {isLoading, error}] = useGetUserResumeMutation()
 
     // job
     const {jobId} = useParams();
@@ -54,26 +57,19 @@ export default function ViewApplicants() {
         }
     };
 
-    // pdf
-    const [pdf, setPdf] = useState(pdfFile);
-    const [viewingPdf, setViewingPdf] = useState(false);
-    const [selectedPdf, setSelectedPdf] = useState(null);
-    const [getResume, {isLoading, error}] = useGetUserResumeMutation()
-
-    const fetchResume = async (resumeName) => {
+    const fetchResume = async (resumePath) => {
         try {
-            const response = await getResume(resumeName)
-            console.log(response) // buffer stream
+            // console.log(resumePath)
+            // const response = await getResume(resumePath)
+            // console.log(response)
             // setPdf(response)
-
         } catch (e) {
             console.error(e)
         }
     }
     const handleViewResume = async (resumePath) => {
-        // setPdf(`http://localhost:8080/api/v1/jobs/resume/${resumePath}`)
-        await fetchResume(resumePath)
-
+        // await fetchResume(resumePath)
+        setPdf(resumePath)
         setSelectedPdf(resumePath);
         setViewingPdf(true);
     };
@@ -127,7 +123,6 @@ export default function ViewApplicants() {
                         {viewingPdf && selectedPdf === applicant.resumePath && (
                             <>
                                 {isLoading && <Loader/>}
-                                {/*{error && <p>{error}</p>}*/}
                                 <PdfComponent pdf={pdf} onClose={handleClosePdf}/>
                             </>
                         )}

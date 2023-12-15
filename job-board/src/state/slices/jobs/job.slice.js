@@ -19,6 +19,9 @@ const jobSlice = createSlice({
         setEmployerJobs: (state, action) => {
             state.employerJobs = [...state.employerJobs, ...action.payload]
         },
+        removeEmployerJob: (state, action) => {
+            // state.employerJobs = [...state.employerJobs, ...action.payload]
+        },
         setUserBookmarks: (state, action) => {
             state.bookmarkedJobs = [...state.bookmarkedJobs, ...action.payload]
         },
@@ -36,5 +39,5 @@ const jobSlice = createSlice({
     }
 })
 
-export const {setStateJobs, setUserBookmarks, removeBookmark, setEmployerJobs, removeAllUserJobsData, setUserApplications} = jobSlice.actions
+export const {setStateJobs, setUserBookmarks, removeBookmark, setEmployerJobs, removeEmployerJob, removeAllUserJobsData, setUserApplications} = jobSlice.actions
 export default jobSlice.reducer

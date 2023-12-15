@@ -1,6 +1,7 @@
 const path = require('path')
 const asyncHandler = require('express-async-handler')
 const {Job, Bookmark, JobApplication, User} = require('../models')
+const {cloudinaryUtil} = require('../utils')
 
 // @ desc ---- Get Jobs  @ access -- all
 // route  --POST-- [base_api]/jobs
@@ -83,6 +84,11 @@ const viewJob = asyncHandler(async (req, res) => {
 
 const updateJob = asyncHandler(async (req, res) => {
    const {jobId} = req.params
+    const {
+        title, category, company, companyLogo, location, type, experience, description, skills, salary
+    } = req.body;
+
+    console.log(req.body)
 
     const job = await Job.findByPk(+(jobId))
     if(!job){
@@ -90,7 +96,28 @@ const updateJob = asyncHandler(async (req, res) => {
         throw new Error("Job not found / already deleted");
     }
 
-    res.status(200).json({message: 'job updated successfully', details: job})
+    if(title !== job.title  && company !== job.company){
+        // check for similar
+        const existingJob = await Job.findOne({where: {title, company}})
+        if (existingJob) {
+            res.status(409)
+            throw new Error('You already created a similar job. Change the title or the company name')
+        }
+    }
+
+    job.title = title || job.title
+    job.category = category || job.category
+    job.company = company || job.company
+    job.companyLogo = companyLogo || job.companyLogo
+    job.location = location || job.location
+    job.skills = skills || job.skills
+    job.experience = experience || job.experience
+    job.type = type || job.type
+    job.description = description || job.description
+    job.salary = salary || job.salary
+
+    const updatedJob = await job.save()
+    res.status(200).json({message: 'job updated successfully', details: updatedJob})
 })
 
 const deleteJob = asyncHandler(async (req, res) => {
@@ -128,10 +155,10 @@ const getJobApplicants = asyncHandler(async (req, res) => {
 });
 
 // @ desc ---- Get Resume  @ access -- all
-// route  --GET-- [base_api]/jobs/resume/:resumeName
+// route  --GET-- [base_api]/jobs/resume/:resumePath
 const getResume = asyncHandler(async (req, res, next) => {
-    const {resumeName} = req.params;
-    const filePath = path.join(__dirname, '../uploads', resumeName)
+    const {resumePath} = req.params;
+    const filePath = path.join(__dirname, '../uploads', resumePath)
     res.status(200).sendFile(filePath, (err) => {
         if (err){
             console.log('server error',err)
@@ -142,7 +169,6 @@ const getResume = asyncHandler(async (req, res, next) => {
         }
     })
 });
-
 
 // --- Bookmarks --- //
 const bookmarkJob = asyncHandler(async (req, res) => {
@@ -183,7 +209,7 @@ const getUserBookmarks = asyncHandler(async (req, res) => {
 const applyJob = asyncHandler(async (req, res) => {
     const user_id = req.user.userId
     const job_id = req.params.jobId
-    const resumePath = req.file.filename
+    const {resume} = req.files
 
     const existingApplication = await JobApplication.findOne({where: {user_id, job_id}})
     if (existingApplication) {
@@ -191,14 +217,30 @@ const applyJob = asyncHandler(async (req, res) => {
         throw new Error('You have already applied for this job')
     }
 
-    const application = await JobApplication.create({
-        user_id, job_id, resumePath
-    })
-    if (!application) {
-        res.status(500)
-        throw new Error('failed to upload resume')
-    }
-    res.status(201).json({message: 'application completed successfully', details: application})
+    // upload file to CDN
+   await cloudinaryUtil.cloudinary.uploader.upload(
+        resume.tempFilePath, {
+            public_id: `${user_id}_${job_id}_${Date.now()}`,
+            resource_type: "raw",
+            folder: "resumes"
+        }
+    ).then(async (data) => {
+       // save application to DB
+       const application = await JobApplication.create({
+           user_id, job_id, resumePath: data.url
+       })
+       if (!application) {
+           res.status(500)
+           throw new Error('failed to upload resume')
+       }
+       res.status(201).json({
+           message: "application submitted successfully",
+           details: application
+       })
+   }).catch(error => {
+       res.status(500)
+       throw new Error('Failed to upload file to server')
+   })
 })
 
 // @ desc ---- get candidate applications  @ access -- candidate

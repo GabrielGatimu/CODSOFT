@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {useCreateJobMutation, useGetJobMutation, useUpdateJobMutation} from '../../state/slices/jobs/jobApi.slice.js';
-import {setEmployerJobs} from '../../state/slices/jobs/job.slice.js';
+import {removeEmployerJob, setEmployerJobs} from '../../state/slices/jobs/job.slice.js';
 import {toast} from 'react-toastify';
 import Loader from '../../components/Loader.jsx';
 import {PlusIcon, SaveIcon} from 'lucide-react';
@@ -85,7 +85,7 @@ export default function AddEditJob() {
                 dispatch(setEmployerJobs([response.newJob]));
             } else {
                 response = await updateJobApiCall(dataToSend).unwrap()
-                console.log(response)
+                // dispatch(removeEmployerJob(jobId))
                 // dispatch(setEmployerJobs([response.details]))
             }
 
@@ -103,6 +103,7 @@ export default function AddEditJob() {
     const getJob = async () => {
         try {
             const response = await getJobApiCall(jobId).unwrap()
+            console.log(response)
             setJobData({...response})
         } catch (e) {
             console.error(e)
@@ -111,6 +112,7 @@ export default function AddEditJob() {
     }
 
     useEffect(() => {
+        if (activeLink === '/create-job') return
         getJob()
     }, []);
     return (
@@ -180,6 +182,7 @@ export default function AddEditJob() {
                         <div className="p-1 rounded bg-indigo-200 my-1">
                             <label htmlFor="type">Job Type:</label>
                             <select className="px-3 mb-2 bg-stone-100 rounded" name="type" id="type"
+                                    defaultValue="Full-time"
                                     value={jobData.type} onChange={handleInputChange} required>
                                 <option value="Full-time">Full-Time</option>
                                 <option value="Part-time">Part-Time</option>
@@ -243,6 +246,7 @@ export default function AddEditJob() {
                                     <input
                                         type="number"
                                         name="fixedSalary"
+                                        // value={activeLink === '/create-job' ? jobData.fixedSalary : jobData.salary}
                                         value={jobData.fixedSalary}
                                         placeholder="Fixed Salary"
                                         onChange={handleInputChange}

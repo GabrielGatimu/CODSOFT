@@ -4,6 +4,7 @@ const express = require('express')
 const cors = require('cors')
 require('dotenv').config()
 const cookieParser = require('cookie-parser')
+const fileUpload = require('express-fileupload')
 
 const db = require('./models')
 const {errorMiddleware} = require('./middleware')
@@ -20,6 +21,7 @@ app.use(cors(corsOptions))
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+app.use(fileUpload({useTempFiles: true}))
 app.use(cookieParser())
 app.use(express.static('uploads'))
 
@@ -42,7 +44,7 @@ app.listen(port, async () => {
             console.log(`\n\t connected to ${process.env['DB']} database \n\t syncing models...\n`)
 
             // sync DB
-            await db.sequelize.sync({alter:true})
+            await db.sequelize.sync({alter: true})
                 .then(() => {
                     console.log(`\n\t models synchronized successfully \n`)
 

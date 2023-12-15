@@ -23,21 +23,22 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // ---- Update user profile
 const updateUserProfile = asyncHandler(async (req, res) => {
     const userId = req.user.userId;
+    const {first_name, last_name, email, password} = req.body
     const user = await User.findByPk(userId);
 
     if (user) {
-        if(req.body.email && (req.body.email !== user.email)){
-            const existingEmail = await User.findOne({where: {email: req.body.email}})
+        if(email && (email !== user.email)){
+            const existingEmail = await User.findOne({where: {email}})
             if (existingEmail){
                 res.status(409)
                 throw new Error('Such EMAIL is already in use. Use another one')
             }
         }
-        user.first_name = req.body.first_name || user.first_name;
-        user.last_name = req.body.last_name || user.last_name;
-        user.email = req.body.email || user.email;
-        if (req.body.password) {
-            user.password = await bcrypt.hash(req.body.password, 10);
+        user.first_name = first_name || user.first_name;
+        user.last_name = last_name || user.last_name;
+        user.email = email || user.email;
+        if (password) {
+            user.password = await bcrypt.hash(password, 10);
         }
 
         const updatedUser = await user.save();

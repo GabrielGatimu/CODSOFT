@@ -230,66 +230,66 @@ export default function JobListing() {
                         </div>
                     </div>
                     {/* Other Filters */}
-                    <div className="custom_flex-container filter-container">
-                        {/* filter inputs */}
-                        <h2 className="font-bold">Other filters</h2>
-                        <div>
-                            <select name="category_filter" value={filters.category_filter}
-                                    onChange={handleFilterChange}>
-                                <option value="">Category</option>
-                                <option value="Software Development">Software Development</option>
-                                <option value="Data Science">Data Science</option>
-                            </select>
-                        </div>
-                        <div>
-                            <select name="company_filter" value={filters.company_filter} onChange={handleFilterChange}>
-                                <option value="">Company</option>
-                                <option value="Microsoft">Microsoft</option>
-                                <option value="Google">Google</option>
-                                <option value="IBM">IBM</option>
-                            </select>
-                        </div>
-                        <div>
-                            <select name="type_filter" value={filters.type_filter} onChange={handleFilterChange}>
-                                <option value="">Type</option>
-                                <option value="full-time">full-time</option>
-                                <option value="part-time">part-time</option>
-                                <option value="contract">contract</option>
-                            </select>
-                        </div>
-                        <div>
-                            <select name="location_filter" value={filters.location_filter}
-                                    onChange={handleFilterChange}>
-                                <option value="">location</option>
-                                <option value="remote">remote</option>
-                                <option value="New York">New York</option>
-                                <option value="London">London</option>
-                                <option value="Nairobi">Nairobi</option>
-                            </select>
-                        </div>
-                        <div>
-                            <select name="experience_filter" value={filters.experience_filter}
-                                    onChange={handleFilterChange}>
-                                <option value="">exp</option>
-                                <option value="0-2 years">0-2 yrs</option>
-                                <option value="2-5 years">2-5 yrs</option>
-                                <option value="5-10 years"> 5-10 yrs</option>
-                                <option value="10+ years">10+ yrs</option>
-                            </select>
-                        </div>
+                    {/*<div className="custom_flex-container filter-container">*/}
+                    {/*    /!* filter inputs *!/*/}
+                    {/*    <h2 className="font-bold">Other filters</h2>*/}
+                    {/*    <div>*/}
+                    {/*        <select name="category_filter" value={filters.category_filter}*/}
+                    {/*                onChange={handleFilterChange}>*/}
+                    {/*            <option value="">Category</option>*/}
+                    {/*            <option value="Software Development">Software Development</option>*/}
+                    {/*            <option value="Data Science">Data Science</option>*/}
+                    {/*        </select>*/}
+                    {/*    </div>*/}
+                    {/*    <div>*/}
+                    {/*        <select name="company_filter" value={filters.company_filter} onChange={handleFilterChange}>*/}
+                    {/*            <option value="">Company</option>*/}
+                    {/*            <option value="Microsoft">Microsoft</option>*/}
+                    {/*            <option value="Google">Google</option>*/}
+                    {/*            <option value="IBM">IBM</option>*/}
+                    {/*        </select>*/}
+                    {/*    </div>*/}
+                    {/*    <div>*/}
+                    {/*        <select name="type_filter" value={filters.type_filter} onChange={handleFilterChange}>*/}
+                    {/*            <option value="">Type</option>*/}
+                    {/*            <option value="full-time">full-time</option>*/}
+                    {/*            <option value="part-time">part-time</option>*/}
+                    {/*            <option value="contract">contract</option>*/}
+                    {/*        </select>*/}
+                    {/*    </div>*/}
+                    {/*    <div>*/}
+                    {/*        <select name="location_filter" value={filters.location_filter}*/}
+                    {/*                onChange={handleFilterChange}>*/}
+                    {/*            <option value="">location</option>*/}
+                    {/*            <option value="remote">remote</option>*/}
+                    {/*            <option value="New York">New York</option>*/}
+                    {/*            <option value="London">London</option>*/}
+                    {/*            <option value="Nairobi">Nairobi</option>*/}
+                    {/*        </select>*/}
+                    {/*    </div>*/}
+                    {/*    <div>*/}
+                    {/*        <select name="experience_filter" value={filters.experience_filter}*/}
+                    {/*                onChange={handleFilterChange}>*/}
+                    {/*            <option value="">exp</option>*/}
+                    {/*            <option value="0-2 years">0-2 yrs</option>*/}
+                    {/*            <option value="2-5 years">2-5 yrs</option>*/}
+                    {/*            <option value="5-10 years"> 5-10 yrs</option>*/}
+                    {/*            <option value="10+ years">10+ yrs</option>*/}
+                    {/*        </select>*/}
+                    {/*    </div>*/}
 
-                        {/* filter buttons */}
-                        <div className="flex items-center gap-x-4 border-b-2 border-stone-400 pb-1">
-                            <button
-                                className="btn green-btn"
-                                onClick={handleSearch}>Search
-                            </button>
-                            <button
-                                className="btn black-btn"
-                                onClick={handleResetFilters}>Reset
-                            </button>
-                        </div>
-                    </div>
+                    {/*    /!* filter buttons *!/*/}
+                    {/*    <div className="flex items-center gap-x-4 border-b-2 border-stone-400 pb-1">*/}
+                    {/*        <button*/}
+                    {/*            className="btn green-btn"*/}
+                    {/*            onClick={handleSearch}>Search*/}
+                    {/*        </button>*/}
+                    {/*        <button*/}
+                    {/*            className="btn black-btn"*/}
+                    {/*            onClick={handleResetFilters}>Reset*/}
+                    {/*        </button>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
 
                 </div>
             </section>
