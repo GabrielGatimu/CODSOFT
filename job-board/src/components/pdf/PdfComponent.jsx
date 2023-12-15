@@ -53,8 +53,7 @@ export default function PdfComponent({pdf, onClose}) {
             </nav>
 
             <Document
-                file={`http://localhost:8080/api/v1/jobs/resume/${pdf}`}
-                // file={pdf}
+                file={pdf}
                 onLoadSuccess={onDocumentLoadSuccess}
             >
                 <Page pageNumber={pageNumber}  renderTextLayer={false} renderAnnotationLayer={false}

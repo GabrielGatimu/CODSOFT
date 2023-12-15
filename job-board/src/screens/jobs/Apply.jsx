@@ -5,6 +5,7 @@ import {toast} from 'react-toastify';
 import BackButton from "../../components/navigation/BackButton.jsx";
 import useAuth from "../../hooks/useAuth.js";
 import {useApplyJobMutation} from "../../state/slices/jobs/jobApi.slice.js";
+import Loader from "../../components/Loader.jsx";
 
 export default function Apply() {
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function Apply() {
     const [applyJob, {isLoading, error}] = useApplyJobMutation()
     const {jobId} = useParams()
 
+
     const handleResumeChange = (e) => {
         const selectedResume = e.target.files[0];
         setResume(selectedResume);
@@ -28,7 +30,6 @@ export default function Apply() {
     const handleAboutChange = (e) => {
         setAbout(e.target.value);
     };
-
 
     const handleApplicationSubmit = async (e) => {
         e.preventDefault();
@@ -56,10 +57,10 @@ export default function Apply() {
             const response = await applyJob(dataToSend).unwrap()
             toast.success(response.message);
 
-            setTimeout(() => {
-                navigate('/jobs')
-
-            }, 6000)
+            // setTimeout(() => {
+            //     navigate('/jobs')
+            //
+            // }, 2000)
         } catch (e) {
             console.error(e);
             toast.error(e?.data?.message)
@@ -96,6 +97,7 @@ export default function Apply() {
                         Accepted file formats: .pdf, .docx
                     </small>
                 </div>
+
                 <div className="mb-4">
                     <label className="block text-gray-700 font-bold mb-2" htmlFor="about">
                         About Yourself (Optional)
@@ -109,9 +111,12 @@ export default function Apply() {
                         className="border p-2 w-full"
                     />
                 </div>
-                <button type="submit" className="btn green-btn">
-                    Submit Application
-                </button>
+                {
+                    isLoading ? <><Loader/> <span className="text-xs text-indigo-700">submitting application...</span></> :
+                        <button type="submit" className="btn green-btn">
+                            Submit Application
+                        </button>
+                }
             </form>
         </div>
     );

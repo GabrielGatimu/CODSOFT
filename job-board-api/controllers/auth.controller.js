@@ -151,10 +151,15 @@ const verifyEmail = asyncHandler(async (req, res) => {
             user.role
         );
 
+        const userData = {
+            userName,
+            email: user.email,
+            role: user.role
+        }
       return res.status(200)
             .json({
                 message: "Email verified successfully",
-                // user: ,
+                user: userData,
                 accessToken: accessToken
             })
     } else {

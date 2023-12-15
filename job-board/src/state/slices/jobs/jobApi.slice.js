@@ -21,18 +21,31 @@ export const jobApiSlice = apiSlice.injectEndpoints({
                 method: "GET"
             })
         }),
-        createJob : builder.mutation({
-            query: (data) => ({
-                url: `${JOBS_URL}/add`,
-                method: "POST",
-                body: data
-            })
-        }),
         getJob : builder.mutation({
             query: (jobId) => ({
                 url: `${JOBS_URL}/${jobId}`,
                 method: "GET",
             })
+        }),
+        createJob : builder.mutation({
+            query: (data) => ({
+                url: `${JOBS_URL}/add`,
+                method: "POST",
+                body: data.formData
+            })
+        }),
+        updateJob : builder.mutation({
+            query: (data) => ({
+                url: `${JOBS_URL}/${data.jobId}`,
+                method: "PUT",
+                body: data.formData,
+            }),
+        }),
+        deleteJob : builder.mutation({
+            query: (jobId) => ({
+                url: `${JOBS_URL}/${jobId}`,
+                method: "DELETE",
+            }),
         }),
         // --- Bookmarks --- //
         toggleBookmark: builder.mutation({
@@ -61,9 +74,6 @@ export const jobApiSlice = apiSlice.injectEndpoints({
                 method: "GET",
             })
         })
-
-        // editJob : builder.mutation({}),
-        // deleteJob : builder.mutation({}),
     })
 })
 
@@ -71,8 +81,9 @@ export const {
     useGetJobsMutation,
     useGetEmployerJobsMutation,
     useGetJobApplicationsMutation,
-    useCreateJobMutation,
     useGetJobMutation,
+    useCreateJobMutation,
+    useUpdateJobMutation,
     useToggleBookmarkMutation,
     useGetUserBookmarksMutation,
     useApplyJobMutation,
