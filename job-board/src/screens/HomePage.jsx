@@ -1,8 +1,8 @@
-import Hero from "../components/Hero.jsx";
+import Hero from "../components/home/Hero.jsx";
 
 export default function HomePage() {
     return (
-        <section className="bg-blue-50 font-normal">
+        <section className="h-full font-normal">
         <Hero />
         </section>
     );

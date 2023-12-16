@@ -3,12 +3,12 @@ import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {toast} from "react-toastify";
 import {jwtDecode} from "jwt-decode";
+import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
 
 import '../../styles/custom.css'
 import {setCredentials} from "../../state/slices/auth/auth.slice.js";
 import {useGoogleMutation, useSigninMutation} from "../../state/slices/auth/authApi.slice.js";
 import useAuth from "../../hooks/useAuth.js";
-import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
 import Loader from "../../components/Loader.jsx";
 
 export default function SignIn() {
