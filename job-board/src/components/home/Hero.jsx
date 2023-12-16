@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 const Hero = () => {
     return (
         <main className="
-        h-full md:flex
+        h-fit md:h-[calc(100vh-10vh)] md:flex
          bg-gradient-to-r from-indigo-700 to-indigo-500 ">
 
             {/* left-side Content */}
@@ -40,7 +40,7 @@ const Hero = () => {
             <section className="flex-1 h-full">
                 <img
                     className="h-full object-cover"
-                    src="/assets/images/handshake.jpg"
+                    src="/assets/images/happy-man.png"
                     alt="Banner"
                 />
             </section>
