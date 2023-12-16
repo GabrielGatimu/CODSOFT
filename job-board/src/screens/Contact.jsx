@@ -14,7 +14,8 @@ export default function Contact() {
         })
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async (e) => {
+            e.preventDefault()
 
     }
 

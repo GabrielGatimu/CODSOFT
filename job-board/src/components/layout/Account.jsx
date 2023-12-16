@@ -8,7 +8,7 @@ export default function Account() {
             <Sidebar/>
             <div className="flex-1 p-1 md:p-8 overflow-x-hidden h-screen overflow-y-scroll">
                <BackButton />
-               <div >
+               <div className="" >
                 <Outlet/>
                </div>
             </div>

@@ -17,7 +17,7 @@ export default function SidebarMenu({children}) {
     const navigate = useNavigate()
     const {userInfo} = useAuth()
     const [signoutAPICall, {error}] = useSignoutMutation()
-    const [expanded, seExpanded] = useState(true)
+    const [expanded, seExpanded] = useState(false)
     const [moreMenu, setMoreMenu] = useState(false);
 
     const handleSignOut = async () => {
@@ -71,7 +71,7 @@ export default function SidebarMenu({children}) {
                 </SidebarContext.Provider>
 
                 {/* user section */}
-                <div className="border-t border-t-stone-300 flex p-3">
+                <div className="border-t border-t-stone-300 flex p-3 mb-32">
                     <UserCircle
                         className={`w-10 h-10 rounded-md text-indigo-700 cursor-pointer`}
                         onClick={(e) => {
@@ -106,8 +106,6 @@ export default function SidebarMenu({children}) {
                                     <p>Logout</p>
                                     <LogOutIcon />
                                 </div>
-                                <p> action </p>
-                                <p> action </p>
                                 <p> action </p>
                             </div>
                         )}

@@ -116,13 +116,13 @@ export default function AddEditJob() {
     }, []);
     return (
         <div className="flex flex-col w-full items-center justify-center">
-            <h2 className="w-full mb-1 p-1 text-xl md:text-2xl mx-20 text-center text-indigo-700 bg-gradient-to-r from-stone-200 to-indigo-100 ">
+            <h2 className="w-full mb-1 p-1 text-xl md:text-2xl mx-20 text-center text-indigo-700 bg-gradient-to-tr from-stone-200 to-indigo-100 ">
                 {activeLink === '/create-job' ? 'Post a Job' : 'Edit Job'}
             </h2>
             {
                 (getJobLoading || createJobLoading || updateJobLoading) && <Loader/>
             }
-            <form onSubmit={handleSubmit} className="w-full p-4 bg-gradient-to-r from-stone-200 to-indigo-100">
+            <form onSubmit={handleSubmit} className="w-full p-4 bg-gradient-to-br from-stone-200 to-indigo-100">
                 {/* Input fields */}
                 <div className="flex flex-col md:flex-row gap-x-3 gap-y-2">
 

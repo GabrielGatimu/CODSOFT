@@ -19,7 +19,7 @@ import ErrorComponent from "./components/error/ErrorComponent.jsx";
 // -- auth -- //
 import PrivateRoute from "./components/auth/PrivateRoute.jsx";
 import RequireRole from "./components/auth/RequireRole.jsx";
-import SignUpSignIn from "./screens/auth/SignUpSignIn.jsx";
+import SignUp from "./screens/auth/SignUp.jsx";
 import EmailVerification from "./screens/auth/EmailVerification.jsx";
 import ForgotPassword from "./screens/auth/ForgotPassword.jsx";
 import ResetPassword from "./screens/auth/ResetPassword.jsx";
@@ -41,6 +41,7 @@ import Statistics from "./screens/Statistics.jsx";
 import Applications from "./screens/jobs/Applications.jsx";
 import Favourites from "./screens/jobs/Favourites.jsx";
 import AddEditJob from "./screens/jobs/AddEditJob.jsx";
+import SignIn from "./screens/auth/SignIn.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -52,7 +53,8 @@ const router = createBrowserRouter(
             <Route path="/blog" element={<Blog/>}/>
             <Route path="/contact" element={<Contact/>}/>
 
-            <Route path="/signin" element={<SignUpSignIn/>}/>
+            <Route path="/signup" element={<SignUp/>}/>
+            <Route path="/signin" element={<SignIn/>}/>
             <Route path="/forgot-password" element={<ForgotPassword />}/>
             <Route path="/reset-password/:resetToken" element={<ResetPassword />}/>
             <Route path="/verify-email/:verificationCode" element={<EmailVerification />}/>
