@@ -1,5 +1,6 @@
 .idea
 node_modules/
+job-board-api/.env
 .env
 todo.todo
 tmp/

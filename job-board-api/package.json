@@ -5,11 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon job-board-api/app.js",
-    "client": "npm run dev --prefix job-board",
-    "client-expose": "npm run host --prefix job-board",
-    "start": "node job-board-api/app.js",
-    "dev": "concurrently \"npm run server\" \"npm run client-expose\" "
+    "dev": "nodemon app.js",
+    "start": "node app.js"
   },
   "author": "Gabriel Gatimu",
   "license": "ISC",
