@@ -78,6 +78,7 @@ export default function SignIn() {
             dispatch(setCredentials({...response}))
             navigate(redirectPath)
         } catch (e) {
+            console.log(e)
             toast.error(e?.data?.message || e.error)
         }
     }

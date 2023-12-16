@@ -1,4 +1,5 @@
 import {Link} from "react-router-dom";
+import {happyMan} from "../../assets/index.js";
 
 const Hero = () => {
     return (
@@ -8,7 +9,7 @@ const Hero = () => {
 
             {/* left-side Content */}
             <section
-                className="flex-1 flex flex-col items-center justify-center h-[calc(100vh-30vh)] md:min-h-full">
+                className="flex-1 flex flex-col items-center justify-center h-[calc(100vh-50vh)] md:min-h-full">
                 {/* text */}
                 <div className="px-4 text-white">
                     <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
@@ -21,7 +22,7 @@ const Hero = () => {
                 {/*<div></div>*/}
 
                 {/* Search Inputs */}
-                <div className="relative mt-12">
+                <div className="relative mt-16">
                     <div className="text-center">
                         <Link
                             to={'/signup'}
@@ -40,7 +41,7 @@ const Hero = () => {
             <section className="flex-1 h-full">
                 <img
                     className="h-full object-cover"
-                    src="/assets/images/happy-man.png"
+                    src={happyMan}
                     alt="Banner"
                 />
             </section>

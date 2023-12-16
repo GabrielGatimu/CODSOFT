@@ -7,7 +7,7 @@ export default function HowItWorks () {
                 <h2 className="text-3xl font-extrabold text-gray-900">How It Works</h2>
                 <div className="mt-8 px-12 md:px-0 flex flex-col md:flex-row lg:flex-row gap-8 justify-center ">
                     {/* Step 1 */}
-                        <div className="flex-1 shadow-md hover:scale-105 transition duration-500 ease-in-out bg-slate-500 rounded-md p-6">
+                        <div className="flex-1 shadow-md hover:scale-105 transition duration-500 ease-in-out bg-slate-600 rounded-md p-6">
                             {/* step icon */}
                             <Home
                                 size={32}
@@ -19,7 +19,7 @@ export default function HowItWorks () {
                         </div>
 
                     {/* Step 2 */}
-                        <div className="flex-1 shadow-md hover:scale-105 transition duration-500 ease-in-out bg-green-500 rounded-md p-6">
+                        <div className="flex-1 shadow-md hover:scale-105 transition duration-500 ease-in-out bg-green-600 rounded-md p-6">
                             {/* step icon */}
                             <Search
                             size={32}
@@ -45,5 +45,5 @@ export default function HowItWorks () {
             </div>
         </div>
     );
-};
+}
 
