@@ -62,7 +62,7 @@ export default function Profile() {
 
 
     return (
-        <div className="flex h-full items-center justify-center rounded border border-indigo-600">
+        <div className="flex h-full items-center justify-center rounded border py-2 border-slate-300">
             {getProfileError && <p className="flex items-center justify-center w-full p-4 rounded  text-red-500">
                 {getProfileError.data.message}
             </p>
@@ -70,7 +70,7 @@ export default function Profile() {
 
             {getProfileLoading ? <Loader/>
                 :
-                <form className="bg-white p-10 rounded shadow-lg" onSubmit={handleSubmit}>
+                <form className="bg-gradient-to-br from-stone-200 to-indigo-200 p-10 rounded shadow-lg" onSubmit={handleSubmit}>
                     <h2 className="text-2xl mb-6 font-bold text-stone-900">Update your details</h2>
 
                     <div className="input-group">

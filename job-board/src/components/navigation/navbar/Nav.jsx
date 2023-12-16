@@ -81,7 +81,7 @@ export default function Nav() {
                     <MenuItem href="/" onClick={() => handleMenuItemClick('/')}>Home</MenuItem>
                     <MenuItem href="/jobs" onClick={() => handleMenuItemClick('/jobs')}>Browse
                         Jobs</MenuItem>
-                    <MenuItem href="/blog" onClick={() => handleMenuItemClick('/blog')}>Blog</MenuItem>
+                    {/*<MenuItem href="/blog" onClick={() => handleMenuItemClick('/blog')}>Blog</MenuItem>*/}
                     <MenuItem href="/contact" onClick={() => handleMenuItemClick('/contact')}>Contact</MenuItem>
                     {userInfo &&
                         <MenuItem
