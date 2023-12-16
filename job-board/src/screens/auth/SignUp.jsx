@@ -288,19 +288,19 @@ export default function SignUp() {
                         </p>
 
                         {/* Sign In with Google*/}
-                        <div className="mt-4 w-full">
-                            {googleError && <h3>{googleError}</h3>}
-                            <GoogleOAuthProvider clientId={googleClientId}>
-                                <GoogleLogin
-                                    onSuccess={credentialResponse => {
-                                        getGoogleUser(credentialResponse);
-                                    }}
-                                    onError={() => {
-                                        console.log('Error occurred when signing in with Google');
-                                    }}
-                                />
-                            </GoogleOAuthProvider>
-                        </div>
+                        {/*<div className="mt-4 w-full">*/}
+                        {/*    {googleError && <h3>{googleError}</h3>}*/}
+                        {/*    <GoogleOAuthProvider clientId={googleClientId}>*/}
+                        {/*        <GoogleLogin*/}
+                        {/*            onSuccess={credentialResponse => {*/}
+                        {/*                getGoogleUser(credentialResponse);*/}
+                        {/*            }}*/}
+                        {/*            onError={() => {*/}
+                        {/*                console.log('Error occurred when signing in with Google');*/}
+                        {/*            }}*/}
+                        {/*        />*/}
+                        {/*    </GoogleOAuthProvider>*/}
+                        {/*</div>*/}
 
                     </>
                 }
