@@ -25,7 +25,7 @@ const Hero = () => {
                 <div className="relative mt-16">
                     <div className="text-center">
                         <Link
-                            to={'/signup'}
+                            to={'/jobs'}
                             smooth={true}
                             duration={500}
                             className="px-6 py-3 text-base leading-6 font-medium rounded-md text-white bg-gradient-to-l from-green-600 to-green-500 hover:bg-gradient-to-r hover:from-green-700 hover:to-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-blue transition duration-150 ease-in-out"

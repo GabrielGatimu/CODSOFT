@@ -4,6 +4,7 @@ const signupInputs = [
     check("first_name", "first_name is required").not().isEmpty(),
     check("last_name", "last_name is required").not().isEmpty(),
     check("email", "Please include a valid email").isEmail(),
+    check("role", "Please include a valid email").not().isEmpty(),
 ]
 
 const passwordInput = [
