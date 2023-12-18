@@ -227,7 +227,7 @@ const applyJob = asyncHandler(async (req, res) => {
     ).then(async (data) => {
        // save application to DB
        const application = await JobApplication.create({
-           user_id, job_id, resumePath: data.url
+           user_id, job_id, resumePath: data.secure_url
        })
        if (!application) {
            res.status(500)
