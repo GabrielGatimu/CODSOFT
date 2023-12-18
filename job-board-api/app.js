@@ -13,8 +13,8 @@ const app = express()
 
 // ----- CORS ---- //
 const corsOptions = {
-    origin: ["http://localhost", "http://localhost:5173", "http://localhost:4173"],
     // origin: '*',
+    origin: ["http://localhost", "http://localhost:5173", "http://localhost:4173", "https://job-board.onrender.com/"],
     credentials: true
 }
 app.use(cors(corsOptions))
