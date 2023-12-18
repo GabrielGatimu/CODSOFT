@@ -1,10 +1,10 @@
 const asyncHandler = require('express-async-handler')
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const {User, Token} = require('../models')
+const {User, Company, Token} = require('../models')
 const {tokenGenerator, nodemailer} = require('../utils')
 
-const resendEmailToUnverifiedUser = asyncHandler(async (user) => {
+const resendEmailToUnverifiedUser = asyncHandler(async (res, user) => {
     // --- destroy old token and assign a new one
     await Token.destroy({where: {user_id: user.id, action: 'email-verification'}})
     // await Token.save()
@@ -82,6 +82,7 @@ const googleAuth = asyncHandler(async (req, res) => {
 // route  --POST-- [base_api]/auth/signup
 const signUp = asyncHandler(async (req, res) => {
     const {first_name, last_name, email, password, role, auth_source} = req.body;
+    const {company_name, registration_number, company_logo} = req.body;
 
     const userExists = await User.findOne({where: {email}});
     if (userExists) {
@@ -119,12 +120,21 @@ const signUp = asyncHandler(async (req, res) => {
         newToken.token
     )
 
+    // register users company
+    if (role === 'employer'){
+        await Company.create({
+            company_name,
+            registration_number,
+            company_logo,
+            employer_id: newUser.id
+        })
+    }
+
     res.status(201).json({
         message:
             "Registered Successfully. Check your email to verify your account ",
     })
 })
-
 // @desc ---- Verify email
 // route --POST-- [base_api]/auth/:userId/verify-email/:confirmationCode
 const verifyEmail = asyncHandler(async (req, res) => {
@@ -186,7 +196,7 @@ const signIn = asyncHandler(async (req, res) => {
 
     // -- resend verification email if user is !verified
     if (!user.verified) {
-        return resendEmailToUnverifiedUser(user)
+        return resendEmailToUnverifiedUser(res, user)
     }
 
     // compare password

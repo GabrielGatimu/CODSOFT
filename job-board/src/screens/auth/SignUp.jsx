@@ -35,10 +35,8 @@ export default function SignUp() {
     };
 
     //  --- form states --- //
-    // const [isSignUp, setIsSignUp] = useState(false);
-
     // steps & progress
-    const totalSteps = 2
+    const [totalSteps, setTotalSteps] = useState(2)
     const [currentStep, setCurrentStep] = useState(1)
 
     const nextStep = () => {
@@ -49,25 +47,28 @@ export default function SignUp() {
         setCurrentStep((prevStep) => prevStep - 1);
     };
 
-    const [userData, setUserData] = useState({
-        // user details
+    // user details
+    const [userRole, setUserRole] = useState('');
+    const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
         email: "",
         password: "",
         confirm_password: "",
-        title: ""
+        role: userRole,
+
+        // company details
+        company_name: "",
+        company_logo: "",
+        registration_number: ""
     });
 
-    const [companyData, setCompanyData] = useState({
-        // company details
-        company_name: ""
-    });
 
     const handleInputChange = (e) => {
-        setUserData({
-            ...userData,
+        setFormData({
+            ...formData,
             [e.target.name]: e.target.value,
+            role: userRole
         });
     };
 
@@ -77,14 +78,26 @@ export default function SignUp() {
 
         try {
             signUpError = ''
-            if (userData.password !== userData.confirm_password) {
+            if (formData.password !== formData.confirm_password) {
                 toast.error("Passwords do not match. Please check and try again");
                 return;
             }
 
-            const response = await signupAPICall(userData).unwrap()
+            const response = await signupAPICall(formData).unwrap()
             setSuccessMessage(response.message)
-            setUserData({})
+
+            // setFormData({
+            //     first_name: "",
+            //     last_name: "",
+            //     email: "",
+            //     password: "",
+            //     confirm_password: "",
+            //     role: userRole,
+            //
+            //     company_name: "",
+            //     registration_number: "",
+            //     company_logo: ""
+            // });
         } catch (err) {
             toast.error(err?.data?.message || err?.data?.errors[0]?.msg || err.error);
         }
@@ -120,21 +133,93 @@ export default function SignUp() {
             <div className="flex flex-col gap-y-3">
                 <form className="bg-white p-10 rounded shadow-lg" onSubmit={handleSubmit}>
 
-                    {/* STEP 1 */}
-                    {currentStep === 1 &&
+                    {/* STEP 1 (ROLE SELECT) */}
+                    {currentStep === 1 && (
                         <>
                             <h2 className="text-2xl mb-6 font-bold text-stone-900">Get started</h2>
                             <p className="text-gray-900">What do you want to do?</p>
 
                             <div className="flex items-center justify-between gap-x-3 my-12 text-white w-80 ">
-                                <div className="bg-green-600 rounded py-2 px-4  flex-1 text-center">Hire</div>
-                                <div className="bg-purple-600 rounded py-2 px-4 flex-1  text-center">Find a Job</div>
+                                <div
+                                    className={`cursor-pointer bg-green-600 rounded py-2 px-4  flex-1 text-center ${userRole === 'employer' ? 'border-4 border-indigo-500' : ''}`}
+                                    onClick={() => {
+                                        setTotalSteps(3)
+                                        setUserRole('employer')
+                                        setFormData({
+                                            first_name: "",
+                                            last_name: "",
+                                            email: "",
+                                            password: "",
+                                            confirm_password: "",
+                                            role: 'employer'
+                                        });
+                                    }}
+                                >
+                                    Hire
+                                </div>
+                                <div
+                                    className={`cursor-pointer bg-purple-600 rounded py-2 px-4 flex-1  text-center ${userRole === 'candidate' ? 'border-4 border-green-500' : ''}`}
+                                    onClick={() => {
+                                        setTotalSteps(2)
+                                        setUserRole('candidate')
+                                        setFormData({
+                                            first_name: "",
+                                            last_name: "",
+                                            email: "",
+                                            password: "",
+                                            confirm_password: "",
+                                            role: 'candidate'
+                                        });
+                                    }}
+                                >
+                                    Find a Job
+                                </div>
                             </div>
                         </>
-                    }
+                    )}
 
-                    {/* STEP 2 */}
-                    {currentStep === 2 &&
+                    {currentStep === 2 && userRole === 'employer' && (
+                        <>
+                            <h2 className="text-2xl mb-6 font-bold text-stone-900">Company Details</h2>
+                            {/* company details */}
+                            <div className="input-group">
+                                <label htmlFor="company_name">Company Name</label>
+                                <input
+                                    type="text"
+                                    name="company_name"
+                                    placeholder="Enter your company name"
+                                    required
+                                    value={formData.company_name}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className="input-group">
+                                <label htmlFor="company_name">Registration Number</label>
+                                <input
+                                    type="text"
+                                    name="registration_number"
+                                    placeholder="Enter your company/business reg no."
+                                    required
+                                    value={formData.registration_number}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className="input-group">
+                                <label htmlFor="company_name">Registration Number</label>
+                                <input
+                                    type="text"
+                                    name="company_logo"
+                                    placeholder="choose company/business logo."
+                                    required
+                                    value={formData.company_logo}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                        </>
+                    )}
+
+                    {/* STEP 2 (for CANDIDATES)  || STEP 3 (for EMPLOYERS) */}
+                    {(currentStep === totalSteps) &&
                         <>
                             <h2 className="text-2xl mb-6 font-bold text-stone-900">Create an Account</h2>
                             {/* inputs */}
@@ -149,7 +234,7 @@ export default function SignUp() {
                                         name="first_name"
                                         placeholder="first name..."
                                         required
-                                        value={userData.first_name}
+                                        value={formData.first_name}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -163,7 +248,7 @@ export default function SignUp() {
                                         name="last_name"
                                         placeholder="last name..."
                                         required
-                                        value={userData.last_name}
+                                        value={formData.last_name}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -178,7 +263,7 @@ export default function SignUp() {
                                     name="email"
                                     placeholder="Enter your email"
                                     required
-                                    value={userData.email}
+                                    value={formData.email}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -193,7 +278,7 @@ export default function SignUp() {
                                         name="password"
                                         placeholder="Enter your password"
                                         required
-                                        value={userData.password}
+                                        value={formData.password}
                                         onChange={handleInputChange}
                                     />
                                     {showPassword ?
@@ -235,7 +320,7 @@ export default function SignUp() {
                                         name="confirm_password"
                                         placeholder="Confirm your password"
                                         required
-                                        value={userData.confirm_password}
+                                        value={formData.confirm_password}
                                         onChange={handleInputChange}
                                     />
                                     {showPassword ?
@@ -290,7 +375,7 @@ export default function SignUp() {
                             </span>
                             </p>
 
-                             {/*Sign In with Google*/}
+                            {/*Sign In with Google*/}
                             {/*<div className="mt-4 w-full">*/}
                             {/*    {googleError && <h3>{googleError}</h3>}*/}
                             {/*    <GoogleOAuthProvider clientId={googleClientId}>*/}
@@ -314,7 +399,8 @@ export default function SignUp() {
                                 Previous
                             </button>
                         }
-                        {(currentStep < totalSteps) &&
+
+                        {(currentStep < totalSteps && userRole !== '') &&
                             <button className="btn slate-btn" type="button" onClick={nextStep}>
                                 Next
                             </button>
