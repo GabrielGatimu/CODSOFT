@@ -31,7 +31,7 @@ export default function AddEditJob() {
         experience: '',
         description: '',
         skills: '',
-        salaryType: 'fixed',
+        salaryType: 'range',
         salary: '',
         lowerLimit: '',
         upperLimit: '',
@@ -183,7 +183,7 @@ export default function AddEditJob() {
                             <select className="px-3 mb-2 bg-stone-100 rounded" name="type" id="type"
                                     defaultValue="Full-time"
                                     value={jobData.type} onChange={handleInputChange} required>
-                                <option value="Full-time">Full-Time</option>
+                                <option value="Full-time" selected>Full-Time</option>
                                 <option value="Part-time">Part-Time</option>
                                 <option value="Contract">Contract</option>
                             </select>
@@ -198,7 +198,7 @@ export default function AddEditJob() {
                                         onChange={handleInputChange}
                                         defaultValue={jobData.salaryType}
                                 >
-                                    <option value="range">Range</option>
+                                    <option value="range" selected>Range</option>
                                     <option value="fixed">Fixed</option>
                                 </select>
                             </label>
