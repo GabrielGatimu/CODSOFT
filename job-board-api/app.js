@@ -14,7 +14,7 @@ const app = express()
 // ----- CORS ---- //
 const corsOptions = {
     // origin: '*',
-    origin: ["http://localhost", "http://localhost:5173", "http://localhost:4173", "https://job-board-app-2nmr.onrender.com"],
+    origin: [process.env.LOCALHOST_ORIGIN ,  process.env.PRODUCTION_ORIGIN],
     credentials: true
 }
 app.use(cors(corsOptions))

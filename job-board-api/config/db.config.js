@@ -1,7 +1,7 @@
 dbConfig = {
     HOST: process.env['HOST'],
     USER: process.env['DB_USER'],
-    PASSWORD: process.env['DB_PASSWORD'],
+    PASSWORD: process.env['DB_USER_PASSWORD'],
     DB: process.env['DB'],
     PORT: process.env['DB_PORT'],
     dialect: "postgres",

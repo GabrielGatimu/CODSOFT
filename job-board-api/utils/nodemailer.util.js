@@ -24,7 +24,7 @@ const sendVerificationEmail = async (userName, email, token) => {
         <h1>Please Confirm your Account</h1>
         <h2>Hello ${userName}</h2>
         <p>Thank you for joining Job Board. Confirm your email by clicking on the following link</p>
-        <a href=http://localhost:5173/verify-email/${token}> Click here to verify your account</a>
+        <a href=${process.env.PRODUCTION_ORIGIN}/verify-email/${token}> Click here to verify your account</a>
         </div>
         `
     }
@@ -48,7 +48,7 @@ const sendResetPassword = async (userName, email, token) => {
         <h2>Hello ${userName}</h2>
         <p>
         You are receiving this email because you (or someone else) has requested a password reset for your Job Board account.\nConfirm by clicking on the following link</p>
-        <a href=http://localhost:5173/reset-password/${token}> Click here to reset your password</a>\n
+        <a href=${process.env.PRODUCTION_ORIGIN}/reset-password/${token}> Click here to reset your password</a>\n
            If you did not request this, please ignore this email and your password will remain unchanged.
         </div>
         `
